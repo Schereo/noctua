@@ -1,12 +1,9 @@
 import type Database from 'better-sqlite3'
 import { z } from 'zod'
-import { extractUsage, getDraftModel, getOpenRouter } from './openrouter'
+import { extractUsage, getDraftModel, getOpenRouter, providerBody } from './openrouter'
 import { logUsage } from './budget'
 
-type RuleActionExecutor = (
-  messageIds: number[],
-  action: 'archive' | 'markRead' | 'flag'
-) => void
+type RuleActionExecutor = (messageIds: number[], action: 'archive' | 'markRead' | 'flag') => void
 let executeAction: RuleActionExecutor = () => {}
 /** Vom Bootstrap gesetzt (syncEngine.applyAction) — vermeidet Import-Zyklen. */
 export function setRuleActionExecutor(fn: RuleActionExecutor): void {
@@ -22,7 +19,15 @@ export const ruleJsonSchema = z.object({
       listUnsubscribe: z.boolean().optional(),
       category: z
         .array(
-          z.enum(['personal', 'work', 'newsletter', 'promotions', 'notifications', 'transactional', 'other'])
+          z.enum([
+            'personal',
+            'work',
+            'newsletter',
+            'promotions',
+            'notifications',
+            'transactional',
+            'other'
+          ])
         )
         .max(7)
         .optional(),
@@ -36,7 +41,15 @@ export const ruleJsonSchema = z.object({
       markRead: z.boolean().optional(),
       flag: z.boolean().optional(),
       setCategory: z
-        .enum(['personal', 'work', 'newsletter', 'promotions', 'notifications', 'transactional', 'other'])
+        .enum([
+          'personal',
+          'work',
+          'newsletter',
+          'promotions',
+          'notifications',
+          'transactional',
+          'other'
+        ])
         .optional(),
       createTask: z.boolean().optional()
     })
@@ -81,6 +94,7 @@ export async function draftRule(
   if (!client) throw new Error('Kein OpenRouter-Key hinterlegt')
   const model = getDraftModel()
   const response = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       { role: 'system', content: DRAFT_PROMPT },
@@ -121,13 +135,28 @@ export function matches(rule: RuleJson, m: MessageFacts): boolean {
   const domain = (m.from_addr ?? '').split('@')[1]?.toLowerCase() ?? ''
   const subject = (m.subject ?? '').toLowerCase()
   const { match } = rule
-  if (match.fromContains && !match.fromContains.some((x) => from.includes(x.toLowerCase()))) return false
-  if (match.fromDomain && !match.fromDomain.some((x) => domain === x.toLowerCase() || domain.endsWith(`.${x.toLowerCase()}`))) return false
-  if (match.subjectContains && !match.subjectContains.some((x) => subject.includes(x.toLowerCase()))) return false
-  if (match.listUnsubscribe !== undefined && Boolean(m.list_unsubscribe) !== match.listUnsubscribe) return false
-  if (match.category && (m.category === null || !match.category.includes(m.category as never))) return false
-  if (match.minPriority !== undefined && (m.priority === null || m.priority < match.minPriority)) return false
-  if (match.maxPriority !== undefined && (m.priority === null || m.priority > match.maxPriority)) return false
+  if (match.fromContains && !match.fromContains.some((x) => from.includes(x.toLowerCase())))
+    return false
+  if (
+    match.fromDomain &&
+    !match.fromDomain.some(
+      (x) => domain === x.toLowerCase() || domain.endsWith(`.${x.toLowerCase()}`)
+    )
+  )
+    return false
+  if (
+    match.subjectContains &&
+    !match.subjectContains.some((x) => subject.includes(x.toLowerCase()))
+  )
+    return false
+  if (match.listUnsubscribe !== undefined && Boolean(m.list_unsubscribe) !== match.listUnsubscribe)
+    return false
+  if (match.category && (m.category === null || !match.category.includes(m.category as never)))
+    return false
+  if (match.minPriority !== undefined && (m.priority === null || m.priority < match.minPriority))
+    return false
+  if (match.maxPriority !== undefined && (m.priority === null || m.priority > match.maxPriority))
+    return false
   return true
 }
 

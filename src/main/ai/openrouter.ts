@@ -23,6 +23,21 @@ export function getOpenRouter(): OpenAI | null {
   return client
 }
 
+/**
+ * Zero Data Retention (M86): standardmäßig routet OpenRouter nur zu
+ * Anbietern, die Prompts nicht speichern (`data_collection: 'deny'`).
+ * Abschaltbar über ai.zdrOnly = '0' — dann stehen mehr Modelle bereit,
+ * aber ohne ZDR-Garantie.
+ */
+export function zdrOnly(): boolean {
+  return getSetting('ai.zdrOnly') !== '0'
+}
+
+/** OpenRouter-Zusatzfelder für chat.completions.create — bei allen Calls spreaden. */
+export function providerBody(): Record<string, unknown> {
+  return zdrOnly() ? { provider: { data_collection: 'deny' } } : {}
+}
+
 export function getTriageModel(): string {
   return getSetting('ai.triageModel') ?? 'deepseek/deepseek-v4-flash'
 }

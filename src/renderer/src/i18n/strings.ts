@@ -484,6 +484,31 @@ const table = {
     de: 'Neue Adressen tauchen nach dem ersten Sync in den Filtern auf. Die Eule liest den Gesendet-Ordner des Postfachs und lernt seinen Stil.'
   },
   mailCount: { en: '{n} mails', de: '{n} Mails' },
+  customModelToggle: { en: 'custom model…', de: 'eigenes Modell…' },
+  customModelNote: {
+    en: 'The listed models are tried and tested. Any OpenRouter model works too — cost and fitness are then yours to judge. The test runs a sample mail through the scanner prompt.',
+    de: 'Die gelisteten Modelle sind erprobt. Jedes OpenRouter-Modell geht auch — Kosten und Tauglichkeit kennen wir dann nicht. Der Test schickt eine Beispiel-Mail durch den Scanner-Prompt.'
+  },
+  customModelPh: {
+    en: 'provider/model — e.g. moonshotai/kimi-k2',
+    de: 'anbieter/modell — z. B. moonshotai/kimi-k2'
+  },
+  customModelTest: { en: 'TEST', de: 'TESTEN' },
+  customModelApply: { en: 'USE MODEL', de: 'ÜBERNEHMEN' },
+  customModelOk: {
+    en: '✓ works — {ms} ms · ~{cost}',
+    de: '✓ funktioniert — {ms} ms · ~{cost}'
+  },
+  customModelFailed: { en: 'test failed', de: 'Test fehlgeschlagen' },
+  zdrHead: { en: 'PRIVACY', de: 'DATENSCHUTZ' },
+  zdrLabel: {
+    en: 'ZERO-DATA-RETENTION PROVIDERS ONLY',
+    de: 'NUR ANBIETER OHNE DATENSPEICHERUNG'
+  },
+  zdrNote: {
+    en: 'Requests are routed only to providers that don’t store prompts (ZDR). Turning this off can make more models available — without that guarantee.',
+    de: 'Anfragen gehen nur an Anbieter, die Prompts nicht speichern (Zero Data Retention). Ausgeschaltet stehen ggf. mehr Modelle bereit — ohne diese Garantie.'
+  },
   obSyncingMails: { en: 'LOADING MAILS · {n}', de: 'LÄDT MAILS · {n}' },
   obSyncNote: {
     en: 'mails keep loading in the background — you can already continue',
