@@ -1,4 +1,4 @@
-// String-Tabelle des Letterpress-Designs. Quelle: design_handoff_noctua_mail
+// String-Tabelle des Letterpress-Designs (aus dem ursprünglichen Design-Handoff).
 // („Noctua Mail.dc.html" = EN kanonisch, „Noctua Mail DE.dc.html" = DE).
 // Platzhalter in {braces} werden von t() ersetzt.
 
