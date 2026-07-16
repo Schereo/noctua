@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.4] - 2026-07-16
+
+### Behoben
+
+- **Onboarding: Google Mail nutzt jetzt den Google-Sign-in** statt des alten App-Passwort-Formulars (QA-Fund im frisch installierten Build): „VERBINDEN" bei Google fragt nur noch den Postfachnamen und öffnet dann den Browser-OAuth — derselbe `accounts:addGoogle`-Kanal wie im Konten-Dialog der Einstellungen (M46). Der Hinweis erklärt, dass Noctua das Passwort nie sieht und kein App-Passwort mehr nötig ist. Das Inline-Formular mit Adresse/App-Passwort bleibt nur für IMAP; der tote `provider: 'gmail'`-Zweig im Onboarding-Connect ist entfernt.
+
 ## [0.88.3] - 2026-07-16
 
 ### Geändert

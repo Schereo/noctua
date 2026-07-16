@@ -16,8 +16,8 @@ import {
 } from '@renderer/features/paper/onboarding-steps'
 
 // 4-Schritte-Onboarding nach Design 1b (welcome → connect → key → training)
-// — mit ECHTEN Flows: Microsoft öffnet den Browser-OAuth, Google/IMAP nehmen
-// App-Passwort bzw. Host inline, Schritt 3 speichert den OpenRouter-Schlüssel
+// — mit ECHTEN Flows: Google und Microsoft öffnen den Browser-OAuth (M46),
+// IMAP nimmt Host + App-Passwort inline, Schritt 3 speichert den OpenRouter-Schlüssel
 // über denselben Kanal wie das Intelligenz-Sheet (secrets:set), und das
 // Stil-Training in Schritt 4 zeigt ehrlich, ob es läuft, pausiert oder
 // gescheitert ist — nie ein erfundenes 100 %.
@@ -183,13 +183,17 @@ export function Onboarding(): React.JSX.Element {
     if (step === 3 && !keyReady) keyInputRef.current?.focus()
   }, [step, keyReady])
 
-  const addMicrosoft = (): void => {
+  // Google und Microsoft laufen über den Browser-OAuth — identischer Ablauf,
+  // nur der IPC-Kanal unterscheidet sich. Kein App-Passwort mehr (M46).
+  const addOauth = (provider: 'gmail' | 'microsoft'): void => {
     if (!accountName.trim()) {
       toastNow(t('toastAccountNameRequired'))
       return
     }
-    setBusy('microsoft')
-    void invoke('accounts:addMicrosoft', { accountName: accountName.trim() })
+    setBusy(provider)
+    void invoke(provider === 'gmail' ? 'accounts:addGoogle' : 'accounts:addMicrosoft', {
+      accountName: accountName.trim()
+    })
       .then(({ email }) => {
         toastNow(t('toastConnected', { addr: email }))
         setForm(null)
@@ -205,7 +209,7 @@ export function Onboarding(): React.JSX.Element {
       toastNow(t('toastAccountNameRequired'))
       return
     }
-    if (!addr.includes('@') || !pass || (form === 'imap' && !host)) {
+    if (!addr.includes('@') || !pass || !host) {
       toastNow(t('toastImapFields'))
       return
     }
@@ -214,15 +218,11 @@ export function Onboarding(): React.JSX.Element {
       email: addr.trim(),
       accountName: accountName.trim(),
       password: pass,
-      provider: form === 'gmail' ? 'gmail' : 'imap',
-      ...(form === 'imap'
-        ? {
-            imapHost: host.trim(),
-            imapPort: 993,
-            smtpHost: host.trim().replace(/^imap\./, 'smtp.'),
-            smtpPort: 587
-          }
-        : {})
+      provider: 'imap',
+      imapHost: host.trim(),
+      imapPort: 993,
+      smtpHost: host.trim().replace(/^imap\./, 'smtp.'),
+      smtpPort: 587
     })
       .then(() => {
         toastNow(t('toastConnected', { addr: addr.trim() }))
@@ -405,30 +405,28 @@ export function Onboarding(): React.JSX.Element {
                   maxLength={40}
                   autoFocus
                 />
-                {form !== 'microsoft' && (
+                {form === 'imap' && (
                   <>
                     <input
                       value={addr}
                       onChange={(e) => setAddr(e.target.value)}
-                      placeholder={form === 'gmail' ? 'you@gmail.com' : t('imapAddrPh')}
+                      placeholder={t('imapAddrPh')}
                       className="paper-input"
                     />
                     <div className="flex gap-2">
-                      {form === 'imap' && (
-                        <input
-                          value={host}
-                          onChange={(e) => setHost(e.target.value)}
-                          placeholder={t('imapHostPh')}
-                          className="paper-input flex-1"
-                        />
-                      )}
+                      <input
+                        value={host}
+                        onChange={(e) => setHost(e.target.value)}
+                        placeholder={t('imapHostPh')}
+                        className="paper-input flex-1"
+                      />
                       <input
                         value={pass}
                         onChange={(e) => setPass(e.target.value)}
                         type="password"
                         placeholder={t('imapPassPh')}
                         className="paper-input"
-                        style={{ width: form === 'imap' ? 150 : undefined }}
+                        style={{ width: 150 }}
                       />
                     </div>
                   </>
@@ -436,7 +434,7 @@ export function Onboarding(): React.JSX.Element {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={form === 'microsoft' ? addMicrosoft : connectForm}
+                    onClick={form === 'imap' ? connectForm : () => addOauth(form)}
                     className="btn-bare"
                     style={{
                       font: '500 10px var(--mono)',
@@ -448,7 +446,11 @@ export function Onboarding(): React.JSX.Element {
                     {busy ? '···' : t('connect')}
                   </button>
                   <span style={{ font: '400 9px var(--mono)', color: 'var(--faint)' }}>
-                    {form === 'microsoft' ? t('microsoftBrowserNote') : t('imapNote')}
+                    {form === 'microsoft'
+                      ? t('microsoftBrowserNote')
+                      : form === 'gmail'
+                        ? t('addGoogleNote')
+                        : t('imapNote')}
                   </span>
                 </div>
               </div>
