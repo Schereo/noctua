@@ -473,7 +473,7 @@ const table = {
     en: 'smtp host — empty = same as imap',
     de: 'SMTP-Host — leer = wie IMAP'
   },
-  imapPassPh: { en: 'app password', de: 'App-Passwort' },
+  imapPassPh: { en: 'password', de: 'Passwort' },
   connect: { en: 'CONNECT', de: 'VERBINDEN' },
   imapNote: {
     en: 'port 993 = SSL, others STARTTLS · Proton Bridge: 127.0.0.1, ports 1143/1025',
