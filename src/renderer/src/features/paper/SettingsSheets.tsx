@@ -420,7 +420,7 @@ function AccountCard({
               marginTop: 2
             }}
           >
-            {a.provider} · {t('threads', { n: a.threadCount.toLocaleString('de-DE') })}
+            {a.provider} · {t('mailCount', { n: a.messageCount.toLocaleString('de-DE') })}
           </div>
           {errLine && (
             <div
@@ -972,7 +972,7 @@ function VoiceCard({ account }: { account: AccountSummary }): React.JSX.Element 
         <span className="ml-auto" style={{ font: '400 9px var(--mono)', color: 'var(--muted)' }}>
           {meta
             ? `${t('replies', { n: meta.replies.toLocaleString('de-DE') })} · ${freshnessLabel(t, meta.updatedAt)}`
-            : t('threads', { n: account.threadCount.toLocaleString('de-DE') })}
+            : t('mailCount', { n: account.messageCount.toLocaleString('de-DE') })}
         </span>
       </div>
       <div className="flex flex-wrap gap-[5px]" style={{ marginTop: 9 }}>

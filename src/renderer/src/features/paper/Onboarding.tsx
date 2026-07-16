@@ -43,6 +43,7 @@ export function Onboarding(): React.JSX.Element {
   const [accountName, setAccountName] = useState('')
   const [addr, setAddr] = useState('')
   const [host, setHost] = useState('')
+  const [port, setPort] = useState('')
   const [pass, setPass] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
   const [train, setTrain] = useState<TrainRow[]>([])
@@ -183,6 +184,33 @@ export function Onboarding(): React.JSX.Element {
     if (step === 3 && !keyReady) keyInputRef.current?.focus()
   }, [step, keyReady])
 
+  // Laufenden Flow markieren: Ein Neustart mittendrin setzt das Onboarding
+  // dann fort, statt verbundene Konten als „Bestandsinstallation" zu werten
+  // (App.tsx, onboardingBootDecision) — sonst entfiele der Schlüssel-Schritt.
+  useEffect(() => {
+    void invoke('settings:set', { key: 'noctua.onboardingStarted', value: '1' })
+  }, [])
+
+  // Wiederaufnahme nach Unterbrechung: Sind schon Konten verbunden, ist der
+  // Willkommens-Schritt erledigt — direkt bei VERBINDEN weitermachen.
+  useEffect(() => {
+    if (step === 1 && connected.length > 0) setStep(2)
+  }, [step, connected.length])
+
+  // Erst-Sync live verfolgen: Solange ein Konto lädt, die Kontenliste alle
+  // 2,5 s neu ziehen — Mail-Zähler und Puls-Punkt bleiben so ehrlich.
+  const anySyncing = connected.some(
+    (a) => a.syncState === 'connecting' || a.syncState === 'syncing'
+  )
+  useEffect(() => {
+    if (!anySyncing) return
+    const iv = setInterval(
+      () => void queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+      2500
+    )
+    return () => clearInterval(iv)
+  }, [anySyncing, queryClient])
+
   // Google und Microsoft laufen über den Browser-OAuth — identischer Ablauf,
   // nur der IPC-Kanal unterscheidet sich. Kein App-Passwort mehr (M46).
   const addOauth = (provider: 'gmail' | 'microsoft'): void => {
@@ -213,16 +241,20 @@ export function Onboarding(): React.JSX.Element {
       toastNow(t('toastImapFields'))
       return
     }
+    // Proton Bridge läuft auf dem Loopback mit eigenen Ports (1143/1025) —
+    // ohne Port-Angabe die richtigen Defaults wählen statt stur 993/587.
+    const cleanHost = host.trim()
+    const loopback = ['127.0.0.1', 'localhost', '::1'].includes(cleanHost.toLowerCase())
     setBusy(form)
     void invoke('accounts:add', {
       email: addr.trim(),
       accountName: accountName.trim(),
       password: pass,
       provider: 'imap',
-      imapHost: host.trim(),
-      imapPort: 993,
-      smtpHost: host.trim().replace(/^imap\./, 'smtp.'),
-      smtpPort: 587
+      imapHost: cleanHost,
+      imapPort: Number(port) || (loopback ? 1143 : 993),
+      smtpHost: loopback ? cleanHost : cleanHost.replace(/^imap\./, 'smtp.'),
+      smtpPort: loopback ? 1025 : 587
     })
       .then(() => {
         toastNow(t('toastConnected', { addr: addr.trim() }))
@@ -230,6 +262,7 @@ export function Onboarding(): React.JSX.Element {
         setAccountName('')
         setAddr('')
         setHost('')
+        setPort('')
         setPass('')
         void queryClient.invalidateQueries({ queryKey: ['accounts'] })
       })
@@ -366,12 +399,24 @@ export function Onboarding(): React.JSX.Element {
                           {acc ? `${acc.accountName} · ${acc.email}` : ''}
                         </div>
                       </div>
-                      <span style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}>
-                        {done
-                          ? `✓ ${t('threads', { n: acc?.threadCount.toLocaleString('de-DE') ?? '0' })}`
-                          : busy === p.key
-                            ? '···'
-                            : ''}
+                      <span
+                        className="flex items-center gap-1.5"
+                        style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}
+                      >
+                        {done && acc ? (
+                          acc.syncState === 'connecting' || acc.syncState === 'syncing' ? (
+                            <>
+                              <span className="ob-sync-dot" aria-hidden="true" />
+                              {t('obSyncingMails', { n: acc.messageCount.toLocaleString('de-DE') })}
+                            </>
+                          ) : (
+                            `✓ ${t('mailCount', { n: acc.messageCount.toLocaleString('de-DE') })}`
+                          )
+                        ) : busy === p.key ? (
+                          '···'
+                        ) : (
+                          ''
+                        )}
                       </span>
                       <button
                         type="button"
@@ -419,14 +464,21 @@ export function Onboarding(): React.JSX.Element {
                                 className="paper-input flex-1"
                               />
                               <input
-                                value={pass}
-                                onChange={(e) => setPass(e.target.value)}
-                                type="password"
-                                placeholder={t('imapPassPh')}
+                                value={port}
+                                onChange={(e) => setPort(e.target.value)}
+                                placeholder="993"
+                                inputMode="numeric"
                                 className="paper-input"
-                                style={{ width: 150 }}
+                                style={{ width: 70 }}
                               />
                             </div>
+                            <input
+                              value={pass}
+                              onChange={(e) => setPass(e.target.value)}
+                              type="password"
+                              placeholder={t('imapPassPh')}
+                              className="paper-input"
+                            />
                           </>
                         )}
                         <div className="flex items-center gap-3">
@@ -468,7 +520,9 @@ export function Onboarding(): React.JSX.Element {
               </button>
               <span style={{ font: '400 9.5px var(--mono)', color: 'var(--faint)' }}>
                 {connected.length > 0
-                  ? t('obNConnected', { n: connected.length })
+                  ? anySyncing
+                    ? t('obSyncNote')
+                    : t('obNConnected', { n: connected.length })
                   : t('obNothingLeaves')}
               </span>
             </div>

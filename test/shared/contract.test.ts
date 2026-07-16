@@ -208,6 +208,27 @@ describe('ipc-contract', () => {
     ).toBe(1_752_576_600_000)
   })
 
+  it('accounts:list trägt messageCount für die Mail-Zähler (Default 0)', () => {
+    const base = {
+      id: 1,
+      email: 'tim@hotmail.de',
+      accountName: 'Hotmail',
+      displayName: null,
+      provider: 'microsoft' as const,
+      color: '#f0d9a8',
+      syncState: 'syncing' as const,
+      lastError: null,
+      signature: null,
+      threadCount: 2,
+      syncDays: null
+    }
+    const spec = invokeContract['accounts:list']
+    expect(spec.output.parse({ accounts: [base] }).accounts[0].messageCount).toBe(0)
+    expect(
+      spec.output.parse({ accounts: [{ ...base, messageCount: 807 }] }).accounts[0].messageCount
+    ).toBe(807)
+  })
+
   it('validiert ein sync:state-Push-Payload', () => {
     expect(() =>
       pushContract['sync:state'].parse({ accountId: 1, state: 'idle', detail: null })

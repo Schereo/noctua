@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { invoke, onPush } from '@renderer/lib/ipc'
 import { initPanelPrefs, usePaper } from '@renderer/stores/paper'
 import { initDraftAutosave } from '@renderer/features/paper/draft-autosave'
+import { onboardingBootDecision } from '@renderer/features/paper/onboarding-steps'
 import { useUiStore } from '@renderer/stores/ui'
 import { useAccounts } from '@renderer/queries/accounts'
 import { useThreadInvalidation } from '@renderer/queries/threads'
@@ -80,13 +81,22 @@ function App(): React.JSX.Element {
   useEffect(() => {
     initLanguage()
     initPanelPrefs()
-    // Onboarding nur beim echten Erststart — Bestandskonten zählen als onboarded
+    // Onboarding beim Erststart zeigen, nach Unterbrechung fortsetzen —
+    // nur echte Bestandskonten (Flow lief nie) zählen als onboarded.
     void invoke('settings:get', { key: 'noctua.onboarded' }).then(async (r) => {
       if (r.value === '1') return
-      const accs = await invoke('accounts:list', undefined)
-      if (accs.accounts.length > 0) {
+      const [started, accs] = await Promise.all([
+        invoke('settings:get', { key: 'noctua.onboardingStarted' }),
+        invoke('accounts:list', undefined)
+      ])
+      const decision = onboardingBootDecision({
+        onboarded: false,
+        started: started.value === '1',
+        accountCount: accs.accounts.length
+      })
+      if (decision === 'legacyMarkOnboarded') {
         void invoke('settings:set', { key: 'noctua.onboarded', value: '1' })
-      } else {
+      } else if (decision === 'show' || decision === 'resume') {
         usePaper.getState().setOnboarding(true)
       }
     })

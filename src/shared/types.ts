@@ -20,6 +20,8 @@ export const accountSummarySchema = z.object({
   errorSince: z.number().nullable().default(null),
   signature: z.string().nullable(),
   threadCount: z.number().default(0),
+  /** Anzahl Mails — nutzerfreundlicher als Threads (Onboarding/Einstellungen). */
+  messageCount: z.number().default(0),
   /** Sync-Zeitraum in Tagen: 0 = alles, null = Standard (90/183). */
   syncDays: z.number().int().nullable().default(null)
 })
