@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.2] - 2026-07-16
+
+### Entfernt
+
+- **Design-Handoff-Ordner** (`design_handoff_noctua_mail/`, `design_handoff_v2/`): die HTML-Mockups und Task-Listen aus den Claude-Design-Übergaben waren Arbeitsartefakte, keine Projektquelle — das Letterpress-Design lebt längst im Code. Der Quellen-Kommentar in strings.ts verweist nicht mehr auf den gelöschten Ordner.
+
 ## [0.88.1] - 2026-07-16
 
 ### Geändert
