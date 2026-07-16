@@ -257,12 +257,20 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
       if (!(error instanceof AppleGuardrailError)) throw error
       parsed = neutralVerdict(row.subject)
     }
+    // Aufgaben-Ableitung ist für das On-Device-Modell bewusst AUS: das kleine
+    // Modell erkennt zu viele Schein-Aufgaben. Kategorie/Priorität/Zusammen-
+    // fassung/needs_reply bleiben — nur Tasks entstehen hier nicht.
+    parsed = { ...parsed, action_items: [] }
     logUsage(db, 'apple/on-device', 0, 0, 0)
-    return persistVerdict(db, row, messageId, parsed, 'apple/on-device', {
-      inputTokens: 0,
-      outputTokens: 0,
-      costUsd: 0
-    })
+    return persistVerdict(
+      db,
+      row,
+      messageId,
+      parsed,
+      'apple/on-device',
+      { inputTokens: 0, outputTokens: 0, costUsd: 0 },
+      { createTasks: false }
+    )
   }
 
   if (!client) return 'skipped-no-client'
@@ -321,7 +329,8 @@ function persistVerdict(
   messageId: number,
   parsed: TriageVerdict,
   model: string,
-  usage: { inputTokens: number; outputTokens: number; costUsd: number }
+  usage: { inputTokens: number; outputTokens: number; costUsd: number },
+  options: { createTasks?: boolean } = {}
 ): TriageOutcome {
   let priority = parsed.priority
   const stats = db
@@ -368,24 +377,26 @@ function persistVerdict(
     Date.now()
   )
 
-  createTasksFromTriage(db, {
-    sourceKind: 'mail',
-    sourceId: messageId,
-    accountId: row.account_id,
-    category: parsed.category,
-    needsReply,
-    subject: row.subject,
-    actionItems,
-    accountEmail: row.account_email,
-    ownerDisplayName: row.account_display_name,
-    ownerAccountName: row.account_name,
-    toJson: row.to_json,
-    ccJson: row.cc_json,
-    bodyText: textBeforeForwardedMessage(row.subject, fullBodyText),
-    addressedToMe: parsed.addressed_to_me,
-    fromAddr: row.from_addr,
-    folderSpecialUse: row.folder_special_use,
-    forwardWithoutRequest
-  })
+  if (options.createTasks !== false) {
+    createTasksFromTriage(db, {
+      sourceKind: 'mail',
+      sourceId: messageId,
+      accountId: row.account_id,
+      category: parsed.category,
+      needsReply,
+      subject: row.subject,
+      actionItems,
+      accountEmail: row.account_email,
+      ownerDisplayName: row.account_display_name,
+      ownerAccountName: row.account_name,
+      toJson: row.to_json,
+      ccJson: row.cc_json,
+      bodyText: textBeforeForwardedMessage(row.subject, fullBodyText),
+      addressedToMe: parsed.addressed_to_me,
+      fromAddr: row.from_addr,
+      folderSpecialUse: row.folder_special_use,
+      forwardWithoutRequest
+    })
+  }
   return 'done'
 }
