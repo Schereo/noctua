@@ -6,6 +6,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.89.0] - 2026-07-16
+
+### Hinzugefügt
+
+- **Freie Modellwahl mit Funktions-Test** (M86): Unter Einstellungen → Intelligenz lässt sich für Scannen und Schreiben jetzt jedes OpenRouter-Modell eintragen („eigenes Modell…"). Eine Annotation macht ehrlich, dass Kosten und Tauglichkeit dann beim Nutzer liegen — und der **TESTEN**-Knopf schickt eine Beispiel-Mail durch den Scanner-Prompt: Kommt strukturiertes JSON zurück, zeigt die Zeile ✓ mit Latenz und Kosten und erst dann den ÜBERNEHMEN-Knopf; sonst den konkreten Fehlergrund. Neuer IPC-Kanal `ai:testModel` (Contract-getestet), Antwort-Urteil als pure, unit-getestete Funktion.
+- **Zero-Data-Retention-Routing, standardmäßig an** (M86): Alle OpenRouter-Anfragen (Scannen, Entwerfen, Eule-Chat, Stil-Training, Diktat, Regeln, Stupser) tragen jetzt `provider.data_collection = "deny"` — geroutet wird nur zu Anbietern, die Prompts nicht speichern. Der neue DATENSCHUTZ-Schalter in den Intelligenz-Einstellungen kann das abschalten, wenn ein Wunschmodell sonst nicht verfügbar ist; der Hinweis erklärt den Tausch.
+
+
 ## [0.88.6] - 2026-07-16
 
 ### Behoben

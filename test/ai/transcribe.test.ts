@@ -6,7 +6,8 @@ const createMock = vi.fn()
 vi.mock('@main/ai/openrouter', () => ({
   getOpenRouter: () => ({ chat: { completions: { create: createMock } } }),
   getSttModel: () => 'openai/gpt-audio-mini',
-  extractUsage: () => ({ inputTokens: 0, outputTokens: 0, costUsd: 0 })
+  extractUsage: () => ({ inputTokens: 0, outputTokens: 0, costUsd: 0 }),
+  providerBody: () => ({})
 }))
 vi.mock('@main/ai/budget', () => ({
   isBudgetExceeded: () => false,

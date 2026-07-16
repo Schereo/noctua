@@ -4,7 +4,7 @@ import type Database from 'better-sqlite3'
 import { z } from 'zod'
 import type { PushChannel, PushPayload } from '@shared/ipc-contract'
 import { htmlToText } from '../mail/parser'
-import { extractUsage, getDraftModel, getOpenRouter } from './openrouter'
+import { extractUsage, getDraftModel, getOpenRouter, providerBody } from './openrouter'
 import { isBudgetExceeded, logUsage } from './budget'
 import { embedQuery } from './embeddings'
 import { blendThreadKeys, isTemporalQuestion } from './chat-recency'
@@ -64,6 +64,7 @@ async function expandQuery(db: Database.Database, question: string): Promise<str
   // Kein response_format: Anthropic-Modelle unterstützen json_object über
   // OpenRouter nicht — JSON kommt per Instruktion und wird robust extrahiert.
   const response = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       {
@@ -249,6 +250,7 @@ async function runChat(
 
   const model = getDraftModel()
   const stream = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       {

@@ -3,7 +3,7 @@ import { currentDateLine, localStamp } from './prompt-date'
 import type Database from 'better-sqlite3'
 import type { PushChannel, PushPayload } from '@shared/ipc-contract'
 import { htmlToText } from '../mail/parser'
-import { extractUsage, getDraftModel, getOpenRouter } from './openrouter'
+import { extractUsage, getDraftModel, getOpenRouter, providerBody } from './openrouter'
 import { isBudgetExceeded, logUsage } from './budget'
 import {
   detectAddressForm,
@@ -263,6 +263,7 @@ ${BASE_STYLE_RULES}${profileBlock}${contactBlock}${formality}${styleInstructions
 
   const model = getDraftModel()
   const stream = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -557,6 +558,7 @@ ${BASE_STYLE_RULES}${profileBlock}${formality}${styleInstructionsBlock(sent.acco
 
   const model = getDraftModel()
   const stream = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -715,6 +717,7 @@ ${input.idea.trim()}`
 
   const model = getDraftModel()
   const stream = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       { role: 'system', content: systemPrompt },
@@ -824,6 +827,7 @@ ${BASE_STYLE_RULES}${profileBlock}${styleInstructionsBlock(accountId)}${
 
   const model = getDraftModel()
   const completion = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       { role: 'system', content: systemPrompt },

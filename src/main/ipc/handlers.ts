@@ -32,6 +32,7 @@ import { cancelGoogleLogin, googleInteractiveLogin } from '../auth/google'
 import { startChat } from '../ai/chat'
 import { refreshStyleProfile } from '../ai/style'
 import { listModels } from '../ai/models'
+import { runModelTest } from '../ai/model-test'
 import { transcribeAudio } from '../ai/transcribe'
 import { followupRadar } from '../ai/followups'
 import { openExternalSafe } from '../util/links'
@@ -387,6 +388,8 @@ export const handlers: IpcHandlers = {
   },
 
   'ai:models': async () => ({ models: await listModels() }),
+
+  'ai:testModel': ({ model }) => runModelTest(model),
 
   'ai:stylePreview': async ({ accountId }) => ({ text: await stylePreview(getDb(), accountId) }),
 

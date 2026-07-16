@@ -1,7 +1,7 @@
 import type Database from 'better-sqlite3'
 import { z } from 'zod'
 import { getSetting, setSetting } from '../db'
-import { extractUsage, getDraftModel, getOpenRouter } from './openrouter'
+import { extractUsage, getDraftModel, getOpenRouter, providerBody } from './openrouter'
 import { logUsage } from './budget'
 
 const STYLE_KEY = 'ai.styleProfile'
@@ -17,7 +17,11 @@ const clippedList = (maxItems: number, maxLen: number) =>
     .default([])
     .transform((arr) =>
       arr
-        .map((x) => String(x ?? '').trim().slice(0, maxLen))
+        .map((x) =>
+          String(x ?? '')
+            .trim()
+            .slice(0, maxLen)
+        )
         .filter(Boolean)
         .slice(0, maxItems)
     )
@@ -84,9 +88,12 @@ export async function refreshStyleProfile(
     .all(accountId ?? null, accountId ?? null) as Array<{ text_plain: string }>
   if (samples.length === 0) return null
 
-  const corpus = samples.map((s, i) => `--- Mail ${i + 1} ---\n${s.text_plain.slice(0, 500)}`).join('\n\n')
+  const corpus = samples
+    .map((s, i) => `--- Mail ${i + 1} ---\n${s.text_plain.slice(0, 500)}`)
+    .join('\n\n')
   const model = getDraftModel()
   const response = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       {
@@ -159,7 +166,11 @@ export function detectAddressForm(texts: string[]): 'sie' | 'du' | null {
     sie += (text.match(/\b(Ihnen|Ihrem|Ihren|Ihrer)\b/g) ?? []).length
     sie += (text.match(/sehr geehrte/gi) ?? []).length * 2
     sie += (text.match(/(?<=[a-zäöüß,;:]\s)Sie\b/g) ?? []).length
-    du += (text.match(/\b(dich|dir|dein|deine|deinem|deinen|deiner|Dich|Dir|Dein|Deine|Deinem|Deinen|Deiner)\b/g) ?? []).length
+    du += (
+      text.match(
+        /\b(dich|dir|dein|deine|deinem|deinen|deiner|Dich|Dir|Dein|Deine|Deinem|Deinen|Deiner)\b/g
+      ) ?? []
+    ).length
     du += (text.match(/(?<=[a-zäöüß,;:]\s)[Dd]u\b/g) ?? []).length
   }
   if (sie === 0 && du === 0) return null
