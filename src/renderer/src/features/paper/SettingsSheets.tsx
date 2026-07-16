@@ -420,7 +420,7 @@ function AccountCard({
               marginTop: 2
             }}
           >
-            {a.provider} · {t('threads', { n: a.threadCount.toLocaleString('de-DE') })}
+            {a.provider} · {t('mailCount', { n: a.messageCount.toLocaleString('de-DE') })}
           </div>
           {errLine && (
             <div
@@ -972,7 +972,7 @@ function VoiceCard({ account }: { account: AccountSummary }): React.JSX.Element 
         <span className="ml-auto" style={{ font: '400 9px var(--mono)', color: 'var(--muted)' }}>
           {meta
             ? `${t('replies', { n: meta.replies.toLocaleString('de-DE') })} · ${freshnessLabel(t, meta.updatedAt)}`
-            : t('threads', { n: account.threadCount.toLocaleString('de-DE') })}
+            : t('mailCount', { n: account.messageCount.toLocaleString('de-DE') })}
         </span>
       </div>
       <div className="flex flex-wrap gap-[5px]" style={{ marginTop: 9 }}>
@@ -1194,6 +1194,134 @@ export function StyleSheetView(): React.JSX.Element {
   )
 }
 
+/**
+ * Eigenes OpenRouter-Modell (M86): frei eintippen, per Beispiel-Mail testen,
+ * erst nach bestandenem Test übernehmen. Die Modell-ID-Form prüft der
+ * Contract; hier nur eine freundliche Vorab-Prüfung.
+ */
+function CustomModelRow({ onPick }: { onPick: (id: string) => void }): React.JSX.Element {
+  const t = useT()
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState('')
+  const [testing, setTesting] = useState(false)
+  const [result, setResult] = useState<{
+    ok: boolean
+    latencyMs: number
+    costUsd: number | null
+    detail: string | null
+  } | null>(null)
+
+  const valid = /^[\w.:-]+\/[\w.:-]+$/.test(id.trim())
+  const runTest = (): void => {
+    if (!valid || testing) return
+    setTesting(true)
+    setResult(null)
+    void invoke('ai:testModel', { model: id.trim() })
+      .then(setResult)
+      .catch((err) =>
+        setResult({
+          ok: false,
+          latencyMs: 0,
+          costUsd: null,
+          detail: err instanceof Error ? err.message : String(err)
+        })
+      )
+      .finally(() => setTesting(false))
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="text-btn self-start"
+        style={{ marginTop: 2, borderBottom: '1px solid var(--hairline)' }}
+        onClick={() => setOpen(true)}
+      >
+        {t('customModelToggle')}
+      </button>
+    )
+  }
+  return (
+    <div
+      className="flex flex-col gap-2"
+      style={{ border: '1px dashed var(--hairline)', padding: 10 }}
+    >
+      <div
+        style={{
+          font: '400 10.5px/1.5 var(--serif)',
+          fontStyle: 'italic',
+          color: 'var(--secondary)'
+        }}
+      >
+        {t('customModelNote')}
+      </div>
+      <div className="flex gap-2">
+        <input
+          value={id}
+          onChange={(e) => {
+            setId(e.target.value)
+            setResult(null)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') runTest()
+            e.stopPropagation()
+          }}
+          placeholder={t('customModelPh')}
+          className="paper-input flex-1"
+        />
+        <button
+          type="button"
+          className="btn-bare flex-none"
+          onClick={runTest}
+          disabled={!valid || testing}
+          style={{
+            font: '500 10px var(--mono)',
+            padding: '6px 12px',
+            ...(valid && !testing
+              ? { color: 'var(--paper)', background: 'var(--ink)' }
+              : { color: 'var(--faint)', border: '1px solid var(--hairline)' })
+          }}
+        >
+          {testing ? '···' : t('customModelTest')}
+        </button>
+      </div>
+      {result && (
+        <div
+          className="flex items-center gap-2.5"
+          style={{
+            font: '400 9.5px var(--mono)',
+            color: result.ok ? 'var(--ac)' : 'var(--muted)'
+          }}
+        >
+          <span className="min-w-0 flex-1">
+            {result.ok
+              ? t('customModelOk', {
+                  ms: result.latencyMs.toLocaleString('de-DE'),
+                  cost: result.costUsd != null ? `$${result.costUsd.toFixed(4)}` : '?'
+                })
+              : `✗ ${result.detail ?? t('customModelFailed')}`}
+          </span>
+          {result.ok && (
+            <button
+              type="button"
+              className="btn-bare flex-none"
+              onClick={() => onPick(id.trim())}
+              style={{
+                font: '500 9px var(--mono)',
+                color: 'var(--paper)',
+                background: 'var(--ink)',
+                padding: '4px 10px'
+              }}
+            >
+              {t('customModelApply')}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ModelList({
   kind,
   current,
@@ -1313,7 +1441,45 @@ function ModelList({
       {catalog.isLoading && (
         <span style={{ font: '400 9.5px var(--mono)', color: 'var(--faint)' }}>…</span>
       )}
+      {kind !== 'stt' && <CustomModelRow onPick={onPick} />}
     </div>
+  )
+}
+
+/** ZDR-Schalter (M86): Anfragen nur an Anbieter ohne Prompt-Speicherung. */
+function ZdrCard(): React.JSX.Element {
+  const t = useT()
+  const [on, setOn] = useState(true)
+  useEffect(() => {
+    void invoke('settings:get', { key: 'ai.zdrOnly' }).then((r) => setOn(r.value !== '0'))
+  }, [])
+  const toggle = (): void => {
+    const next = !on
+    setOn(next)
+    void invoke('settings:set', { key: 'ai.zdrOnly', value: next ? '1' : '0' })
+  }
+  return (
+    <>
+      <div className="mlabel" style={{ color: 'var(--ac)' }}>
+        {t('zdrHead')}
+      </div>
+      {/* Track-Optik des Rules-/Reply-Scope-Toggles wiederverwendet */}
+      <button
+        type="button"
+        className="reply-scope-toggle"
+        onClick={toggle}
+        aria-pressed={on}
+        style={{ marginTop: 10 }}
+      >
+        <span className="reply-scope-toggle__label">{t('zdrLabel')}</span>
+        <span className="reply-scope-toggle__track" aria-hidden="true">
+          <span className="reply-scope-toggle__knob" />
+        </span>
+      </button>
+      <div className="mmeta" style={{ marginTop: 8 }}>
+        {t('zdrNote')}
+      </div>
+    </>
   )
 }
 
@@ -1449,6 +1615,10 @@ export function IntelSheet(): React.JSX.Element {
           />
           {orStatus.data?.hasKey ? t('orSaved') : t('orNoKey')}
         </div>
+      </div>
+
+      <div className="ink-card" style={{ padding: 14, marginTop: 12 }}>
+        <ZdrCard />
       </div>
 
       <div className="ink-card" style={{ padding: 14, marginTop: 12 }}>

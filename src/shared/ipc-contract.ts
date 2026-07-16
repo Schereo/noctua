@@ -162,6 +162,23 @@ export const invokeContract = {
     input: z.object({ threadKey: z.string().max(500), category: aiCategorySchema.nullable() }),
     output: z.object({ ok: z.literal(true) })
   },
+  'ai:testModel': {
+    input: z.object({
+      /** OpenRouter-Modell-ID, z. B. moonshotai/kimi-k2 */
+      model: z
+        .string()
+        .trim()
+        .min(3)
+        .max(200)
+        .regex(/^[\w.:-]+\/[\w.:-]+$/)
+    }),
+    output: z.object({
+      ok: z.boolean(),
+      latencyMs: z.number(),
+      costUsd: z.number().nullable(),
+      detail: z.string().nullable()
+    })
+  },
   'ai:models': {
     input: z.void(),
     output: z.object({

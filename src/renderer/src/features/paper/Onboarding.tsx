@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { invoke } from '@renderer/lib/ipc'
 import { useAccounts } from '@renderer/queries/accounts'
@@ -16,8 +16,8 @@ import {
 } from '@renderer/features/paper/onboarding-steps'
 
 // 4-Schritte-Onboarding nach Design 1b (welcome → connect → key → training)
-// — mit ECHTEN Flows: Microsoft öffnet den Browser-OAuth, Google/IMAP nehmen
-// App-Passwort bzw. Host inline, Schritt 3 speichert den OpenRouter-Schlüssel
+// — mit ECHTEN Flows: Google und Microsoft öffnen den Browser-OAuth (M46),
+// IMAP nimmt Host + App-Passwort inline, Schritt 3 speichert den OpenRouter-Schlüssel
 // über denselben Kanal wie das Intelligenz-Sheet (secrets:set), und das
 // Stil-Training in Schritt 4 zeigt ehrlich, ob es läuft, pausiert oder
 // gescheitert ist — nie ein erfundenes 100 %.
@@ -43,6 +43,7 @@ export function Onboarding(): React.JSX.Element {
   const [accountName, setAccountName] = useState('')
   const [addr, setAddr] = useState('')
   const [host, setHost] = useState('')
+  const [port, setPort] = useState('')
   const [pass, setPass] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
   const [train, setTrain] = useState<TrainRow[]>([])
@@ -183,13 +184,44 @@ export function Onboarding(): React.JSX.Element {
     if (step === 3 && !keyReady) keyInputRef.current?.focus()
   }, [step, keyReady])
 
-  const addMicrosoft = (): void => {
+  // Laufenden Flow markieren: Ein Neustart mittendrin setzt das Onboarding
+  // dann fort, statt verbundene Konten als „Bestandsinstallation" zu werten
+  // (App.tsx, onboardingBootDecision) — sonst entfiele der Schlüssel-Schritt.
+  useEffect(() => {
+    void invoke('settings:set', { key: 'noctua.onboardingStarted', value: '1' })
+  }, [])
+
+  // Wiederaufnahme nach Unterbrechung: Sind schon Konten verbunden, ist der
+  // Willkommens-Schritt erledigt — direkt bei VERBINDEN weitermachen.
+  useEffect(() => {
+    if (step === 1 && connected.length > 0) setStep(2)
+  }, [step, connected.length])
+
+  // Erst-Sync live verfolgen: Solange ein Konto lädt, die Kontenliste alle
+  // 2,5 s neu ziehen — Mail-Zähler und Puls-Punkt bleiben so ehrlich.
+  const anySyncing = connected.some(
+    (a) => a.syncState === 'connecting' || a.syncState === 'syncing'
+  )
+  useEffect(() => {
+    if (!anySyncing) return
+    const iv = setInterval(
+      () => void queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+      2500
+    )
+    return () => clearInterval(iv)
+  }, [anySyncing, queryClient])
+
+  // Google und Microsoft laufen über den Browser-OAuth — identischer Ablauf,
+  // nur der IPC-Kanal unterscheidet sich. Kein App-Passwort mehr (M46).
+  const addOauth = (provider: 'gmail' | 'microsoft'): void => {
     if (!accountName.trim()) {
       toastNow(t('toastAccountNameRequired'))
       return
     }
-    setBusy('microsoft')
-    void invoke('accounts:addMicrosoft', { accountName: accountName.trim() })
+    setBusy(provider)
+    void invoke(provider === 'gmail' ? 'accounts:addGoogle' : 'accounts:addMicrosoft', {
+      accountName: accountName.trim()
+    })
       .then(({ email }) => {
         toastNow(t('toastConnected', { addr: email }))
         setForm(null)
@@ -205,24 +237,24 @@ export function Onboarding(): React.JSX.Element {
       toastNow(t('toastAccountNameRequired'))
       return
     }
-    if (!addr.includes('@') || !pass || (form === 'imap' && !host)) {
+    if (!addr.includes('@') || !pass || !host) {
       toastNow(t('toastImapFields'))
       return
     }
+    // Proton Bridge läuft auf dem Loopback mit eigenen Ports (1143/1025) —
+    // ohne Port-Angabe die richtigen Defaults wählen statt stur 993/587.
+    const cleanHost = host.trim()
+    const loopback = ['127.0.0.1', 'localhost', '::1'].includes(cleanHost.toLowerCase())
     setBusy(form)
     void invoke('accounts:add', {
       email: addr.trim(),
       accountName: accountName.trim(),
       password: pass,
-      provider: form === 'gmail' ? 'gmail' : 'imap',
-      ...(form === 'imap'
-        ? {
-            imapHost: host.trim(),
-            imapPort: 993,
-            smtpHost: host.trim().replace(/^imap\./, 'smtp.'),
-            smtpPort: 587
-          }
-        : {})
+      provider: 'imap',
+      imapHost: cleanHost,
+      imapPort: Number(port) || (loopback ? 1143 : 993),
+      smtpHost: loopback ? cleanHost : cleanHost.replace(/^imap\./, 'smtp.'),
+      smtpPort: loopback ? 1025 : 587
     })
       .then(() => {
         toastNow(t('toastConnected', { addr: addr.trim() }))
@@ -230,6 +262,7 @@ export function Onboarding(): React.JSX.Element {
         setAccountName('')
         setAddr('')
         setHost('')
+        setPort('')
         setPass('')
         void queryClient.invalidateQueries({ queryKey: ['accounts'] })
       })
@@ -344,115 +377,138 @@ export function Onboarding(): React.JSX.Element {
                   p.key === 'imap' ? a.provider === 'imap' : a.provider === p.key
                 )
                 return (
-                  <div
-                    key={p.key}
-                    className="tint-card flex items-center gap-3"
-                    style={{ padding: '12px 14px' }}
-                  >
+                  <Fragment key={p.key}>
                     <div
-                      className="flex flex-none items-center justify-center"
-                      style={{
-                        width: 26,
-                        height: 26,
-                        border: '1px solid var(--ink)',
-                        font: '600 10px var(--mono)'
-                      }}
+                      className="tint-card flex items-center gap-3"
+                      style={{ padding: '12px 14px' }}
                     >
-                      {p.glyph}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div style={{ font: '500 14px var(--serif)' }}>{p.name}</div>
-                      <div className="mmeta" style={{ marginTop: 1 }}>
-                        {acc ? `${acc.accountName} · ${acc.email}` : ''}
+                      <div
+                        className="flex flex-none items-center justify-center"
+                        style={{
+                          width: 26,
+                          height: 26,
+                          border: '1px solid var(--ink)',
+                          font: '600 10px var(--mono)'
+                        }}
+                      >
+                        {p.glyph}
                       </div>
+                      <div className="min-w-0 flex-1">
+                        <div style={{ font: '500 14px var(--serif)' }}>{p.name}</div>
+                        <div className="mmeta" style={{ marginTop: 1 }}>
+                          {acc ? `${acc.accountName} · ${acc.email}` : ''}
+                        </div>
+                      </div>
+                      <span
+                        className="flex items-center gap-1.5"
+                        style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}
+                      >
+                        {done && acc ? (
+                          acc.syncState === 'connecting' || acc.syncState === 'syncing' ? (
+                            <>
+                              <span className="ob-sync-dot" aria-hidden="true" />
+                              {t('obSyncingMails', { n: acc.messageCount.toLocaleString('de-DE') })}
+                            </>
+                          ) : (
+                            `✓ ${t('mailCount', { n: acc.messageCount.toLocaleString('de-DE') })}`
+                          )
+                        ) : busy === p.key ? (
+                          '···'
+                        ) : (
+                          ''
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (done) return
+                          setForm(p.key)
+                        }}
+                        className="btn-bare flex-none"
+                        style={{
+                          font: '500 9px var(--mono)',
+                          letterSpacing: 1,
+                          padding: '5px 12px',
+                          ...(done
+                            ? { color: 'var(--muted)', border: '1px solid var(--hairline)' }
+                            : { color: 'var(--paper)', background: 'var(--ink)' })
+                        }}
+                      >
+                        {done ? t('obConnected') : busy === p.key ? '···' : t('obConnect')}
+                      </button>
                     </div>
-                    <span style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}>
-                      {done
-                        ? `✓ ${t('threads', { n: acc?.threadCount.toLocaleString('de-DE') ?? '0' })}`
-                        : busy === p.key
-                          ? '···'
-                          : ''}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (done) return
-                        setForm(p.key)
-                      }}
-                      className="btn-bare flex-none"
-                      style={{
-                        font: '500 9px var(--mono)',
-                        letterSpacing: 1,
-                        padding: '5px 12px',
-                        ...(done
-                          ? { color: 'var(--muted)', border: '1px solid var(--hairline)' }
-                          : { color: 'var(--paper)', background: 'var(--ink)' })
-                      }}
-                    >
-                      {done ? t('obConnected') : busy === p.key ? '···' : t('obConnect')}
-                    </button>
-                  </div>
+                    {/* Verbinden-Formular klappt direkt unter dem gewählten Anbieter auf */}
+                    {form === p.key && (
+                      <div className="ink-card flex flex-col gap-2" style={{ padding: 14 }}>
+                        <input
+                          value={accountName}
+                          onChange={(e) => setAccountName(e.target.value)}
+                          placeholder={t('accountNamePh')}
+                          className="paper-input"
+                          maxLength={40}
+                          autoFocus
+                        />
+                        {form === 'imap' && (
+                          <>
+                            <input
+                              value={addr}
+                              onChange={(e) => setAddr(e.target.value)}
+                              placeholder={t('imapAddrPh')}
+                              className="paper-input"
+                            />
+                            <div className="flex gap-2">
+                              <input
+                                value={host}
+                                onChange={(e) => setHost(e.target.value)}
+                                placeholder={t('imapHostPh')}
+                                className="paper-input flex-1"
+                              />
+                              <input
+                                value={port}
+                                onChange={(e) => setPort(e.target.value)}
+                                placeholder="993"
+                                inputMode="numeric"
+                                className="paper-input"
+                                style={{ width: 70 }}
+                              />
+                            </div>
+                            <input
+                              value={pass}
+                              onChange={(e) => setPass(e.target.value)}
+                              type="password"
+                              placeholder={t('imapPassPh')}
+                              className="paper-input"
+                            />
+                          </>
+                        )}
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={form === 'imap' ? connectForm : () => addOauth(form)}
+                            className="btn-bare"
+                            style={{
+                              font: '500 10px var(--mono)',
+                              color: 'var(--paper)',
+                              background: 'var(--ink)',
+                              padding: '5px 12px'
+                            }}
+                          >
+                            {busy ? '···' : t('connect')}
+                          </button>
+                          <span style={{ font: '400 9px var(--mono)', color: 'var(--faint)' }}>
+                            {form === 'microsoft'
+                              ? t('microsoftBrowserNote')
+                              : form === 'gmail'
+                                ? t('addGoogleNote')
+                                : t('imapNote')}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Fragment>
                 )
               })}
             </div>
-            {form && (
-              <div className="ink-card flex flex-col gap-2" style={{ padding: 14, marginTop: 12 }}>
-                <input
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  placeholder={t('accountNamePh')}
-                  className="paper-input"
-                  maxLength={40}
-                  autoFocus
-                />
-                {form !== 'microsoft' && (
-                  <>
-                    <input
-                      value={addr}
-                      onChange={(e) => setAddr(e.target.value)}
-                      placeholder={form === 'gmail' ? 'you@gmail.com' : t('imapAddrPh')}
-                      className="paper-input"
-                    />
-                    <div className="flex gap-2">
-                      {form === 'imap' && (
-                        <input
-                          value={host}
-                          onChange={(e) => setHost(e.target.value)}
-                          placeholder={t('imapHostPh')}
-                          className="paper-input flex-1"
-                        />
-                      )}
-                      <input
-                        value={pass}
-                        onChange={(e) => setPass(e.target.value)}
-                        type="password"
-                        placeholder={t('imapPassPh')}
-                        className="paper-input"
-                        style={{ width: form === 'imap' ? 150 : undefined }}
-                      />
-                    </div>
-                  </>
-                )}
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={form === 'microsoft' ? addMicrosoft : connectForm}
-                    className="btn-bare"
-                    style={{
-                      font: '500 10px var(--mono)',
-                      color: 'var(--paper)',
-                      background: 'var(--ink)',
-                      padding: '5px 12px'
-                    }}
-                  >
-                    {busy ? '···' : t('connect')}
-                  </button>
-                  <span style={{ font: '400 9px var(--mono)', color: 'var(--faint)' }}>
-                    {form === 'microsoft' ? t('microsoftBrowserNote') : t('imapNote')}
-                  </span>
-                </div>
-              </div>
-            )}
             <div className="flex items-center gap-4" style={{ marginTop: 24 }}>
               <button
                 type="button"
@@ -464,7 +520,9 @@ export function Onboarding(): React.JSX.Element {
               </button>
               <span style={{ font: '400 9.5px var(--mono)', color: 'var(--faint)' }}>
                 {connected.length > 0
-                  ? t('obNConnected', { n: connected.length })
+                  ? anySyncing
+                    ? t('obSyncNote')
+                    : t('obNConnected', { n: connected.length })
                   : t('obNothingLeaves')}
               </span>
             </div>

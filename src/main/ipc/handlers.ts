@@ -33,6 +33,7 @@ import { cancelGoogleLogin, googleInteractiveLogin } from '../auth/google'
 import { startChat } from '../ai/chat'
 import { refreshStyleProfile } from '../ai/style'
 import { listModels } from '../ai/models'
+import { runModelTest } from '../ai/model-test'
 import { transcribeAudio } from '../ai/transcribe'
 import { followupRadar } from '../ai/followups'
 import { openExternalSafe } from '../util/links'
@@ -80,6 +81,7 @@ function toSummary(row: AccountRow): AccountSummary {
     errorSince,
     signature: row.signature ?? null,
     threadCount: countThreads(row.id),
+    messageCount: countMessages(row.id),
     syncDays: row.sync_days ?? null
   }
 }
@@ -99,6 +101,17 @@ function countThreads(accountId: number): number {
   try {
     const row = getDb()
       .prepare('SELECT count(DISTINCT thread_key) n FROM messages WHERE account_id = ?')
+      .get(accountId) as { n: number }
+    return row.n
+  } catch {
+    return 0
+  }
+}
+
+function countMessages(accountId: number): number {
+  try {
+    const row = getDb()
+      .prepare('SELECT count(*) n FROM messages WHERE account_id = ?')
       .get(accountId) as { n: number }
     return row.n
   } catch {
@@ -378,6 +391,8 @@ export const handlers: IpcHandlers = {
   'ai:models': async () => ({ models: await listModels() }),
 
   'ai:appleFm': async (input) => appleFmStatus(input?.force ?? false),
+
+  'ai:testModel': ({ model }) => runModelTest(model),
 
   'ai:stylePreview': async ({ accountId }) => ({ text: await stylePreview(getDb(), accountId) }),
 

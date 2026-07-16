@@ -3,7 +3,7 @@ import { z } from 'zod'
 import type { PushChannel, PushPayload } from '@shared/ipc-contract'
 import { getSetting } from '../db'
 import { syncEngine } from '../sync/engine'
-import { extractUsage, getOpenRouter, getTriageModel } from './openrouter'
+import { extractUsage, getOpenRouter, getTriageModel, providerBody } from './openrouter'
 import { htmlToText } from '../mail/parser'
 import {
   isForwardWithoutRequest,
@@ -215,6 +215,7 @@ export class FollowupRadar {
     const model = getTriageModel()
     try {
       const response = await client.chat.completions.create({
+        ...providerBody(),
         model,
         messages: [
           {

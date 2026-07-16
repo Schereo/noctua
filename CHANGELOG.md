@@ -6,11 +6,43 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.90.0] - 2026-07-16
+
+### Hinzugefügt
+
+- **Triage wahlweise lokal über Apple Intelligence** (M87): In Einstellungen → Intelligenz lässt sich der Posteingang-Scan auf das On-Device-Modell von macOS 26 umstellen (Apple Silicon, Apple Intelligence aktiviert) — Kategorie, Priorität, Zusammenfassung, Aufgaben und Antwort-Erwartung entstehen dann komplett auf dem Gerät, der Mail-Text verlässt den Rechner nicht und es fallen keine API-Kosten an (Kostenzeile 0 $). Technik: ein kleiner Swift-Helper (`native/fm-helper`, Guided Generation garantiert das JSON-Schema) spricht mit dem Main-Prozess über ein Zeilenprotokoll; `pnpm dev`/`build:mac` bauen ihn automatisch mit, ohne Swift-Toolchain fehlt nur das Feature (Status wird in den Einstellungen erklärt: Modell lädt, Apple Intelligence aus, Helper fehlt). Lehnen Apples Guardrails einen Mail-Inhalt ab, entsteht ein neutrales Urteil (Kategorie „other", keine Aufgaben) statt eines hängenden Jobs; ist das Modell vorübergehend nicht bereit, bleibt der Job ohne verbrannten Versuch liegen. Diktat und Entwürfe laufen bewusst weiter über OpenRouter — es gibt keinen stillen Cloud-Fallback für die Triage.
+
 ## [0.89.0] - 2026-07-16
 
 ### Hinzugefügt
 
-- **Triage wahlweise lokal über Apple Intelligence** (M86): In Einstellungen → Intelligenz lässt sich der Posteingang-Scan auf das On-Device-Modell von macOS 26 umstellen (Apple Silicon, Apple Intelligence aktiviert) — Kategorie, Priorität, Zusammenfassung, Aufgaben und Antwort-Erwartung entstehen dann komplett auf dem Gerät, der Mail-Text verlässt den Rechner nicht und es fallen keine API-Kosten an (Kostenzeile 0 $). Technik: ein kleiner Swift-Helper (`native/fm-helper`, Guided Generation garantiert das JSON-Schema) spricht mit dem Main-Prozess über ein Zeilenprotokoll; `pnpm dev`/`build:mac` bauen ihn automatisch mit, ohne Swift-Toolchain fehlt nur das Feature (Status wird in den Einstellungen erklärt: Modell lädt, Apple Intelligence aus, Helper fehlt). Lehnen Apples Guardrails einen Mail-Inhalt ab, entsteht ein neutrales Urteil (Kategorie „other", keine Aufgaben) statt eines hängenden Jobs; ist das Modell vorübergehend nicht bereit, bleibt der Job ohne verbrannten Versuch liegen. Diktat und Entwürfe laufen bewusst weiter über OpenRouter — es gibt keinen stillen Cloud-Fallback für die Triage.
+- **Freie Modellwahl mit Funktions-Test** (M86): Unter Einstellungen → Intelligenz lässt sich für Scannen und Schreiben jetzt jedes OpenRouter-Modell eintragen („eigenes Modell…"). Eine Annotation macht ehrlich, dass Kosten und Tauglichkeit dann beim Nutzer liegen — und der **TESTEN**-Knopf schickt eine Beispiel-Mail durch den Scanner-Prompt: Kommt strukturiertes JSON zurück, zeigt die Zeile ✓ mit Latenz und Kosten und erst dann den ÜBERNEHMEN-Knopf; sonst den konkreten Fehlergrund. Neuer IPC-Kanal `ai:testModel` (Contract-getestet), Antwort-Urteil als pure, unit-getestete Funktion.
+- **Zero-Data-Retention-Routing, standardmäßig an** (M86): Alle OpenRouter-Anfragen (Scannen, Entwerfen, Eule-Chat, Stil-Training, Diktat, Regeln, Stupser) tragen jetzt `provider.data_collection = "deny"` — geroutet wird nur zu Anbietern, die Prompts nicht speichern. Der neue DATENSCHUTZ-Schalter in den Intelligenz-Einstellungen kann das abschalten, wenn ein Wunschmodell sonst nicht verfügbar ist; der Hinweis erklärt den Tausch.
+
+## [0.88.6] - 2026-07-16
+
+### Behoben
+
+- **Ein Neustart mitten im Onboarding überspringt nicht mehr den Rest des Flows:** Sobald das erste Konto verbunden war, wertete der nächste App-Start es als „Bestandsinstallation" und markierte das Onboarding still als erledigt — wer z. B. nach dem ersten Konto neu startete (oder die App abstürzte), wurde nie nach dem OpenRouter-Schlüssel gefragt. Das Onboarding setzt jetzt ein `onboardingStarted`-Flag; beim Start entscheidet eine testbare Regel (`onboardingBootDecision`): abgeschlossen → nichts, unterbrochener Flow → fortsetzen (mit verbundenen Konten direkt bei Schritt 2), Konten ohne je gestarteten Flow → weiterhin still als onboarded markieren (echte Bestandsinstallationen).
+- **Proton Bridge und exotische IMAP-Setups funktionieren jetzt im Onboarding:** Das Verbinden-Formular hardcodete Port 993 und riet den SMTP-Host per `imap.`→`smtp.` — die Bridge (127.0.0.1, Ports 1143/1025) konnte nie klappen, obwohl der Hinweistext sie erwähnte. Jetzt gibt es ein Port-Feld (leer = 993), und Loopback-Hosts bekommen automatisch die Bridge-Defaults (IMAP 1143, SMTP 1025 auf demselben Host). Das Passwort-Feld ist in eine eigene Zeile gerückt, damit Adresse und Host nicht mehr verwechselt werden.
+- **Der Erst-Sync ist im Onboarding sichtbar:** Verbundene Konten zeigen während des Ladens einen pulsierenden Punkt mit **LÄDT MAILS · {n}** und live hochzählender Zahl (danach „✓ {n} Mails"), und neben WEITER erklärt ein Hinweis, dass Mails im Hintergrund weiterladen — man muss nicht warten.
+
+### Geändert
+
+- **„Mails" statt „Threads":** Der Jargon-Begriff ist aus Onboarding und Einstellungen verschwunden; `accounts:list` liefert dafür eine ehrliche `messageCount` (Mail-Zahl statt Unterhaltungs-Zahl, Contract-getestet).
+
+## [0.88.5] - 2026-07-16
+
+### Geändert
+
+- **Onboarding: Das Verbinden-Formular klappt jetzt direkt unter dem gewählten Anbieter auf** statt gesammelt unter allen dreien — bei Google unter Google, bei Outlook unter Outlook, bei IMAP unter IMAP. So bleibt sichtbar, wofür man gerade Daten eingibt.
+- **IMAP-Formular sagt „Passwort" statt „App-Passwort"** (Onboarding und Einstellungen → Konten): Bei generischem IMAP ist es ein normales Passwort — App-Passwörter waren die Gmail-Krücke, und Gmail läuft seit M46 über den Browser-Sign-in.
+
+## [0.88.4] - 2026-07-16
+
+### Behoben
+
+- **Onboarding: Google Mail nutzt jetzt den Google-Sign-in** statt des alten App-Passwort-Formulars (QA-Fund im frisch installierten Build): „VERBINDEN" bei Google fragt nur noch den Postfachnamen und öffnet dann den Browser-OAuth — derselbe `accounts:addGoogle`-Kanal wie im Konten-Dialog der Einstellungen (M46). Der Hinweis erklärt, dass Noctua das Passwort nie sieht und kein App-Passwort mehr nötig ist. Das Inline-Formular mit Adresse/App-Passwort bleibt nur für IMAP; der tote `provider: 'gmail'`-Zweig im Onboarding-Connect ist entfernt.
 
 ## [0.88.3] - 2026-07-16
 

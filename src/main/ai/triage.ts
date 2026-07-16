@@ -1,7 +1,13 @@
 import type Database from 'better-sqlite3'
 import { z } from 'zod'
 import { htmlToText } from '../mail/parser'
-import { extractUsage, getOpenRouter, getTriageModel, getTriageProvider } from './openrouter'
+import {
+  extractUsage,
+  getOpenRouter,
+  getTriageModel,
+  getTriageProvider,
+  providerBody
+} from './openrouter'
 import { AppleGuardrailError, appleFmStatus, appleTriage } from './apple-fm'
 import { logUsage } from './budget'
 import { createTasksFromTriage, isUserAuthoredMail } from '../db/repos/tasks'
@@ -265,6 +271,7 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
   let lastError = ''
   for (let attempt = 0; attempt < 2; attempt++) {
     const response = await client.chat.completions.create({
+      ...providerBody(),
       model,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },

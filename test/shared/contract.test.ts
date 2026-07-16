@@ -220,6 +220,42 @@ describe('ipc-contract', () => {
     ).toBe(1_752_576_600_000)
   })
 
+  it('ai:testModel verlangt eine OpenRouter-ID in anbieter/modell-Form (M86)', () => {
+    const spec = invokeContract['ai:testModel']
+    expect(spec.input.parse({ model: ' moonshotai/kimi-k2 ' })).toEqual({
+      model: 'moonshotai/kimi-k2'
+    })
+    expect(() => spec.input.parse({ model: 'ohne-slash' })).toThrow()
+    expect(() => spec.input.parse({ model: 'a/b c' })).toThrow()
+    expect(spec.output.parse({ ok: true, latencyMs: 812, costUsd: 0.0004, detail: null }).ok).toBe(
+      true
+    )
+    expect(
+      spec.output.parse({ ok: false, latencyMs: 90, costUsd: null, detail: 'HTTP 404' }).detail
+    ).toBe('HTTP 404')
+  })
+
+  it('accounts:list trägt messageCount für die Mail-Zähler (Default 0)', () => {
+    const base = {
+      id: 1,
+      email: 'tim@hotmail.de',
+      accountName: 'Hotmail',
+      displayName: null,
+      provider: 'microsoft' as const,
+      color: '#f0d9a8',
+      syncState: 'syncing' as const,
+      lastError: null,
+      signature: null,
+      threadCount: 2,
+      syncDays: null
+    }
+    const spec = invokeContract['accounts:list']
+    expect(spec.output.parse({ accounts: [base] }).accounts[0].messageCount).toBe(0)
+    expect(
+      spec.output.parse({ accounts: [{ ...base, messageCount: 807 }] }).accounts[0].messageCount
+    ).toBe(807)
+  })
+
   it('validiert ein sync:state-Push-Payload', () => {
     expect(() =>
       pushContract['sync:state'].parse({ accountId: 1, state: 'idle', detail: null })

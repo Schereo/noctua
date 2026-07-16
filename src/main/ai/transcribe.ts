@@ -1,5 +1,5 @@
 import type Database from 'better-sqlite3'
-import { extractUsage, getOpenRouter, getSttModel } from './openrouter'
+import { extractUsage, getOpenRouter, getSttModel, providerBody } from './openrouter'
 import { isBudgetExceeded, logUsage } from './budget'
 
 /**
@@ -17,6 +17,7 @@ export async function transcribeAudio(
 
   const model = getSttModel()
   const completion = await client.chat.completions.create({
+    ...providerBody(),
     model,
     messages: [
       {
