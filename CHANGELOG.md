@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.3] - 2026-07-16
+
+### Geändert
+
+- **README auf Englisch**: komplette Übersetzung inklusive Header (Tagline „the owl sorts, you decide", Badge-Labels license/version) — größere Reichweite fürs öffentliche Repo. App-UI und Changelog bleiben deutsch.
+
 ## [0.88.2] - 2026-07-16
 
 ### Entfernt
