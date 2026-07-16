@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.6] - 2026-07-16
+
+### Behoben
+
+- **Ein Neustart mitten im Onboarding überspringt nicht mehr den Rest des Flows:** Sobald das erste Konto verbunden war, wertete der nächste App-Start es als „Bestandsinstallation" und markierte das Onboarding still als erledigt — wer z. B. nach dem ersten Konto neu startete (oder die App abstürzte), wurde nie nach dem OpenRouter-Schlüssel gefragt. Das Onboarding setzt jetzt ein `onboardingStarted`-Flag; beim Start entscheidet eine testbare Regel (`onboardingBootDecision`): abgeschlossen → nichts, unterbrochener Flow → fortsetzen (mit verbundenen Konten direkt bei Schritt 2), Konten ohne je gestarteten Flow → weiterhin still als onboarded markieren (echte Bestandsinstallationen).
+- **Proton Bridge und exotische IMAP-Setups funktionieren jetzt im Onboarding:** Das Verbinden-Formular hardcodete Port 993 und riet den SMTP-Host per `imap.`→`smtp.` — die Bridge (127.0.0.1, Ports 1143/1025) konnte nie klappen, obwohl der Hinweistext sie erwähnte. Jetzt gibt es ein Port-Feld (leer = 993), und Loopback-Hosts bekommen automatisch die Bridge-Defaults (IMAP 1143, SMTP 1025 auf demselben Host). Das Passwort-Feld ist in eine eigene Zeile gerückt, damit Adresse und Host nicht mehr verwechselt werden.
+- **Der Erst-Sync ist im Onboarding sichtbar:** Verbundene Konten zeigen während des Ladens einen pulsierenden Punkt mit **LÄDT MAILS · {n}** und live hochzählender Zahl (danach „✓ {n} Mails"), und neben WEITER erklärt ein Hinweis, dass Mails im Hintergrund weiterladen — man muss nicht warten.
+
+### Geändert
+
+- **„Mails" statt „Threads":** Der Jargon-Begriff ist aus Onboarding und Einstellungen verschwunden; `accounts:list` liefert dafür eine ehrliche `messageCount` (Mail-Zahl statt Unterhaltungs-Zahl, Contract-getestet).
+
 ## [0.88.5] - 2026-07-16
 
 ### Geändert

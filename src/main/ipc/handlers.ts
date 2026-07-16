@@ -79,6 +79,7 @@ function toSummary(row: AccountRow): AccountSummary {
     errorSince,
     signature: row.signature ?? null,
     threadCount: countThreads(row.id),
+    messageCount: countMessages(row.id),
     syncDays: row.sync_days ?? null
   }
 }
@@ -98,6 +99,17 @@ function countThreads(accountId: number): number {
   try {
     const row = getDb()
       .prepare('SELECT count(DISTINCT thread_key) n FROM messages WHERE account_id = ?')
+      .get(accountId) as { n: number }
+    return row.n
+  } catch {
+    return 0
+  }
+}
+
+function countMessages(accountId: number): number {
+  try {
+    const row = getDb()
+      .prepare('SELECT count(*) n FROM messages WHERE account_id = ?')
       .get(accountId) as { n: number }
     return row.n
   } catch {

@@ -40,6 +40,30 @@ export function finishCtaEnabled(states: TrainRowState[]): boolean {
   return states.every((s) => s === 'done' || s === 'failed' || s === 'paused')
 }
 
+/**
+ * Boot-Entscheidung beim App-Start: Was passiert mit dem Onboarding?
+ * - `none`: schon abgeschlossen.
+ * - `resume`: Onboarding lief bereits (Started-Flag) und wurde durch Neustart/
+ *   Reload unterbrochen — fortsetzen, auch wenn schon Konten verbunden sind.
+ *   Vorher schluckte die Bestandskonten-Heuristik diesen Fall: Wer mitten im
+ *   Flow neu startete, wurde nie nach dem OpenRouter-Schlüssel gefragt.
+ * - `legacyMarkOnboarded`: Konten existieren, aber das Onboarding lief nie —
+ *   Bestandsinstallation von vor dem Onboarding, still als erledigt markieren.
+ * - `show`: echter Erststart.
+ */
+export type OnboardingBootDecision = 'none' | 'show' | 'resume' | 'legacyMarkOnboarded'
+
+export function onboardingBootDecision(ctx: {
+  onboarded: boolean
+  started: boolean
+  accountCount: number
+}): OnboardingBootDecision {
+  if (ctx.onboarded) return 'none'
+  if (ctx.started) return 'resume'
+  if (ctx.accountCount > 0) return 'legacyMarkOnboarded'
+  return 'show'
+}
+
 /** Was Enter außerhalb eines Inputs auf dem aktuellen Schritt bewirkt. */
 export type EnterAction =
   | { kind: 'to-connect' }

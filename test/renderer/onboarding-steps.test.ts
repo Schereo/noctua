@@ -2,11 +2,42 @@ import { describe, expect, it } from 'vitest'
 import {
   enterAction,
   finishCtaEnabled,
+  onboardingBootDecision,
   rowState,
   trainCtaEnabled,
   type TrainRowFlags,
   type TrainRowState
 } from '@renderer/features/paper/onboarding-steps'
+
+describe('onboardingBootDecision', () => {
+  it('abgeschlossenes Onboarding gewinnt immer', () => {
+    expect(onboardingBootDecision({ onboarded: true, started: true, accountCount: 3 })).toBe('none')
+    expect(onboardingBootDecision({ onboarded: true, started: false, accountCount: 0 })).toBe(
+      'none'
+    )
+  })
+
+  it('echter Erststart zeigt das Onboarding', () => {
+    expect(onboardingBootDecision({ onboarded: false, started: false, accountCount: 0 })).toBe(
+      'show'
+    )
+  })
+
+  it('Neustart mitten im Flow setzt fort — auch mit schon verbundenem Konto', () => {
+    expect(onboardingBootDecision({ onboarded: false, started: true, accountCount: 1 })).toBe(
+      'resume'
+    )
+    expect(onboardingBootDecision({ onboarded: false, started: true, accountCount: 0 })).toBe(
+      'resume'
+    )
+  })
+
+  it('Bestandskonten ohne je gestarteten Flow werden still als onboarded markiert', () => {
+    expect(onboardingBootDecision({ onboarded: false, started: false, accountCount: 2 })).toBe(
+      'legacyMarkOnboarded'
+    )
+  })
+})
 
 function row(overrides: Partial<TrainRowFlags> = {}): TrainRowFlags {
   return { running: false, failed: false, pct: 0, ...overrides }

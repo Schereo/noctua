@@ -483,7 +483,12 @@ const table = {
     en: "New addresses appear in the filters after first sync. The owl reads that mailbox's sent folder and starts learning its style.",
     de: 'Neue Adressen tauchen nach dem ersten Sync in den Filtern auf. Die Eule liest den Gesendet-Ordner des Postfachs und lernt seinen Stil.'
   },
-  threads: { en: '{n} threads', de: '{n} Threads' },
+  mailCount: { en: '{n} mails', de: '{n} Mails' },
+  obSyncingMails: { en: 'LOADING MAILS · {n}', de: 'LÄDT MAILS · {n}' },
+  obSyncNote: {
+    en: 'mails keep loading in the background — you can already continue',
+    de: 'Mails laden im Hintergrund weiter — du kannst schon fortfahren'
+  },
   yourStyleHead: { en: 'Your style', de: 'Dein Stil' },
   styleSub: {
     en: 'ONE PER ADDRESS · LEARNED FROM SENT MAIL · STORED LOCALLY',

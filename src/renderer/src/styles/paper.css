@@ -3158,6 +3158,17 @@ kbd,
   text-underline-offset: 3px;
 }
 
+/* Erst-Sync-Indikator im Onboarding: pulsierender Akzent-Punkt neben dem
+   live hochzählenden Mail-Zähler (Puls-Keyframe der Aufnahme wiederverwendet). */
+.ob-sync-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: none;
+  background: var(--ac);
+  animation: mail-composer-recording-pulse 1.15s ease-in-out infinite;
+}
+
 /* Antwort-Umfang als Toggle in der Empfängerzeile (Turn 9, Rules-Muster):
    Label + Track (26×14, eckiger Knopf) + ⌘⇧A-Chip, die ganze Gruppe ist
    die Klickfläche. An = Track ink-gefüllt, Knopf rechts, Zähler in Akzent. */
