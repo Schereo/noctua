@@ -1,6 +1,6 @@
 {
   "name": "noctua",
-  "version": "0.88.3",
+  "version": "0.89.0",
   "description": "AI-first mail client for macOS",
   "main": "./out/main/index.js",
   "author": "Tim Sigl",
@@ -17,6 +17,7 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "rebuild:node": "npm rebuild better-sqlite3",
     "rebuild:electron": "node scripts/rebuild-electron.mjs",
+    "build:fm": "node scripts/build-fm-helper.mjs --strict",
     "test": "npm run rebuild:node >/dev/null 2>&1 && { vitest run; rc=$?; npm run rebuild:electron >/dev/null 2>&1; exit $rc; }",
     "test:semantic-eval": "npm run rebuild:node >/dev/null 2>&1 && { NOCTUA_SEMANTIC_EVAL=1 vitest run test/local/semantic-search-eval.local.test.ts --reporter=verbose; rc=$?; npm run rebuild:electron >/dev/null 2>&1; exit $rc; }",
     "test:watch": "npm run rebuild:node && vitest",
@@ -28,7 +29,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:mac": "node scripts/build-fm-helper.mjs && electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "postbuild:mac": "npm run rebuild:electron",
     "dev:fresh": "./scripts/dev.sh"

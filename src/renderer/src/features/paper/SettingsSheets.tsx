@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { invoke } from '@renderer/lib/ipc'
 import { useAccounts } from '@renderer/queries/accounts'
-import { useModelCatalog, useModels, useOrKeyStatus } from '@renderer/queries/intel'
+import { useAppleFm, useModelCatalog, useModels, useOrKeyStatus } from '@renderer/queries/intel'
 import { usePaper } from '@renderer/stores/paper'
 import { rowTime, useI18n, useT } from '@renderer/lib/i18n'
 import { useStyleMeta, useStyleProfile } from '@renderer/features/paper/useVoiceTag'
@@ -1377,6 +1377,35 @@ export function IntelSheet(): React.JSX.Element {
     })
   }, [])
 
+  // Triage-Rechner: OpenRouter (Cloud) oder Apple Intelligence (On-Device).
+  const appleFm = useAppleFm()
+  const [scanProvider, setScanProvider] = useState<'openrouter' | 'apple'>('openrouter')
+  useEffect(() => {
+    void invoke('settings:get', { key: 'ai.triageProvider' }).then((r) => {
+      if (r.value === 'apple') setScanProvider('apple')
+    })
+  }, [])
+  const pickProvider = (provider: 'openrouter' | 'apple'): void => {
+    setScanProvider(provider)
+    void invoke('settings:set', { key: 'ai.triageProvider', value: provider }).then(() => {
+      toastNow(
+        provider === 'apple'
+          ? t('toastScanApple')
+          : t('toastScanModel', { model: (models.data?.scanModel ?? '').split('/')[1] ?? '' })
+      )
+      void queryClient.invalidateQueries({ queryKey: ['ai'] })
+    })
+  }
+  const fmStateLabel = {
+    available: t('fmStateAvailable'),
+    'apple-intelligence-off': t('fmStateOff'),
+    'model-not-ready': t('fmStateNotReady'),
+    'device-unsupported': t('fmStateUnsupported'),
+    'helper-missing': t('fmStateHelperMissing'),
+    error: t('fmStateError')
+  }[appleFm.data?.state ?? 'error']
+  const fmAvailable = appleFm.data?.state === 'available'
+
   return (
     <SheetShell title={t('intelligence')} sub={t('intelSub')}>
       <div className="ink-card" style={{ padding: 14, marginTop: 16 }}>
@@ -1431,7 +1460,58 @@ export function IntelSheet(): React.JSX.Element {
             {t('modelScanSub')}
           </span>
         </div>
-        <ModelList kind="scan" current={models.data?.scanModel ?? ''} onPick={pick('scan')} />
+
+        {/* On-Device-Option: erscheint nur, wo der Helper überhaupt existiert */}
+        {appleFm.data && appleFm.data.state !== 'device-unsupported' && (
+          <div style={{ marginTop: 10, display: 'grid', gap: 6 }}>
+            <label
+              className="flex items-start gap-2 cursor-pointer"
+              style={{ font: '400 10px var(--mono)', color: 'var(--ink)' }}
+            >
+              <input
+                type="radio"
+                name="scan-provider"
+                checked={scanProvider === 'apple'}
+                disabled={!fmAvailable}
+                onChange={() => pickProvider('apple')}
+                style={{ marginTop: 2 }}
+              />
+              <span style={{ display: 'grid', gap: 2 }}>
+                <strong style={{ font: '500 10px var(--mono)' }}>{t('fmProviderApple')}</strong>
+                <span style={{ color: 'var(--faint)', font: '400 9px var(--mono)' }}>
+                  {t('fmProviderAppleSub')} ·{' '}
+                  <span style={{ color: fmAvailable ? 'var(--ink)' : 'var(--ac)' }}>
+                    {fmStateLabel}
+                  </span>
+                </span>
+              </span>
+            </label>
+            <label
+              className="flex items-start gap-2 cursor-pointer"
+              style={{ font: '400 10px var(--mono)', color: 'var(--ink)' }}
+            >
+              <input
+                type="radio"
+                name="scan-provider"
+                checked={scanProvider === 'openrouter'}
+                onChange={() => pickProvider('openrouter')}
+                style={{ marginTop: 2 }}
+              />
+              <strong style={{ font: '500 10px var(--mono)' }}>{t('fmProviderCloud')}</strong>
+            </label>
+          </div>
+        )}
+
+        <div
+          style={scanProvider === 'apple' ? { opacity: 0.45, pointerEvents: 'none' } : undefined}
+        >
+          {scanProvider === 'apple' && (
+            <div className="mmeta" style={{ marginTop: 8 }}>
+              {t('fmCloudDimmed')}
+            </div>
+          )}
+          <ModelList kind="scan" current={models.data?.scanModel ?? ''} onPick={pick('scan')} />
+        </div>
       </div>
 
       <div className="ink-card" style={{ padding: 14, marginTop: 12 }}>

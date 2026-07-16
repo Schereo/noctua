@@ -20,6 +20,16 @@ export function useModels() {
   })
 }
 
+/** Verfügbarkeit von Apple Intelligence (On-Device-Triage). */
+export function useAppleFm() {
+  return useQuery({
+    queryKey: ['ai', 'appleFm'],
+    queryFn: () => invoke('ai:appleFm', undefined),
+    staleTime: 30_000,
+    retry: false
+  })
+}
+
 /** Live-Modellliste von OpenRouter (main-seitig gecacht). */
 export function useModelCatalog() {
   return useQuery({

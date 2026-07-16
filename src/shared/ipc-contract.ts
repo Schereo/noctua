@@ -176,6 +176,21 @@ export const invokeContract = {
       )
     })
   },
+  // Verfügbarkeit des On-Device-Modells (Apple Intelligence) für die Triage
+  'ai:appleFm': {
+    input: z.object({ force: z.boolean().default(false) }).optional(),
+    output: z.object({
+      state: z.enum([
+        'available',
+        'apple-intelligence-off',
+        'model-not-ready',
+        'device-unsupported',
+        'helper-missing',
+        'error'
+      ]),
+      detail: z.string().nullable()
+    })
+  },
   'ai:stylePreview': {
     input: z.object({ accountId: z.number().int() }),
     output: z.object({ text: z.string() })

@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.89.0] - 2026-07-16
+
+### Hinzugefügt
+
+- **Triage wahlweise lokal über Apple Intelligence** (M86): In Einstellungen → Intelligenz lässt sich der Posteingang-Scan auf das On-Device-Modell von macOS 26 umstellen (Apple Silicon, Apple Intelligence aktiviert) — Kategorie, Priorität, Zusammenfassung, Aufgaben und Antwort-Erwartung entstehen dann komplett auf dem Gerät, der Mail-Text verlässt den Rechner nicht und es fallen keine API-Kosten an (Kostenzeile 0 $). Technik: ein kleiner Swift-Helper (`native/fm-helper`, Guided Generation garantiert das JSON-Schema) spricht mit dem Main-Prozess über ein Zeilenprotokoll; `pnpm dev`/`build:mac` bauen ihn automatisch mit, ohne Swift-Toolchain fehlt nur das Feature (Status wird in den Einstellungen erklärt: Modell lädt, Apple Intelligence aus, Helper fehlt). Lehnen Apples Guardrails einen Mail-Inhalt ab, entsteht ein neutrales Urteil (Kategorie „other", keine Aufgaben) statt eines hängenden Jobs; ist das Modell vorübergehend nicht bereit, bleibt der Job ohne verbrannten Versuch liegen. Diktat und Entwürfe laufen bewusst weiter über OpenRouter — es gibt keinen stillen Cloud-Fallback für die Triage.
+
 ## [0.88.3] - 2026-07-16
 
 ### Geändert

@@ -26,6 +26,18 @@ describe('ipc-contract', () => {
     ).toThrow()
   })
 
+  it('validiert die Apple-Intelligence-Statusantwort (ai:appleFm)', () => {
+    const spec = invokeContract['ai:appleFm']
+    expect(() => spec.output.parse({ state: 'available', detail: null })).not.toThrow()
+    expect(() =>
+      spec.output.parse({ state: 'helper-missing', detail: 'nicht gebaut' })
+    ).not.toThrow()
+    expect(() => spec.output.parse({ state: 'lokal', detail: null })).toThrow()
+    // Input ist optional (force default false)
+    expect(() => spec.input.parse(undefined)).not.toThrow()
+    expect(() => spec.input.parse({ force: true })).not.toThrow()
+  })
+
   it('validiert den Google-Browser-Login (nur Postfachname nötig)', () => {
     const spec = invokeContract['accounts:addGoogle']
     expect(spec.input.parse({ accountName: '  Privat  ' })).toEqual({ accountName: 'Privat' })

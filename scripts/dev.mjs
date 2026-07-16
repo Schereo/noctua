@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { prepareNoctuaDevApp } from './prepare-dev-app.mjs'
+import { buildFmHelper } from './build-fm-helper.mjs'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const rootRequire = createRequire(join(root, 'package.json'))
@@ -21,6 +22,8 @@ const forwardedArgs = requestedCommand === 'preview' ? process.argv.slice(3) : p
 if (process.platform === 'darwin') {
   env.ELECTRON_EXEC_PATH = prepareNoctuaDevApp()
   console.log('[dev] Starte die gebrandete Noctua-Dev-App')
+  // Apple-Intelligence-Helper mitbauen (überspringt still ohne Swift/SDK 26)
+  buildFmHelper()
 }
 
 // Die gebrandete Binary lässt app.isPackaged fälschlich true melden — ohne
