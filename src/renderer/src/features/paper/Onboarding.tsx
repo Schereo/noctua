@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { invoke } from '@renderer/lib/ipc'
 import { useAccounts } from '@renderer/queries/accounts'
@@ -344,117 +344,119 @@ export function Onboarding(): React.JSX.Element {
                   p.key === 'imap' ? a.provider === 'imap' : a.provider === p.key
                 )
                 return (
-                  <div
-                    key={p.key}
-                    className="tint-card flex items-center gap-3"
-                    style={{ padding: '12px 14px' }}
-                  >
+                  <Fragment key={p.key}>
                     <div
-                      className="flex flex-none items-center justify-center"
-                      style={{
-                        width: 26,
-                        height: 26,
-                        border: '1px solid var(--ink)',
-                        font: '600 10px var(--mono)'
-                      }}
+                      className="tint-card flex items-center gap-3"
+                      style={{ padding: '12px 14px' }}
                     >
-                      {p.glyph}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div style={{ font: '500 14px var(--serif)' }}>{p.name}</div>
-                      <div className="mmeta" style={{ marginTop: 1 }}>
-                        {acc ? `${acc.accountName} · ${acc.email}` : ''}
+                      <div
+                        className="flex flex-none items-center justify-center"
+                        style={{
+                          width: 26,
+                          height: 26,
+                          border: '1px solid var(--ink)',
+                          font: '600 10px var(--mono)'
+                        }}
+                      >
+                        {p.glyph}
                       </div>
+                      <div className="min-w-0 flex-1">
+                        <div style={{ font: '500 14px var(--serif)' }}>{p.name}</div>
+                        <div className="mmeta" style={{ marginTop: 1 }}>
+                          {acc ? `${acc.accountName} · ${acc.email}` : ''}
+                        </div>
+                      </div>
+                      <span style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}>
+                        {done
+                          ? `✓ ${t('threads', { n: acc?.threadCount.toLocaleString('de-DE') ?? '0' })}`
+                          : busy === p.key
+                            ? '···'
+                            : ''}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (done) return
+                          setForm(p.key)
+                        }}
+                        className="btn-bare flex-none"
+                        style={{
+                          font: '500 9px var(--mono)',
+                          letterSpacing: 1,
+                          padding: '5px 12px',
+                          ...(done
+                            ? { color: 'var(--muted)', border: '1px solid var(--hairline)' }
+                            : { color: 'var(--paper)', background: 'var(--ink)' })
+                        }}
+                      >
+                        {done ? t('obConnected') : busy === p.key ? '···' : t('obConnect')}
+                      </button>
                     </div>
-                    <span style={{ font: '400 9px var(--mono)', color: 'var(--ac)' }}>
-                      {done
-                        ? `✓ ${t('threads', { n: acc?.threadCount.toLocaleString('de-DE') ?? '0' })}`
-                        : busy === p.key
-                          ? '···'
-                          : ''}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (done) return
-                        setForm(p.key)
-                      }}
-                      className="btn-bare flex-none"
-                      style={{
-                        font: '500 9px var(--mono)',
-                        letterSpacing: 1,
-                        padding: '5px 12px',
-                        ...(done
-                          ? { color: 'var(--muted)', border: '1px solid var(--hairline)' }
-                          : { color: 'var(--paper)', background: 'var(--ink)' })
-                      }}
-                    >
-                      {done ? t('obConnected') : busy === p.key ? '···' : t('obConnect')}
-                    </button>
-                  </div>
+                    {/* Verbinden-Formular klappt direkt unter dem gewählten Anbieter auf */}
+                    {form === p.key && (
+                      <div className="ink-card flex flex-col gap-2" style={{ padding: 14 }}>
+                        <input
+                          value={accountName}
+                          onChange={(e) => setAccountName(e.target.value)}
+                          placeholder={t('accountNamePh')}
+                          className="paper-input"
+                          maxLength={40}
+                          autoFocus
+                        />
+                        {form === 'imap' && (
+                          <>
+                            <input
+                              value={addr}
+                              onChange={(e) => setAddr(e.target.value)}
+                              placeholder={t('imapAddrPh')}
+                              className="paper-input"
+                            />
+                            <div className="flex gap-2">
+                              <input
+                                value={host}
+                                onChange={(e) => setHost(e.target.value)}
+                                placeholder={t('imapHostPh')}
+                                className="paper-input flex-1"
+                              />
+                              <input
+                                value={pass}
+                                onChange={(e) => setPass(e.target.value)}
+                                type="password"
+                                placeholder={t('imapPassPh')}
+                                className="paper-input"
+                                style={{ width: 150 }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={form === 'imap' ? connectForm : () => addOauth(form)}
+                            className="btn-bare"
+                            style={{
+                              font: '500 10px var(--mono)',
+                              color: 'var(--paper)',
+                              background: 'var(--ink)',
+                              padding: '5px 12px'
+                            }}
+                          >
+                            {busy ? '···' : t('connect')}
+                          </button>
+                          <span style={{ font: '400 9px var(--mono)', color: 'var(--faint)' }}>
+                            {form === 'microsoft'
+                              ? t('microsoftBrowserNote')
+                              : form === 'gmail'
+                                ? t('addGoogleNote')
+                                : t('imapNote')}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Fragment>
                 )
               })}
             </div>
-            {form && (
-              <div className="ink-card flex flex-col gap-2" style={{ padding: 14, marginTop: 12 }}>
-                <input
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  placeholder={t('accountNamePh')}
-                  className="paper-input"
-                  maxLength={40}
-                  autoFocus
-                />
-                {form === 'imap' && (
-                  <>
-                    <input
-                      value={addr}
-                      onChange={(e) => setAddr(e.target.value)}
-                      placeholder={t('imapAddrPh')}
-                      className="paper-input"
-                    />
-                    <div className="flex gap-2">
-                      <input
-                        value={host}
-                        onChange={(e) => setHost(e.target.value)}
-                        placeholder={t('imapHostPh')}
-                        className="paper-input flex-1"
-                      />
-                      <input
-                        value={pass}
-                        onChange={(e) => setPass(e.target.value)}
-                        type="password"
-                        placeholder={t('imapPassPh')}
-                        className="paper-input"
-                        style={{ width: 150 }}
-                      />
-                    </div>
-                  </>
-                )}
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={form === 'imap' ? connectForm : () => addOauth(form)}
-                    className="btn-bare"
-                    style={{
-                      font: '500 10px var(--mono)',
-                      color: 'var(--paper)',
-                      background: 'var(--ink)',
-                      padding: '5px 12px'
-                    }}
-                  >
-                    {busy ? '···' : t('connect')}
-                  </button>
-                  <span style={{ font: '400 9px var(--mono)', color: 'var(--faint)' }}>
-                    {form === 'microsoft'
-                      ? t('microsoftBrowserNote')
-                      : form === 'gmail'
-                        ? t('addGoogleNote')
-                        : t('imapNote')}
-                  </span>
-                </div>
-              </div>
-            )}
             <div className="flex items-center gap-4" style={{ marginTop: 24 }}>
               <button
                 type="button"

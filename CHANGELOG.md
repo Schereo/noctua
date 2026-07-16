@@ -6,6 +6,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.5] - 2026-07-16
+
+### Geändert
+
+- **Onboarding: Das Verbinden-Formular klappt jetzt direkt unter dem gewählten Anbieter auf** statt gesammelt unter allen dreien — bei Google unter Google, bei Outlook unter Outlook, bei IMAP unter IMAP. So bleibt sichtbar, wofür man gerade Daten eingibt.
+- **IMAP-Formular sagt „Passwort" statt „App-Passwort"** (Onboarding und Einstellungen → Konten): Bei generischem IMAP ist es ein normales Passwort — App-Passwörter waren die Gmail-Krücke, und Gmail läuft seit M46 über den Browser-Sign-in.
+
 ## [0.88.4] - 2026-07-16
 
 ### Behoben
