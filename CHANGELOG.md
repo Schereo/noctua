@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.90.1] - 2026-07-16
+
+### Geändert
+
+- **On-Device-Triage leitet keine Aufgaben mehr ab** (Nachbesserung zu M87): Das kleine Apple-Intelligence-Modell erkannte deutlich zu viele Schein-Aufgaben (Handlungsaufforderungen aus Newslettern und Info-Mails). Beim Apple-Provider entstehen jetzt weder Action-Item- noch „Antworten:"-Aufgaben — Kategorie, Priorität, Zusammenfassung und die Antwort-Erwartungs-Markierung bleiben on-device erhalten. Die Options-Beschreibung in den Einstellungen sagt das jetzt dazu; mit OpenRouter als Scan-Provider funktioniert die Aufgaben-Erkennung unverändert.
+
 ## [0.90.0] - 2026-07-16
 
 ### Hinzugefügt
