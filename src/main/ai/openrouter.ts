@@ -42,6 +42,11 @@ export function getTriageModel(): string {
   return getSetting('ai.triageModel') ?? 'deepseek/deepseek-v4-flash'
 }
 
+/** Wer rechnet die Triage: OpenRouter (Cloud) oder Apple Intelligence (lokal). */
+export function getTriageProvider(): 'openrouter' | 'apple' {
+  return getSetting('ai.triageProvider') === 'apple' ? 'apple' : 'openrouter'
+}
+
 export function getDraftModel(): string {
   return getSetting('ai.draftModel') ?? 'anthropic/claude-opus-4.8'
 }

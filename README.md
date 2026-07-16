@@ -59,6 +59,11 @@ entered in Settings → Intelligence and stored in the macOS keychain
 (safeStorage). A cheap model handles triage, a strong one drafts replies;
 both model IDs are configurable.
 
+**Triage can also run fully on-device**: on macOS 26 (Apple Silicon, Apple
+Intelligence enabled), Settings → Intelligence offers Apple's foundation
+model for inbox scanning — mail text never leaves the machine and the scan
+costs nothing. Dictation and drafting stay on OpenRouter.
+
 The only thing that leaves your machine is mail text for triage, drafts, and
 questions (sent directly to OpenRouter, no middle server). Without a key,
 Noctua keeps working as a regular mail client — the owl just sleeps.

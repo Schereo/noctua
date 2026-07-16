@@ -24,6 +24,7 @@ import {
 } from '../auth/providers'
 import { syncEngine } from '../sync/engine'
 import { getDraftModel, getTriageModel } from '../ai/openrouter'
+import { appleFmStatus } from '../ai/apple-fm'
 import { startDraftNew, startDraftNudge, startDraftReply, stylePreview } from '../ai/drafts'
 import { draftRule, ruleJsonSchema, ruleNeedsAi } from '../ai/rules'
 import { outboxWorker } from '../smtp/outbox'
@@ -388,6 +389,8 @@ export const handlers: IpcHandlers = {
   },
 
   'ai:models': async () => ({ models: await listModels() }),
+
+  'ai:appleFm': async (input) => appleFmStatus(input?.force ?? false),
 
   'ai:testModel': ({ model }) => runModelTest(model),
 

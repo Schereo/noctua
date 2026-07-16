@@ -14,6 +14,7 @@ import { outboxWorker } from './smtp/outbox'
 import { initNotifications, updateBadge } from './notifications'
 import { setRuleActionExecutor } from './ai/rules'
 import { startUpdateChecks, stopUpdateChecks } from './updates'
+import { stopAppleFm } from './ai/apple-fm'
 import { openExternalSafe } from './util/links'
 import { installAppMenu } from './menu'
 import { cleanupForwardTasksWithoutRequest } from './db/repos/tasks'
@@ -285,6 +286,7 @@ app.on('quit', () => {
   embeddingIndexer.stop()
   outboxWorker.stop()
   stopUpdateChecks()
+  stopAppleFm()
   void syncEngine.stopAll()
   closeDb()
 })

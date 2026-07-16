@@ -1,7 +1,14 @@
 import type Database from 'better-sqlite3'
 import { z } from 'zod'
 import { htmlToText } from '../mail/parser'
-import { extractUsage, getOpenRouter, getTriageModel, providerBody } from './openrouter'
+import {
+  extractUsage,
+  getOpenRouter,
+  getTriageModel,
+  getTriageProvider,
+  providerBody
+} from './openrouter'
+import { AppleGuardrailError, appleFmStatus, appleTriage } from './apple-fm'
 import { logUsage } from './budget'
 import { createTasksFromTriage, isUserAuthoredMail } from '../db/repos/tasks'
 import { isForwardWithoutRequest, textBeforeForwardedMessage } from '../mail/forwarded'
@@ -166,10 +173,62 @@ function buildUserPrompt(db: Database.Database, row: TriageRow): string {
 
 export type TriageOutcome = 'done' | 'skipped-no-client' | 'skipped-missing'
 
+type TriageVerdict = z.infer<typeof triageResultSchema>
+
+/**
+ * Rohes Ergebnis des On-Device-Modells in die Schema-Form bringen: Guided
+ * Generation garantiert die Struktur, aber Wertebereiche (Kategorie-Enum,
+ * Prioritätsklemme, Datums-Format) klemmen wir hier deterministisch.
+ */
+export function sanitizeAppleVerdict(raw: unknown): TriageVerdict {
+  const value = (raw ?? {}) as Record<string, unknown>
+  const category = (AI_CATEGORIES as readonly string[]).includes(String(value.category))
+    ? String(value.category)
+    : 'other'
+  const rawPriority = Number(value.priority)
+  const priority = Number.isFinite(rawPriority)
+    ? Math.min(5, Math.max(1, Math.round(rawPriority)))
+    : 3
+  const items = Array.isArray(value.action_items) ? value.action_items.slice(0, 5) : []
+  const actionItems = items
+    .map((item) => {
+      const it = (item ?? {}) as Record<string, unknown>
+      const title = String(it.title ?? '').slice(0, 200)
+      const due = typeof it.due === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(it.due) ? it.due : null
+      return { title, due }
+    })
+    .filter((item) => item.title.trim().length > 0)
+  const confidence = Number(value.confidence)
+  return triageResultSchema.parse({
+    category,
+    priority,
+    summary: String(value.summary ?? '').slice(0, 300),
+    action_items: actionItems,
+    needs_reply: value.needs_reply === true,
+    addressed_to_me: value.addressed_to_me !== false,
+    confidence: Number.isFinite(confidence) ? Math.min(1, Math.max(0, confidence)) : 0.5
+  })
+}
+
+/** Neutrales Urteil, wenn Apples Guardrails den Mail-Inhalt ablehnen —
+ *  die Mail bleibt nutzbar (Kategorie other, keine Aufgaben, Zuversicht 0). */
+function neutralVerdict(subject: string | null): TriageVerdict {
+  return triageResultSchema.parse({
+    category: 'other',
+    priority: 3,
+    summary: (subject?.trim() || 'Inhalt nicht analysiert').slice(0, 140),
+    action_items: [],
+    needs_reply: false,
+    addressed_to_me: true,
+    confidence: 0
+  })
+}
+
 /** Klassifiziert eine Nachricht und schreibt die Annotation. Wirft bei API-Fehlern. */
 export async function runTriage(db: Database.Database, messageId: number): Promise<TriageOutcome> {
+  const provider = getTriageProvider()
   const client = getOpenRouter()
-  if (!client) return 'skipped-no-client'
+  if (provider === 'openrouter' && !client) return 'skipped-no-client'
 
   const row = db
     .prepare(
@@ -185,8 +244,29 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
     .get(messageId) as TriageRow | undefined
   if (!row) return 'skipped-missing'
 
-  const model = getTriageModel()
   const userPrompt = buildUserPrompt(db, row)
+
+  if (provider === 'apple') {
+    const status = await appleFmStatus()
+    // Modell lädt/It's off: Job ohne verbrannten Versuch zurücklegen (wie „kein Key")
+    if (status.state !== 'available') return 'skipped-no-client'
+    let parsed: TriageVerdict
+    try {
+      parsed = sanitizeAppleVerdict(await appleTriage(SYSTEM_PROMPT, userPrompt))
+    } catch (error) {
+      if (!(error instanceof AppleGuardrailError)) throw error
+      parsed = neutralVerdict(row.subject)
+    }
+    logUsage(db, 'apple/on-device', 0, 0, 0)
+    return persistVerdict(db, row, messageId, parsed, 'apple/on-device', {
+      inputTokens: 0,
+      outputTokens: 0,
+      costUsd: 0
+    })
+  }
+
+  if (!client) return 'skipped-no-client'
+  const model = getTriageModel()
 
   let lastError = ''
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -223,73 +303,89 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
       continue
     }
 
-    // Deterministische Nachverarbeitung: Regeln schlagen Modell-Feinheiten.
-    let priority = parsed.priority
-    const stats = db
-      .prepare('SELECT sent_count FROM contact_stats WHERE account_id = ? AND addr = ?')
-      .get(row.account_id, row.from_addr ?? '') as { sent_count: number } | undefined
-    if (stats && stats.sent_count > 0) priority = Math.min(5, priority + 1)
-    if (row.list_unsubscribe) priority = Math.max(1, priority - 1)
-
-    const userAuthored = isUserAuthoredMail(db, row.from_addr, row.folder_special_use)
-    const fullBodyText = row.text_plain?.trim() || htmlToText(row.html_raw ?? '')
-    const forwardWithoutRequest = isForwardWithoutRequest(row.subject, fullBodyText)
-    const suppressRequests = userAuthored || forwardWithoutRequest
-    const actionItems = suppressRequests ? [] : parsed.action_items
-    const needsReply = suppressRequests ? false : parsed.needs_reply
-
-    db.prepare(
-      `INSERT INTO ai_annotations (message_id, category, priority, summary, action_items_json,
-         needs_reply, addressed_to_me, confidence, model, prompt_version, input_tokens,
-         output_tokens, cost_usd, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-       ON CONFLICT(message_id) DO UPDATE SET
-         category = excluded.category, priority = excluded.priority, summary = excluded.summary,
-         action_items_json = excluded.action_items_json, needs_reply = excluded.needs_reply,
-         addressed_to_me = excluded.addressed_to_me,
-         confidence = excluded.confidence, model = excluded.model,
-         prompt_version = excluded.prompt_version, input_tokens = excluded.input_tokens,
-         output_tokens = excluded.output_tokens, cost_usd = excluded.cost_usd,
-         created_at = excluded.created_at`
-      // user_override_category bleibt beim Upsert unangetastet erhalten.
-    ).run(
-      messageId,
-      parsed.category,
-      priority,
-      parsed.summary.slice(0, 200),
-      JSON.stringify(actionItems),
-      needsReply ? 1 : 0,
-      parsed.addressed_to_me ? 1 : 0,
-      parsed.confidence,
-      model,
-      PROMPT_VERSION,
+    return persistVerdict(db, row, messageId, parsed, model, {
       inputTokens,
       outputTokens,
-      costUsd,
-      Date.now()
-    )
-
-    createTasksFromTriage(db, {
-      sourceKind: 'mail',
-      sourceId: messageId,
-      accountId: row.account_id,
-      category: parsed.category,
-      needsReply,
-      subject: row.subject,
-      actionItems,
-      accountEmail: row.account_email,
-      ownerDisplayName: row.account_display_name,
-      ownerAccountName: row.account_name,
-      toJson: row.to_json,
-      ccJson: row.cc_json,
-      bodyText: textBeforeForwardedMessage(row.subject, fullBodyText),
-      addressedToMe: parsed.addressed_to_me,
-      fromAddr: row.from_addr,
-      folderSpecialUse: row.folder_special_use,
-      forwardWithoutRequest
+      costUsd
     })
-    return 'done'
   }
 
   throw new Error(`Triage-Output ungültig nach Retry: ${lastError}`)
+}
+
+/** Deterministische Nachverarbeitung + Persistenz — für beide Provider gleich:
+ *  Regeln schlagen Modell-Feinheiten, dann Annotation-Upsert und Task-Ableitung. */
+function persistVerdict(
+  db: Database.Database,
+  row: TriageRow,
+  messageId: number,
+  parsed: TriageVerdict,
+  model: string,
+  usage: { inputTokens: number; outputTokens: number; costUsd: number }
+): TriageOutcome {
+  let priority = parsed.priority
+  const stats = db
+    .prepare('SELECT sent_count FROM contact_stats WHERE account_id = ? AND addr = ?')
+    .get(row.account_id, row.from_addr ?? '') as { sent_count: number } | undefined
+  if (stats && stats.sent_count > 0) priority = Math.min(5, priority + 1)
+  if (row.list_unsubscribe) priority = Math.max(1, priority - 1)
+
+  const userAuthored = isUserAuthoredMail(db, row.from_addr, row.folder_special_use)
+  const fullBodyText = row.text_plain?.trim() || htmlToText(row.html_raw ?? '')
+  const forwardWithoutRequest = isForwardWithoutRequest(row.subject, fullBodyText)
+  const suppressRequests = userAuthored || forwardWithoutRequest
+  const actionItems = suppressRequests ? [] : parsed.action_items
+  const needsReply = suppressRequests ? false : parsed.needs_reply
+
+  db.prepare(
+    `INSERT INTO ai_annotations (message_id, category, priority, summary, action_items_json,
+       needs_reply, addressed_to_me, confidence, model, prompt_version, input_tokens,
+       output_tokens, cost_usd, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(message_id) DO UPDATE SET
+       category = excluded.category, priority = excluded.priority, summary = excluded.summary,
+       action_items_json = excluded.action_items_json, needs_reply = excluded.needs_reply,
+       addressed_to_me = excluded.addressed_to_me,
+       confidence = excluded.confidence, model = excluded.model,
+       prompt_version = excluded.prompt_version, input_tokens = excluded.input_tokens,
+       output_tokens = excluded.output_tokens, cost_usd = excluded.cost_usd,
+       created_at = excluded.created_at`
+    // user_override_category bleibt beim Upsert unangetastet erhalten.
+  ).run(
+    messageId,
+    parsed.category,
+    priority,
+    parsed.summary.slice(0, 200),
+    JSON.stringify(actionItems),
+    needsReply ? 1 : 0,
+    parsed.addressed_to_me ? 1 : 0,
+    parsed.confidence,
+    model,
+    PROMPT_VERSION,
+    usage.inputTokens,
+    usage.outputTokens,
+    usage.costUsd,
+    Date.now()
+  )
+
+  createTasksFromTriage(db, {
+    sourceKind: 'mail',
+    sourceId: messageId,
+    accountId: row.account_id,
+    category: parsed.category,
+    needsReply,
+    subject: row.subject,
+    actionItems,
+    accountEmail: row.account_email,
+    ownerDisplayName: row.account_display_name,
+    ownerAccountName: row.account_name,
+    toJson: row.to_json,
+    ccJson: row.cc_json,
+    bodyText: textBeforeForwardedMessage(row.subject, fullBodyText),
+    addressedToMe: parsed.addressed_to_me,
+    fromAddr: row.from_addr,
+    folderSpecialUse: row.folder_special_use,
+    forwardWithoutRequest
+  })
+  return 'done'
 }

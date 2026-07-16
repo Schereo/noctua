@@ -759,6 +759,41 @@ const table = {
     de: 'Das sieht nicht nach einem OpenRouter-Schlüssel aus (sk-or-…)'
   },
   toastScanModel: { en: 'Scanning now runs on {model}', de: 'Scannen läuft jetzt auf {model}' },
+  toastScanApple: {
+    en: 'Scanning now runs on-device (Apple Intelligence)',
+    de: 'Scannen läuft jetzt lokal auf dem Gerät (Apple Intelligence)'
+  },
+  fmProviderCloud: { en: 'OpenRouter (cloud)', de: 'OpenRouter (Cloud)' },
+  fmProviderApple: {
+    en: 'Apple Intelligence — on this Mac',
+    de: 'Apple Intelligence — auf diesem Mac'
+  },
+  fmProviderAppleSub: {
+    en: 'triage runs on-device; mail text never leaves this machine',
+    de: 'Triage läuft auf dem Gerät; Mail-Text verlässt den Rechner nicht'
+  },
+  fmStateAvailable: { en: 'available', de: 'verfügbar' },
+  fmStateOff: {
+    en: 'Apple Intelligence is turned off in System Settings',
+    de: 'Apple Intelligence ist in den Systemeinstellungen ausgeschaltet'
+  },
+  fmStateNotReady: {
+    en: 'model is still downloading — try again later',
+    de: 'Modell lädt noch — später erneut versuchen'
+  },
+  fmStateUnsupported: {
+    en: 'needs macOS 26 on Apple Silicon',
+    de: 'braucht macOS 26 auf Apple Silicon'
+  },
+  fmStateHelperMissing: {
+    en: 'helper not built — run: pnpm run build:fm',
+    de: 'Helper nicht gebaut — pnpm run build:fm ausführen'
+  },
+  fmStateError: { en: 'check failed', de: 'Prüfung fehlgeschlagen' },
+  fmCloudDimmed: {
+    en: 'cloud model unused while Apple Intelligence handles scanning',
+    de: 'Cloud-Modell ruht, solange Apple Intelligence scannt'
+  },
   toastWriteModel: { en: 'Drafts now written by {model}', de: 'Entwürfe schreibt jetzt {model}' },
   toastConnected: {
     en: '✓ {addr} connected — the owl starts learning that style',

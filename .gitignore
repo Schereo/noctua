@@ -9,6 +9,10 @@ coverage
 outputs
 output
 
+# Kompilierter Apple-FM-Helper (wird lokal gebaut)
+native/fm-helper/bin/*
+!native/fm-helper/bin/.gitkeep
+
 # Lokale Agent-/Editor-Artefakte
 .claude/
 .env
