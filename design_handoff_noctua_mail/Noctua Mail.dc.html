@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;height:100%;background:#F4F1EA}
+body{font-family:'Newsreader',serif;color:#17150F}
+a{color:#17150F;text-decoration:none}
+a:hover{color:#C2452C}
+::selection{background:#F0E7D8}
+textarea::placeholder,input::placeholder{color:#9a9184}
+</style>
+</helmet>
+
+<div style="--ac:{{accent}};min-width:1180px;height:100vh;display:flex;flex-direction:column;background:#F4F1EA;color:#17150F;overflow:hidden;position:relative">
+
+  <!-- ══════════════ ONBOARDING ══════════════ -->
+  <sc-if value="{{isOnboarding}}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Onboarding" style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px">
+      <div style="width:620px;background:#FDFCF8;border:1px solid #17150F;box-shadow:8px 8px 0 rgba(23,21,15,.1);padding:40px 44px;box-sizing:border-box">
+
+        <sc-if value="{{obStep1}}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="width:40px;height:40px;border:1.5px solid #17150F;display:flex;align-items:center;justify-content:center;gap:6px"><span style="width:7px;height:7px;background:var(--ac,#C2452C);border-radius:50%"></span><span style="width:7px;height:7px;background:#17150F;border-radius:50%"></span></div>
+            <div style="font:500 34px 'Newsreader',serif;font-style:italic;margin-top:22px">Noctua</div>
+            <div style="font:400 12px 'IBM Plex Mono',monospace;color:#6E6759;letter-spacing:1px;margin-top:6px">MAIL, WITH AN OWL ON YOUR SHOULDER</div>
+            <div style="font:400 16px/1.7 'Newsreader',serif;color:#26221a;margin-top:22px;max-width:460px">It reads with you, drafts in your voice, remembers who owes you a reply, and turns asks into tasks. You keep your hands on the keyboard — or just talk.</div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:30px">
+              <span onClick="{{obNext}}" style="cursor:pointer;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:1px;color:#F4F1EA;background:#17150F;padding:9px 18px">CONNECT YOUR MAIL — ↵</span>
+              <span onClick="{{obSkip}}" style="cursor:pointer;font:400 10px 'IBM Plex Mono',monospace;color:#9a9184;border-bottom:1px solid #DAD4C6">skip for now</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{obStep2}}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:2px;color:var(--ac,#C2452C)">STEP 1 OF 2</div>
+            <div style="font:500 24px 'Newsreader',serif;margin-top:8px">Connect your addresses</div>
+            <div style="font:400 13.5px/1.6 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:4px">Noctua speaks Gmail, Outlook and IMAP. Everything is indexed locally.</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px">
+              <sc-for list="{{obProviders}}" as="p" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid #DAD4C6;background:#F9F7F1;padding:12px 14px">
+                  <div style="width:26px;height:26px;border:1px solid #17150F;display:flex;align-items:center;justify-content:center;font:600 10px 'IBM Plex Mono',monospace;flex:none">{{p.glyph}}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:500 14px 'Newsreader',serif">{{p.name}}</div>
+                    <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:1px">{{p.addr}}</div>
+                  </div>
+                  <span style="font:400 9px 'IBM Plex Mono',monospace;color:var(--ac,#C2452C)">{{p.note}}</span>
+                  <span onClick="{{p.connect}}" style="{{p.btnStyle}}">{{p.btnLabel}}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:24px">
+              <span onClick="{{obNext}}" style="{{obContinueStyle}}">CONTINUE — ↵</span>
+              <span style="font:400 9.5px 'IBM Plex Mono',monospace;color:#9a9184">{{obThreadNote}}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{obStep3}}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:2px;color:var(--ac,#C2452C)">STEP 2 OF 2</div>
+            <div style="font:500 24px 'Newsreader',serif;margin-top:8px">The owl learns your voice</div>
+            <div style="font:400 13.5px/1.6 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:4px">It studies what you've sent — per address — so drafts sound like you, not like a machine.</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
+              <sc-for list="{{obTrain}}" as="t" hint-placeholder-count="3">
+                <div style="border:1px solid #DAD4C6;background:#F9F7F1;padding:12px 14px">
+                  <div style="display:flex;align-items:baseline;gap:10px">
+                    <span style="font:400 10px 'IBM Plex Mono',monospace;color:#17150F">{{t.addr}}</span>
+                    <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">{{t.replies}}</span>
+                    <span style="margin-left:auto;font:500 9px 'IBM Plex Mono',monospace;color:var(--ac,#C2452C)">{{t.pctLabel}}</span>
+                  </div>
+                  <div style="height:5px;background:#EAE5D9;margin-top:8px"><div style="{{t.barStyle}}"></div></div>
+                  <div style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:8px;min-height:16px">{{t.traits}}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:24px">
+              <span onClick="{{obFinish}}" style="{{obCtaStyle}}">ENTER YOUR MAIL — ↵</span>
+              <span style="font:400 9.5px 'IBM Plex Mono',monospace;color:#9a9184">you can retrain any time under STYLE</span>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══════════════ APP ══════════════ -->
+  <sc-if value="{{isApp}}" hint-placeholder-val="{{ true }}">
+
+    <div style="display:flex;align-items:baseline;gap:16px;padding:16px 26px 12px;border-bottom:1px solid #17150F;flex:none">
+      <div style="font:500 24px 'Newsreader',serif;font-style:italic;letter-spacing:.5px">Noctua</div>
+      <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;letter-spacing:1px">TUE, 7 JULY 2026 · WRITING AS <span style="color:#17150F">{{writingAs}}</span></div>
+      <div style="display:flex;gap:4px;margin-left:4px">
+        <span onClick="{{filterAll}}" style="{{chipAllStyle}}">ALL</span>
+        <span onClick="{{filter1}}" style="{{chip1Style}}">FERNWEH¹</span>
+        <span onClick="{{filter2}}" style="{{chip2Style}}">HOTMAIL²</span>
+        <span onClick="{{filter3}}" style="{{chip3Style}}">NACHTVOGEL³</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:14px;align-items:baseline;font:400 10px 'IBM Plex Mono',monospace">
+        <span onClick="{{goInbox}}" style="{{navInboxStyle}}">INBOX {{inboxCount}} <span style="font:400 8px 'IBM Plex Mono',monospace;color:#9a9184;border:1px solid #DAD4C6;padding:0 3px;margin-left:2px">⌘1</span></span>
+        <span onClick="{{goWaiting}}" style="{{navWaitingStyle}}">WAITING {{waitingCount}} <span style="font:400 8px 'IBM Plex Mono',monospace;color:#9a9184;border:1px solid #DAD4C6;padding:0 3px;margin-left:2px">⌘2</span></span>
+        <span onClick="{{goTasks}}" style="{{navTasksStyle}}">TASKS {{tasksCount}} <span style="font:400 8px 'IBM Plex Mono',monospace;color:#9a9184;border:1px solid #DAD4C6;padding:0 3px;margin-left:2px">⌘3</span></span>
+        <span onClick="{{goSettings}}" style="{{navSettingsStyle}}">SETTINGS <span style="font:400 8px 'IBM Plex Mono',monospace;color:#9a9184;border:1px solid #DAD4C6;padding:0 3px;margin-left:2px">⌘,</span></span>
+        <span onClick="{{openPalette}}" style="cursor:pointer;border:1px solid #DAD4C6;padding:1px 6px;color:#6E6759">⌘K</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-height:0">
+
+      <!-- LEFT PANE -->
+      <div style="width:400px;flex:none;border-right:1px solid #17150F;display:flex;flex-direction:column;min-height:0">
+
+        <sc-if value="{{viewInbox}}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="Inbox list" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div style="display:flex;padding:9px 18px 7px;border-bottom:1px solid #DAD4C6;font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759;flex:none">
+              <span style="flex:1">CORRESPONDENCE</span><span>↳ = THE OWL'S GIST</span>
+            </div>
+            <div style="flex:1;overflow-y:auto;min-height:0">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+                <div style="{{r.wrapStyle}}">
+                  <div onClick="{{r.select}}" style="{{r.rowStyle}}">
+                    <div style="display:flex;align-items:baseline;gap:6px">
+                      <span style="{{r.badgeStyle}}">{{r.badge}}</span>
+                      <span style="{{r.nameStyle}}">{{r.from}}</span>
+                      <sc-if value="{{r.unread}}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;width:6px;height:6px;background:var(--ac,#C2452C);flex:none"></span></sc-if>
+                      <span style="margin-left:auto;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;flex:none">{{r.time}}</span>
+                    </div>
+                    <sc-if value="{{r.showGist}}" hint-placeholder-val="{{ true }}">
+                      <div style="{{r.gistStyle}}">↳ {{r.gist}}</div>
+                    </sc-if>
+                    <sc-if value="{{r.hasChips}}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:6px;margin-top:6px">
+                        <sc-if value="{{r.chipTask}}" hint-placeholder-val="{{ false }}"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1px;color:#F4F1EA;background:#17150F;padding:1px 5px">{{r.chipTask}}</span></sc-if>
+                        <sc-if value="{{r.chipDraft}}" hint-placeholder-val="{{ false }}"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1px;color:var(--ac,#C2452C);border:1px solid var(--ac,#C2452C);padding:0 5px">DRAFT READY</span></sc-if>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{inboxEmpty}}" hint-placeholder-val="{{ false }}">
+                <div style="padding:48px 24px;text-align:center">
+                  <div style="font:400 16px 'Newsreader',serif;font-style:italic;color:#57503f">Inbox zero.</div>
+                  <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#9a9184;margin-top:8px">THE OWL APPROVES · Z TO UNDO</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{viewWaiting}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Waiting list" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div style="display:flex;padding:9px 18px 7px;border-bottom:1px solid #DAD4C6;font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759;flex:none">
+              <span style="flex:1">WAITING ON A REPLY</span><span>THE OWL COUNTS THE DAYS</span>
+            </div>
+            <div style="flex:1;overflow-y:auto;min-height:0">
+              <sc-for list="{{wrows}}" as="w" hint-placeholder-count="2">
+                <div onClick="{{w.select}}" style="{{w.rowStyle}}">
+                  <div style="display:flex;align-items:baseline;gap:6px">
+                    <span style="font:600 13.5px 'Newsreader',serif">{{w.from}}</span>
+                    <span style="margin-left:auto;font:500 9.5px 'IBM Plex Mono',monospace;color:var(--ac,#C2452C);flex:none">{{w.daysLabel}}</span>
+                  </div>
+                  <div style="font:400 12px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">↳ {{w.gist}}</div>
+                  <sc-if value="{{w.nudged}}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1px;color:#6E6759;border:1px solid #DAD4C6;padding:0 5px">NUDGED TODAY ✓</span></div></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{waitingEmpty}}" hint-placeholder-val="{{ false }}">
+                <div style="padding:48px 24px;text-align:center">
+                  <div style="font:400 16px 'Newsreader',serif;font-style:italic;color:#57503f">Nobody owes you a reply.</div>
+                  <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#9a9184;margin-top:8px">RARE. ENJOY IT.</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{viewTasks}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Tasks list" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div style="display:flex;padding:9px 18px 7px;border-bottom:1px solid #DAD4C6;font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759;flex:none">
+              <span style="flex:1">TASKS — EXTRACTED FROM MAIL</span><span>SPACE TO TICK</span>
+            </div>
+            <div style="flex:1;overflow-y:auto;min-height:0">
+              <sc-for list="{{trows}}" as="t" hint-placeholder-count="4">
+                <div onClick="{{t.select}}" style="{{t.rowStyle}}">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div onClick="{{t.toggle}}" style="width:12px;height:12px;border:1.5px solid #17150F;flex:none;cursor:pointer;display:flex;align-items:center;justify-content:center"><sc-if value="{{t.done}}" hint-placeholder-val="{{ false }}"><div style="width:6px;height:6px;background:#17150F"></div></sc-if></div>
+                    <span style="{{t.labelStyle}}">{{t.label}}</span>
+                    <span style="{{t.dueStyle}}">{{t.due}}</span>
+                  </div>
+                  <div style="font:400 11px 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:3px;padding-left:22px">from {{t.src}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{viewSettings}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Settings list" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div style="display:flex;padding:9px 18px 7px;border-bottom:1px solid #DAD4C6;font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759;flex:none">
+              <span style="flex:1">SETTINGS — LOCAL, YOURS</span>
+            </div>
+            <div style="flex:1;overflow-y:auto;min-height:0">
+              <sc-for list="{{setRows}}" as="sr" hint-placeholder-count="2">
+                <div onClick="{{sr.select}}" style="{{sr.rowStyle}}">
+                  <div style="font:600 13.5px 'Newsreader',serif">{{sr.name}}</div>
+                  <div style="font:400 12px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">↳ {{sr.sub}}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="padding:10px 18px;border-top:1px solid #17150F;display:flex;gap:13px;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;flex:none;align-items:baseline">
+          <span><span style="color:#17150F">j/k</span> move</span><span><span style="color:#17150F">e</span> file</span><span><span style="color:#17150F">v</span> dictate</span><span><span style="color:#17150F">g</span> go…</span><span><span style="color:#17150F">?</span> keys</span>
+          <span style="margin-left:auto;color:var(--ac,#C2452C)">{{gHint}}</span>
+        </div>
+      </div>
+
+      <!-- CENTER SHEET -->
+      <div style="flex:1;padding:18px 20px;min-width:0;overflow:hidden;display:flex">
+
+        <sc-if value="{{sheetEmail}}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="Reading sheet" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:500 21px 'Newsreader',serif">{{selSubject}}</div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:5px;letter-spacing:.5px">{{selMeta}}</div>
+            <div style="margin-top:6px">
+              <sc-for list="{{bodyParas}}" as="p" hint-placeholder-count="3">
+                <div style="font:400 14px/1.7 'Newsreader',serif;color:#26221a;margin-top:10px">{{p.pre}}<span style="{{p.markStyle}}">{{p.mark}}</span>{{p.post}}</div>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{taskShow}}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;border:1px solid #17150F;background:#F9F7F1;padding:8px 12px;margin-top:18px">
+                <span style="font:500 8px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759;flex:none">THE OWL FOUND A TASK</span>
+                <span style="font:400 13px 'Newsreader',serif;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">☐ {{taskLabel}}</span>
+                <span style="font:500 8.5px 'IBM Plex Mono',monospace;color:#F4F1EA;background:var(--ac,#C2452C);padding:1px 6px;flex:none">{{taskDue}}</span>
+                <span onClick="{{taskAccept}}" style="cursor:pointer;font:500 9px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:2px 8px;flex:none">T ADD</span>
+                <span onClick="{{taskDismiss}}" style="cursor:pointer;font:500 9px 'IBM Plex Mono',monospace;color:#6E6759;flex:none">X</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{taskDone}}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;border:1px solid #DAD4C6;padding:8px 12px;margin-top:18px">
+                <span style="font:500 8px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C);flex:none">✓ IN YOUR TASKS</span>
+                <span style="font:400 13px 'Newsreader',serif;color:#57503f;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{taskLabel}}</span>
+                <span style="font:500 8.5px 'IBM Plex Mono',monospace;color:#6E6759;border:1px solid #DAD4C6;padding:0 6px;flex:none">{{taskDue}}</span>
+              </div>
+            </sc-if>
+
+            <div style="margin:18px 0 0;border-top:1px solid #17150F"></div>
+            <div style="margin:2px 0 0;border-top:1px solid #17150F"></div>
+
+            <sc-if value="{{compIdle}}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:12px;margin-top:16px;padding:10px 12px;border:1px dashed #DAD4C6">
+                <span style="font:500 9px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:2px 7px">V</span>
+                <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#57503f">Press <span style="font-style:normal;font-weight:600">v</span> and just talk — the owl drafts in your voice for this address. Or <span style="font-style:normal;font-weight:600">r</span> to write yourself.</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{compListening}}" hint-placeholder-val="{{ false }}">
+              <div style="background:#17150F;color:#F4F1EA;padding:12px 14px;margin-top:16px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="width:8px;height:8px;background:var(--ac,#C2452C);border-radius:50%;flex:none"></span>
+                  <span style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:1.5px;flex:none">LISTENING {{dictClock}}</span>
+                  <div style="display:flex;align-items:flex-end;gap:2px;height:20px;margin-left:4px">
+                    <sc-for list="{{bars}}" as="b" hint-placeholder-count="14"><div style="{{b.style}}"></div></sc-for>
+                  </div>
+                  <span style="margin-left:auto;font:400 9px 'IBM Plex Mono',monospace;color:#b5afa3">↵ done · ESC cancel</span>
+                </div>
+                <div style="font:400 12px/1.6 'IBM Plex Mono',monospace;color:#b5afa3;margin-top:10px;min-height:34px">“{{dictShown}}<span style="display:inline-block;width:7px;height:12px;background:#F4F1EA;vertical-align:-1px"></span></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{compDrafting}}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:12px;margin-top:16px;padding:12px 14px;border:1px solid #DAD4C6;background:#F9F7F1">
+                <div style="width:22px;height:22px;border:1.5px solid #17150F;display:flex;align-items:center;justify-content:center;gap:3px;flex:none"><span style="width:4px;height:4px;background:var(--ac,#C2452C);border-radius:50%"></span><span style="width:4px;height:4px;background:#17150F;border-radius:50%"></span></div>
+                <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#57503f">The owl is drafting{{draftDots}}</span>
+                <span style="margin-left:auto;font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">voice: {{voiceTag}}</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{compReady}}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px">
+                <sc-if value="{{hasDict}}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:10px;background:#17150F;color:#F4F1EA;padding:7px 12px">
+                    <span style="width:7px;height:7px;background:var(--ac,#C2452C);flex:none"></span>
+                    <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;flex:none">YOU SAID · {{dictClock}}</span>
+                    <span style="font:400 10px 'IBM Plex Mono',monospace;color:#b5afa3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">“{{dictFull}}”</span>
+                  </div>
+                </sc-if>
+                <div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">
+                  <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">{{draftLabel}}</span>
+                  <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">— voice: {{voiceTag}}</span>
+                </div>
+                <sc-if value="{{notEditing}}" hint-placeholder-val="{{ true }}">
+                  <div style="margin-top:2px">
+                    <sc-for list="{{draftParas}}" as="d" hint-placeholder-count="3">
+                      <div style="font:400 14.5px/1.7 'Newsreader',serif;color:#17150F;margin-top:6px;min-height:8px">{{d.line}}</div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{isEditing}}" hint-placeholder-val="{{ false }}">
+                  <textarea value="{{draftText}}" onChange="{{editChange}}" ref="{{editRef}}" style="width:100%;box-sizing:border-box;margin-top:8px;min-height:150px;background:#FDFCF8;border:1px solid var(--ac,#C2452C);padding:10px 12px;font:400 14.5px/1.7 'Newsreader',serif;color:#17150F;outline:none;resize:vertical"></textarea>
+                </sc-if>
+                <div style="display:flex;gap:14px;margin-top:14px;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;align-items:center;flex-wrap:wrap">
+                  <span onClick="{{sendDraft}}" style="cursor:pointer;border:1px solid #17150F;color:#F4F1EA;background:#17150F;padding:3px 12px;font-weight:500">↵ SEND</span>
+                  <span onClick="{{toggleEdit}}" style="cursor:pointer;padding:3px 0">{{editBtnLabel}}</span>
+                  <span onClick="{{redraft}}" style="cursor:pointer;padding:3px 0">⇧R REDRAFT</span>
+                  <span onClick="{{startDictation}}" style="cursor:pointer;padding:3px 0">V RE-DICTATE</span>
+                  <span onClick="{{discardDraft}}" style="cursor:pointer;padding:3px 0;color:#9a9184">ESC DISCARD</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{sheetWaiting}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Waiting sheet" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:500 21px 'Newsreader',serif">{{wSubject}}</div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:5px;letter-spacing:.5px">{{wMeta}}</div>
+            <div style="font:400 14px/1.7 'Newsreader',serif;color:#26221a;margin-top:14px">{{wSentLine}}</div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid var(--ac,#C2452C);padding:8px 12px;margin-top:16px">
+              <span style="font:500 8px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C);flex:none">SILENCE</span>
+              <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#57503f">{{wSilenceLine}}</span>
+            </div>
+            <div style="margin:18px 0 0;border-top:1px solid #17150F"></div>
+            <div style="margin:2px 0 0;border-top:1px solid #17150F"></div>
+            <sc-if value="{{wNotNudged}}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">
+                <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">NUDGE, DRAFTED IN YOUR VOICE</span>
+                <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">— polite, no pressure</span>
+              </div>
+              <div style="margin-top:2px">
+                <sc-for list="{{wNudgeParas}}" as="n" hint-placeholder-count="3">
+                  <div style="font:400 14.5px/1.7 'Newsreader',serif;color:#17150F;margin-top:6px;min-height:8px">{{n.line}}</div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:14px;margin-top:14px;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;align-items:center">
+                <span onClick="{{wSendNudge}}" style="cursor:pointer;border:1px solid #17150F;color:#F4F1EA;background:#17150F;padding:3px 12px;font-weight:500">↵ SEND NUDGE</span>
+                <span onClick="{{wDrop}}" style="cursor:pointer;padding:3px 0;color:#9a9184">D STOP WAITING</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{wIsNudged}}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:16px;padding:10px 12px;border:1px dashed #DAD4C6">
+                <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C);flex:none">✓ NUDGED TODAY</span>
+                <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#57503f">The owl will tell you the moment they answer.</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{sheetTask}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Task sheet" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;letter-spacing:1.5px">TASK</div>
+            <div style="{{tSheetLabelStyle}}">{{tSheetLabel}}</div>
+            <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+              <span style="font:500 8.5px 'IBM Plex Mono',monospace;color:#F4F1EA;background:var(--ac,#C2452C);padding:1px 6px">{{tSheetDue}}</span>
+              <span style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759">extracted automatically</span>
+            </div>
+            <div style="margin:18px 0 0;border-top:1px solid #17150F"></div>
+            <div style="margin:2px 0 0;border-top:1px solid #17150F"></div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:14px;letter-spacing:1.5px">SOURCE</div>
+            <div style="border:1px solid #DAD4C6;background:#F9F7F1;padding:12px 14px;margin-top:8px">
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 13.5px 'Newsreader',serif">{{tSheetFrom}}</span><span style="margin-left:auto;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759">{{tSheetTime}}</span></div>
+              <div style="font:400 12.5px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:3px">↳ {{tSheetGist}}</div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:16px;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;align-items:center">
+              <span onClick="{{tSheetToggle}}" style="cursor:pointer;border:1px solid #17150F;color:#F4F1EA;background:#17150F;padding:3px 12px;font-weight:500">SPACE — {{tSheetToggleLabel}}</span>
+              <sc-if value="{{tSheetHasSrc}}" hint-placeholder-val="{{ false }}"><span onClick="{{tSheetOpen}}" style="cursor:pointer;padding:3px 0">O OPEN THREAD</span></sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{sheetSetAccounts}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Settings accounts" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:500 21px 'Newsreader',serif">Connected addresses</div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:5px;letter-spacing:.5px">ONE STYLE PER ADDRESS · INDEXED LOCALLY</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+              <sc-for list="{{accRows}}" as="a" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid #DAD4C6;background:#F9F7F1;padding:11px 13px">
+                  <span style="{{a.glyphStyle}}">{{a.glyph}}</span>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:500 12px 'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{a.addr}}</div>
+                    <div style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:2px">{{a.sub}}</div>
+                  </div>
+                  <span style="{{a.statusStyle}}">{{a.status}}</span>
+                  <span onClick="{{a.remove}}" style="cursor:pointer;font:500 9px 'IBM Plex Mono',monospace;color:#9a9184;border:1px solid #DAD4C6;padding:2px 8px;flex:none">DISCONNECT</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin:20px 0 0;border-top:1px solid #17150F"></div>
+            <div style="margin:2px 0 0;border-top:1px solid #17150F"></div>
+            <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C);margin-top:16px">ADD AN ADDRESS</div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <span onClick="{{addGoogle}}" style="cursor:pointer;font:500 10px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:6px 12px">G GOOGLE</span>
+              <span onClick="{{addMicrosoft}}" style="cursor:pointer;font:500 10px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:6px 12px">M MICROSOFT</span>
+              <span onClick="{{toggleImap}}" style="cursor:pointer;font:500 10px 'IBM Plex Mono',monospace;color:#17150F;border:1px solid #17150F;padding:5px 12px">@ IMAP</span>
+            </div>
+            <sc-if value="{{imapOpen}}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid #17150F;background:#F9F7F1;padding:14px;margin-top:12px;display:flex;flex-direction:column;gap:8px">
+                <input value="{{imapAddr}}" onChange="{{imapAddrChange}}" placeholder="address — you@yourdomain.de" style="border:1px solid #DAD4C6;background:#FDFCF8;padding:7px 10px;font:400 11.5px 'IBM Plex Mono',monospace;color:#17150F;outline:none">
+                <div style="display:flex;gap:8px">
+                  <input value="{{imapHost}}" onChange="{{imapHostChange}}" placeholder="imap host — mail.yourdomain.de" style="flex:1;border:1px solid #DAD4C6;background:#FDFCF8;padding:7px 10px;font:400 11.5px 'IBM Plex Mono',monospace;color:#17150F;outline:none">
+                  <input value="{{imapPass}}" onChange="{{imapPassChange}}" type="password" placeholder="app password" style="width:150px;border:1px solid #DAD4C6;background:#FDFCF8;padding:7px 10px;font:400 11.5px 'IBM Plex Mono',monospace;color:#17150F;outline:none">
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span onClick="{{imapConnect}}" style="cursor:pointer;font:500 10px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:5px 12px">CONNECT</span>
+                  <span style="font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">SSL, port 993 — the boring kind that just works</span>
+                </div>
+              </div>
+            </sc-if>
+            <div style="font:400 11.5px/1.6 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:14px">New addresses appear in the filters after first sync. The owl reads that mailbox's sent folder and starts learning its style.</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{sheetSetStyle}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Settings style" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:500 21px 'Newsreader',serif">Your style</div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:5px;letter-spacing:.5px">ONE PER ADDRESS · LEARNED FROM SENT MAIL · STORED LOCALLY</div>
+            <div style="font:400 14px/1.75 'Newsreader',serif;color:#26221a;margin-top:14px;max-width:640px">Every draft starts from the address you're answering from. Reply to Jonas from the studio and you get warm, brief, em-dashed English. Answer the Hausverwaltung from your personal address and the owl writes formal German — <span style="font-style:italic">Sehr geehrte Damen und Herren</span> and all. On nachtvogel it stays lowercase and skips the sign-off, because you do.</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;max-width:640px">
+              <sc-for list="{{vcards}}" as="v" hint-placeholder-count="3">
+                <div style="border:1px solid #17150F;background:#F9F7F1;padding:13px 15px">
+                  <div style="display:flex;align-items:baseline;gap:8px">
+                    <span style="font:500 10.5px 'IBM Plex Mono',monospace">{{v.addr}}</span>
+                    <span style="margin-left:auto;font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">{{v.stats}}</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:9px">
+                    <sc-for list="{{v.traits}}" as="tr" hint-placeholder-count="3">
+                      <span style="font:400 9px 'IBM Plex Mono',monospace;color:#57503f;border:1px solid #DAD4C6;padding:1px 6px">{{tr.t}}</span>
+                    </sc-for>
+                  </div>
+                  <div style="font:400 12.5px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:9px">“{{v.sample}}”</div>
+                  <sc-if value="{{v.training}}" hint-placeholder-val="{{ false }}">
+                    <div style="height:4px;background:#EAE5D9;margin-top:10px"><div style="{{v.barStyle}}"></div></div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;gap:12px;margin-top:11px">
+                    <span onClick="{{v.toggleLearn}}" style="cursor:pointer;display:flex;align-items:center;gap:6px">
+                      <span style="{{v.togStyle}}"><span style="{{v.togDotStyle}}"></span></span>
+                      <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">learn from my sends</span>
+                    </span>
+                    <span onClick="{{v.retrain}}" style="cursor:pointer;margin-left:auto;font:500 9px 'IBM Plex Mono',monospace;color:#17150F;border:1px solid #17150F;padding:2px 8px">{{v.retrainLabel}}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DAD4C6;padding:10px 12px;margin-top:14px;max-width:640px;box-sizing:border-box">
+              <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C);flex:none">TRY IT</span>
+              <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#57503f">Pick Tom (personal) or Lea (side project) in the inbox, press <span style="font-style:normal;font-weight:600">v</span> — compare the voices.</span>
+            </div>
+            <div style="font:400 11.5px/1.6 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:14px">Learned locally. Delete a style any time — the owl forgets politely.</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{sheetSetIntel}}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Settings intelligence" style="background:#FDFCF8;border:1px solid #17150F;box-shadow:6px 6px 0 rgba(23,21,15,.1);flex:1;padding:24px 28px;box-sizing:border-box;overflow-y:auto;min-width:0">
+            <div style="font:500 21px 'Newsreader',serif">Intelligence</div>
+            <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:5px;letter-spacing:.5px">BRING YOUR OWN KEY · CALLS GO STRAIGHT TO OPENROUTER · NOTHING PASSES THROUGH US</div>
+            <div style="border:1px solid #17150F;background:#F9F7F1;padding:14px;margin-top:16px">
+              <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">OPENROUTER KEY</div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <input value="{{orKey}}" onChange="{{orChange}}" onKeyDown="{{orKeyDown}}" type="password" placeholder="sk-or-v1-…" style="flex:1;border:1px solid #DAD4C6;background:#FDFCF8;padding:7px 10px;font:400 11.5px 'IBM Plex Mono',monospace;color:#17150F;outline:none">
+                <span onClick="{{orSave}}" style="cursor:pointer;font:500 10px 'IBM Plex Mono',monospace;color:#F4F1EA;background:#17150F;padding:6px 14px">SAVE</span>
+              </div>
+              <div style="font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;margin-top:8px">{{orStatus}}</div>
+            </div>
+            <div style="border:1px solid #17150F;background:#F9F7F1;padding:14px;margin-top:12px">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">MODEL — INBOX SCANNING</span><span style="font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">gists · tasks · silence-tracking, on every mail — cheap wins</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+                <sc-for list="{{scanRows}}" as="m" hint-placeholder-count="4">
+                  <div onClick="{{m.pick}}" style="{{m.rowStyle}}">
+                    <span style="width:11px;height:11px;border:1.5px solid #17150F;flex:none;display:flex;align-items:center;justify-content:center"><sc-if value="{{m.sel}}" hint-placeholder-val="{{ false }}"><span style="width:5px;height:5px;background:#17150F"></span></sc-if></span>
+                    <span style="font:500 11.5px 'IBM Plex Mono',monospace;color:#17150F">{{m.id}}</span>
+                    <span style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#57503f;flex:1">{{m.note}}</span>
+                    <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759;border:1px solid #DAD4C6;padding:0 5px;flex:none">{{m.tag}}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border:1px solid #17150F;background:#F9F7F1;padding:14px;margin-top:12px">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">MODEL — WRITING</span><span style="font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">your drafts, your nudges — quality wins</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+                <sc-for list="{{writeRows}}" as="m" hint-placeholder-count="4">
+                  <div onClick="{{m.pick}}" style="{{m.rowStyle}}">
+                    <span style="width:11px;height:11px;border:1.5px solid #17150F;flex:none;display:flex;align-items:center;justify-content:center"><sc-if value="{{m.sel}}" hint-placeholder-val="{{ false }}"><span style="width:5px;height:5px;background:#17150F"></span></sc-if></span>
+                    <span style="font:500 11.5px 'IBM Plex Mono',monospace;color:#17150F">{{m.id}}</span>
+                    <span style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#57503f;flex:1">{{m.note}}</span>
+                    <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759;border:1px solid #DAD4C6;padding:0 5px;flex:none">{{m.tag}}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="font:400 11.5px/1.6 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:14px">No key? Mail still works — the owl just sleeps: no gists, no drafts, no counting.</div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- OWL RAIL -->
+      <sc-if value="{{railShow}}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Owl rail" style="width:290px;flex:none;border-left:1px solid #17150F;background:#EFEBE2;padding:14px 15px 12px;display:flex;flex-direction:column;gap:11px;overflow-y:auto;min-height:0;box-sizing:border-box">
+          <div style="display:flex;align-items:baseline;gap:8px;flex:none">
+            <span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:2px;color:var(--ac,#C2452C)">THE OWL</span>
+            <span style="font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">{{owlStatus}}</span>
+          </div>
+
+          <div style="background:#FDFCF8;border:1px solid #17150F;box-shadow:3px 3px 0 rgba(23,21,15,.08);padding:11px 13px;flex:none">
+            <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">DRAFTS AWAITING YOU</div>
+            <sc-if value="{{railDraftHas}}" hint-placeholder-val="{{ false }}">
+              <div style="font:500 12.5px 'Newsreader',serif;margin-top:8px">{{railDraftTitle}}</div>
+              <div style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:3px">“{{railDraftExcerpt}}”</div>
+              <div style="display:flex;gap:10px;margin-top:10px;font:500 9px 'IBM Plex Mono',monospace">
+                <span onClick="{{railDraftReview}}" style="cursor:pointer;color:#F4F1EA;background:#17150F;padding:3px 9px">↵ REVIEW</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{railDraftNone}}" hint-placeholder-val="{{ true }}">
+              <div style="font:400 11.5px/1.55 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:8px">None right now. Press <span style="font-style:normal;color:#57503f">v</span> on any thread and talk — a draft appears here.</div>
+            </sc-if>
+          </div>
+
+          <div style="background:#FDFCF8;border:1px solid #17150F;box-shadow:3px 3px 0 rgba(23,21,15,.08);padding:11px 13px;flex:none">
+            <div style="display:flex;align-items:baseline"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">TASKS FROM MAIL</span><span onClick="{{goTasks}}" style="cursor:pointer;margin-left:auto;font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">{{tasksCount}} open →</span></div>
+            <sc-for list="{{railTasks}}" as="rt" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                <div onClick="{{rt.toggle}}" style="width:11px;height:11px;border:1.5px solid #17150F;flex:none;cursor:pointer;display:flex;align-items:center;justify-content:center"><sc-if value="{{rt.done}}" hint-placeholder-val="{{ false }}"><div style="width:5px;height:5px;background:#17150F"></div></sc-if></div>
+                <span style="{{rt.labelStyle}}">{{rt.label}}</span>
+                <span style="{{rt.dueStyle}}">{{rt.due}}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#FDFCF8;border:1px solid #17150F;box-shadow:3px 3px 0 rgba(23,21,15,.08);padding:11px 13px;flex:none">
+            <div style="display:flex;align-items:baseline"><span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--ac,#C2452C)">NO REPLY YET</span><span onClick="{{goWaiting}}" style="cursor:pointer;margin-left:auto;font:400 9px 'IBM Plex Mono',monospace;color:#6E6759">{{waitingCount}} waiting →</span></div>
+            <sc-for list="{{railNudges}}" as="rn" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                <span style="font:400 12.5px 'Newsreader',serif;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{rn.from}} <span style="font:500 9px 'IBM Plex Mono',monospace;color:var(--ac,#C2452C)">{{rn.days}}</span></span>
+                <span onClick="{{rn.go}}" style="{{rn.btnStyle}}">{{rn.btnLabel}}</span>
+              </div>
+            </sc-for>
+            <div style="font:400 9px/1.5 'IBM Plex Mono',monospace;color:#9a9184;margin-top:9px">nudges drafted in your voice — you approve every send</div>
+          </div>
+
+          <div style="margin-top:auto;padding:9px 2px 0;border-top:1px solid #DAD4C6;flex:none">
+            <div style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:#6E6759">YOUR STYLE</div>
+            <div style="font:400 11.5px/1.5 'Newsreader',serif;font-style:italic;color:#57503f;margin-top:4px">{{railVoiceNote}}</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </sc-if>
+
+  <!-- PALETTE -->
+  <sc-if value="{{palShow}}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Command palette" onClick="{{closePalette}}" style="position:absolute;inset:0;background:rgba(23,21,15,.28);z-index:40">
+      <div onClick="{{eatClick}}" style="width:560px;margin:70px auto 0;background:#FDFCF8;border:1px solid #17150F;box-shadow:8px 8px 0 rgba(23,21,15,.18)">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid #17150F">
+          <span style="font:600 13px 'IBM Plex Mono',monospace;color:#6E6759">›</span>
+          <input value="{{palQuery}}" onChange="{{palChange}}" onKeyDown="{{palKeys}}" ref="{{palRef}}" placeholder="Type a command — nudge, dictate, go to…" style="flex:1;border:none;outline:none;background:transparent;font:500 13.5px 'IBM Plex Mono',monospace;color:#17150F">
+          <span style="font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">ESC</span>
+        </div>
+        <sc-for list="{{palResults}}" as="c" hint-placeholder-count="6">
+          <div onClick="{{c.run}}" style="{{c.rowStyle}}">
+            <span style="{{c.labelStyle}}">{{c.label}}</span>
+            <span style="font:400 10px 'IBM Plex Mono',monospace;color:var(--ac,#C2452C)">{{c.note}}</span>
+            <span style="margin-left:auto;font:400 9.5px 'IBM Plex Mono',monospace;color:#6E6759;border:1px solid #DAD4C6;padding:0 5px">{{c.key}}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{palEmpty}}" hint-placeholder-val="{{ false }}">
+          <div style="padding:18px 15px;font:400 12.5px 'Newsreader',serif;font-style:italic;color:#9a9184">The owl knows no such command.</div>
+        </sc-if>
+        <div style="display:flex;gap:12px;padding:8px 15px;border-top:1px solid #DAD4C6;font:400 8.5px 'IBM Plex Mono',monospace;color:#9a9184">
+          <span>↑↓ CHOOSE</span><span>↵ RUN</span><span style="margin-left:auto">THE OWL INDEXES 2,318 THREADS</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- SHORTCUTS -->
+  <sc-if value="{{helpShow}}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Shortcuts overlay" onClick="{{closeHelp}}" style="position:absolute;inset:0;background:rgba(23,21,15,.28);z-index:40">
+      <div onClick="{{eatClick}}" style="width:660px;margin:56px auto 0;background:#FDFCF8;border:1px solid #17150F;box-shadow:8px 8px 0 rgba(23,21,15,.18);padding:22px 26px">
+        <div style="display:flex;align-items:baseline;gap:10px"><span style="font:500 19px 'Newsreader',serif">Keyboard</span><span style="font:400 9px 'IBM Plex Mono',monospace;color:#9a9184">EVERYTHING WORKS WITHOUT THE MOUSE · ESC TO CLOSE</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 34px;margin-top:16px">
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">j / k</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">move through the list</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">v</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">dictate a reply — the hero move</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">e</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">file away · edits an open draft</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">↵</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">send the draft / run command</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">r</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">reply by typing</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">⇧r</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">redraft — another take</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">t / x</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">accept / dismiss a found task</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">⇧s</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">summarize thread</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">z</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">undo last file-away</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">g + i/w/t/s</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">go to inbox · waiting · tasks · style</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">1 / 2 / 3</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">filter by account — again to clear</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">⌘k</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">command palette — everything</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">⌘1/2/3</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">go straight to inbox · waiting · tasks</span></div>
+          <div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid #EAE5D9"><span style="font:500 10px 'IBM Plex Mono',monospace;border:1px solid #DAD4C6;padding:1px 6px;color:#17150F;flex:none">⌘,</span><span style="font:400 13px 'Newsreader',serif;color:#57503f">settings — accounts · key · models</span></div>
+        </div>
+        <div style="font:400 11.5px 'Newsreader',serif;font-style:italic;color:#9a9184;margin-top:14px">The owl works while you sleep.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- TOAST -->
+  <sc-if value="{{toastShow}}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:50;background:#17150F;color:#F4F1EA;border:1px solid #17150F;box-shadow:4px 4px 0 rgba(23,21,15,.2);padding:10px 16px;display:flex;align-items:center;gap:10px;max-width:70%">
+      <span style="width:7px;height:7px;background:var(--ac,#C2452C);flex:none"></span>
+      <span style="font:400 12px 'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{toastMsg}}</span>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#C2452C&quot;, &quot;options&quot;: [&quot;#C2452C&quot;, &quot;#2A5A8C&quot;, &quot;#3F6B4F&quot;, &quot;#8A5A2A&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Theme&quot;}, &quot;showGists&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;The Owl&quot;}, &quot;showRail&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;The Owl&quot;}}">
+class Component extends DCLogic {
+  ADDR = { fernweh: 'lh@fernweh.studio', hotmail: 'lena.hartmann@hotmail.de', nachtvogel: 'hello@nachtvogel.co' };
+  VOICETAG = { fernweh: 'fernweh — warm · brief · em-dashes', hotmail: 'hotmail — höflich · formell · DE', nachtvogel: 'nachtvogel — lowercase · playful' };
+  RAILVOICE = {
+    fernweh: 'Writing as lh@fernweh.studio — warm, brief, em-dashes. Learned from 132 replies.',
+    hotmail: 'Writing as lena.hartmann@hotmail.de — polite German, Sie/du aware. Learned from 41 replies.',
+    nachtvogel: 'Writing as hello@nachtvogel.co — lowercase, playful, no sign-off. Learned from 28 replies.'
+  };
+
+  EMAILS = [
+    { id: 'jonas', acct: 'fernweh', from: 'Jonas Weber', addr: 'jonas@meridian.co', subject: 'Offer for the Meridian rebrand', time: '09:41', unread: true, expectReply: true,
+      gist: 'wants the revised offer by Friday — budget closes Mon',
+      body: [
+        { pre: 'Hi Lena,', mark: '', post: '' },
+        { pre: 'the board liked the second route a lot. Before we can sign off I need the revised offer — ideally with the extended scope we discussed (guidelines + templates). ', mark: 'Can you send it by Friday?', post: ' Our budget round closes Monday morning.' },
+        { pre: '— Jonas', mark: '', post: '' }
+      ],
+      task: { label: 'Send revised offer (guidelines + templates)', due: 'FRI' }, taskState: 'suggested',
+      dict: 'ok tell him friday is fine but i need the page count first… and make it warm',
+      draft: 'Hi Jonas,\nFriday is fine — happy the board went for route two. I\u2019ll send the revised offer with the extended scope by Thursday evening.\nBefore I can finalise it, could you confirm the page count for the templates?\nWarm greetings from the studio,\nLena',
+      draft2: 'Hi Jonas,\nFriday works. One thing first — what\u2019s the final page count for the templates? The revised offer follows Thursday evening.\nBest,\nLena' },
+    { id: 'marie', acct: 'fernweh', from: 'Marie Dupont', addr: 'marie@druckhaus-mitte.de', subject: 'Re: print proofs', time: '09:12', unread: true, expectReply: false,
+      gist: 'Thursday press check confirmed; who brings the proofs?',
+      body: [
+        { pre: 'Hi Lena,', mark: '', post: '' },
+        { pre: 'Thursday 10:00 at the press works for the check. ', mark: 'Can you bring the final proofs', post: ', or should I pick them up from the studio on Wednesday?' },
+        { pre: 'À jeudi, Marie', mark: '', post: '' }
+      ],
+      task: { label: 'Bring final proofs to press check', due: 'THU' }, taskState: 'suggested',
+      dict: 'say i\u2019ll bring the proofs and confirm ten o\u2019clock',
+      draft: 'Hi Marie,\nI\u2019ll bring the final proofs myself — see you Thursday at 10:00 at the press.\nÀ jeudi,\nLena',
+      draft2: 'Hi Marie,\n10:00 Thursday is confirmed — proofs travel with me.\nLena' },
+    { id: 'hausverwaltung', acct: 'hotmail', from: 'Hausverwaltung Oranienstr.', addr: 'verwaltung@oranien-immo.de', subject: 'Nebenkostenabrechnung 2025', time: '08:55', unread: true, expectReply: false,
+      gist: 'Nebenkosten 2025 — respond by Jul 15',
+      body: [
+        { pre: 'Sehr geehrte Frau Hartmann,', mark: '', post: '' },
+        { pre: 'anbei erhalten Sie die Nebenkostenabrechnung 2025 für die Gewerbeeinheit Oranienstraße 161. ', mark: 'Wir bitten um Rückmeldung bis zum 15. Juli.', post: '' },
+        { pre: 'Mit freundlichen Grüßen, Ihre Hausverwaltung', mark: '', post: '' }
+      ],
+      task: { label: 'Reply to Nebenkosten statement', due: 'JUL 15' }, taskState: 'accepted',
+      dict: 'sag denen die abrechnung geht so in ordnung',
+      draft: 'Sehr geehrte Damen und Herren,\nvielen Dank für die Abrechnung — sie geht so in Ordnung. Die Rückzahlung erwarte ich wie berechnet.\nMit freundlichen Grüßen\nLena Hartmann',
+      draft2: 'Sehr geehrte Damen und Herren,\ndie Nebenkostenabrechnung 2025 ist geprüft und in Ordnung.\nMit freundlichen Grüßen\nLena Hartmann' },
+    { id: 'tom', acct: 'hotmail', from: 'Tom Becker', addr: 'tom.becker@web.de', subject: 'Studio dinner Friday?', time: '08:31', unread: true, expectReply: false,
+      gist: 'dinner Friday, Kreuzberg — yes/no is enough',
+      body: [
+        { pre: 'Hey Lena!', mark: '', post: '' },
+        { pre: 'Anna hat ein neues Lokal in Kreuzberg gefunden — Freitag 19:30, Studio-Dinner. ', mark: 'Sag einfach ja oder nein.', post: '' },
+        { pre: 'Tom', mark: '', post: '' }
+      ],
+      task: null, taskState: 'none',
+      dict: 'klar bin dabei frag ob ich was mitbringen soll',
+      draft: 'Hey Tom,\nbin dabei — Freitag 19:30 passt! Soll ich was mitbringen?\nLena',
+      draft2: 'Hey Tom,\nja! Freitag passt. Wein bringe ich mit.\nLena' },
+    { id: 'kita', acct: 'hotmail', from: 'Kita Sonnenblume', addr: 'info@kita-sonnenblume.de', subject: 'Sommerfest am 24.07', time: 'WED', unread: false, expectReply: false,
+      gist: 'Sommerfest RSVP + cake by Jul 18',
+      body: [
+        { pre: 'Liebe Eltern,', mark: '', post: '' },
+        { pre: 'unser Sommerfest findet am 24.07. ab 15 Uhr statt. ', mark: 'Bitte bis 18. Juli anmelden', post: ' und in die Kuchenliste eintragen.' },
+        { pre: 'Herzliche Grüße, das Team der Kita Sonnenblume', mark: '', post: '' }
+      ],
+      task: { label: 'RSVP Sommerfest + cake list', due: 'JUL 18' }, taskState: 'accepted',
+      dict: 'melde uns an und trag mich für einen zitronenkuchen ein',
+      draft: 'Liebes Kita-Team,\nwir kommen gern zum Sommerfest! Ich trage mich für einen Zitronenkuchen ein.\nHerzliche Grüße\nLena Hartmann',
+      draft2: 'Liebes Kita-Team,\nAnmeldung hiermit für uns drei — und ein Zitronenkuchen kommt mit.\nHerzliche Grüße\nLena Hartmann' },
+    { id: 'lea', acct: 'nachtvogel', from: 'Lea Vogt', addr: 'lea@risoclub.net', subject: 'small collab print run?', time: 'WED', unread: true, expectReply: false,
+      gist: 'wants a riso collab this autumn — asks for a yes',
+      body: [
+        { pre: 'hey lena!', mark: '', post: '' },
+        { pre: 'found nachtvogel through the riso zine — ', mark: 'would you be up for a small collab print run this autumn?', post: ' happy to send sketches.' },
+        { pre: 'lea', mark: '', post: '' }
+      ],
+      task: null, taskState: 'none',
+      dict: 'love it say yes and ask for the sketches',
+      draft: 'hey lea!\nlove this — yes, let\u2019s do it. send the sketches over whenever, autumn timing works.\nl',
+      draft2: 'hey!\nyes yes yes. sketches please — autumn is perfect.\nl' },
+    { id: 'news', acct: 'fernweh', from: 'Newsletters ×3', addr: 'bundle', subject: 'Bundled by the owl', time: 'WED', unread: false, expectReply: false,
+      gist: 'nothing urgent — auto-archives in 2 days',
+      body: [
+        { pre: 'Dept. of Type — variable serifs issue. Grain Club — summer paper stocks. Substack Weekly — three essays.', mark: '', post: '' },
+        { pre: 'The owl found no questions addressed to you. This bundle files itself away on Thursday.', mark: '', post: '' }
+      ],
+      task: null, taskState: 'none', dict: null, draft: null, draft2: null }
+  ];
+
+  WAITING = [
+    { id: 'priya', from: 'Priya Sharma', addr: 'priya@formlab.io', subject: 'Workshop follow-up', days: 4, nudged: false,
+      gist: 'said she\u2019d \u201cget back to you\u201d — hasn\u2019t yet',
+      sentLine: 'You asked on Thursday whether her team can host the research workshop in August — she replied she\u2019d check and get back to you.',
+      nudge: 'Hi Priya,\nfloating this back to the top of your inbox — any word from the team on the August workshop? No rush if it\u2019s still in motion.\nWarm greetings,\nLena' },
+    { id: 'meridian', from: 'Meridian Accounting', addr: 'accounts@meridian.co', subject: 'Invoice #2119', days: 6, nudged: false,
+      gist: 'invoice sent 6 days ago — no confirmation',
+      sentLine: 'You sent invoice #2119 (first project phase) last Wednesday and asked for a short confirmation of receipt.',
+      nudge: 'Hello,\na quick one: could you confirm that invoice #2119 arrived safely? Happy to resend if not.\nBest,\nLena Hartmann' }
+  ];
+
+  TASKS = [
+    { id: 'tk1', label: 'Reply to Nebenkosten statement', due: 'JUL 15', src: 'Hausverwaltung — Nebenkostenabrechnung 2025', srcId: 'hausverwaltung', done: false },
+    { id: 'tk2', label: 'RSVP Sommerfest + cake list', due: 'JUL 18', src: 'Kita Sonnenblume — Sommerfest am 24.07', srcId: 'kita', done: false },
+    { id: 'tk3', label: 'Send print files to Druckhaus', due: 'WED', src: 'Marie Dupont — Re: print proofs', srcId: 'marie', done: true }
+  ];
+
+  state = {
+    booted: false, onboard: true, obStep: 1,
+    obProviders: [
+      { key: 'gmail', glyph: 'G', name: 'Google Mail', addr: 'lh@fernweh.studio', status: 'idle', threads: '1,204 threads' },
+      { key: 'outlook', glyph: 'O', name: 'Outlook / Hotmail', addr: 'lena.hartmann@hotmail.de', status: 'idle', threads: '862 threads' },
+      { key: 'imap', glyph: 'I', name: 'IMAP', addr: 'hello@nachtvogel.co', status: 'idle', threads: '252 threads' }
+    ],
+    obTrain: [
+      { addr: 'lh@fernweh.studio', replies: '132 sent replies', pct: 0, traits: 'warm · brief · em-dashes · EN/DE' },
+      { addr: 'lena.hartmann@hotmail.de', replies: '41 sent replies', pct: 0, traits: 'höflich · formell · Sie/du aware' },
+      { addr: 'hello@nachtvogel.co', replies: '28 sent replies', pct: 0, traits: 'lowercase · playful · no sign-off' }
+    ],
+    view: 'inbox', selId: 'jonas', wSelId: 'priya', tSelId: 'tk1', filter: 'all',
+    emails: [], waiting: [], tasks: [],
+    comp: { mode: 'idle', forId: null, shown: '', secs: 0, text: '', editing: false, usedAlt: false, manual: false },
+    barsSeed: 0, draftDots: '…',
+    pal: { open: false, q: '', idx: 0 },
+    help: false, toast: null, gPend: false,
+    setSel: 'accounts', accounts: [], orKey: '', orSaved: false,
+    scanModel: 'google/gemini-2.5-flash', writeModel: 'anthropic/claude-sonnet-4.5',
+    imapOpen: false, imapAddr: '', imapHost: '', imapPass: '',
+    voices: [
+      { key: 'fernweh', addr: 'lh@fernweh.studio', stats: '132 replies · updated today', traits: ['warm', 'brief', 'em-dashes', 'EN/DE'], sample: 'Friday is fine — happy the board went for route two.', learn: true, pct: 0, training: false },
+      { key: 'hotmail', addr: 'lena.hartmann@hotmail.de', stats: '41 replies · updated Mon', traits: ['höflich', 'formell', 'Sie/du aware'], sample: 'Vielen Dank — die Abrechnung geht so in Ordnung.', learn: true, pct: 0, training: false },
+      { key: 'nachtvogel', addr: 'hello@nachtvogel.co', stats: '28 replies · updated Jun', traits: ['lowercase', 'playful', 'no sign-off'], sample: 'love this — yes, let\u2019s do it.', learn: false, pct: 0, training: false }
+    ]
+  };
+
+  componentDidMount() {
+    this._timers = [];
+    this.setState({
+      emails: this.EMAILS.map(e => Object.assign({}, e, { status: 'in', leaving: false })),
+      waiting: this.WAITING.map(w => Object.assign({}, w)),
+      tasks: this.TASKS.map(t => Object.assign({}, t)),
+      accounts: [
+        { key: 'fernweh', provider: 'Google', glyph: 'F', addr: 'lh@fernweh.studio', threads: '1,204 threads', status: 'ok', removable: false },
+        { key: 'hotmail', provider: 'Microsoft', glyph: 'H', addr: 'lena.hartmann@hotmail.de', threads: '862 threads', status: 'ok', removable: false },
+        { key: 'nachtvogel', provider: 'IMAP', glyph: 'N', addr: 'hello@nachtvogel.co', threads: '252 threads', status: 'ok', removable: false }
+      ],
+      booted: true
+    });
+    let ob = false;
+    try { ob = !!localStorage.getItem('noctua_onboarded'); } catch (e) {}
+    if (ob) {
+      this.setState({ onboard: false });
+      this.later(() => this.toast('Still waiting on 2 replies — Priya (4d), Meridian (6d). Press g then w.'), 900);
+    }
+    this._onKey = (e) => this.onKey(e);
+    window.addEventListener('keydown', this._onKey);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._onKey);
+    (this._timers || []).forEach(t => { clearTimeout(t); clearInterval(t); });
+  }
+  later(fn, ms) { const t = setTimeout(fn, ms); this._timers.push(t); return t; }
+  every(fn, ms) { const t = setInterval(fn, ms); this._timers.push(t); return t; }
+
+  toast(msg) {
+    if (this._toastT) clearTimeout(this._toastT);
+    this.setState({ toast: msg });
+    this._toastT = this.later(() => this.setState({ toast: null }), 3600);
+  }
+
+  // ─── derived helpers ───
+  visibleEmails() {
+    const f = this.state.filter;
+    return this.state.emails.filter(e => e.status === 'in' && (f === 'all' || e.acct === f));
+  }
+  selEmail() { return this.state.emails.find(e => e.id === this.state.selId && e.status === 'in') || this.visibleEmails()[0] || null; }
+  selWaiting() { return this.state.waiting.find(w => w.id === this.state.wSelId) || this.state.waiting[0] || null; }
+  selTask() { return this.state.tasks.find(t => t.id === this.state.tSelId) || this.state.tasks[0] || null; }
+
+  moveSel(dir) {
+    const v = this.state.view;
+    if (v === 'inbox') {
+      const list = this.visibleEmails(); if (!list.length) return;
+      const cur = this.selEmail(); let i = list.findIndex(e => e.id === (cur && cur.id));
+      i = Math.max(0, Math.min(list.length - 1, i + dir));
+      this.setState({ selId: list[i].id });
+      this.markRead(list[i].id);
+    } else if (v === 'waiting') {
+      const list = this.state.waiting; if (!list.length) return;
+      const cur = this.selWaiting(); let i = list.findIndex(w => w.id === (cur && cur.id));
+      i = Math.max(0, Math.min(list.length - 1, i + dir));
+      this.setState({ wSelId: list[i].id });
+    } else if (v === 'tasks') {
+      const list = this.state.tasks; if (!list.length) return;
+      const cur = this.selTask(); let i = list.findIndex(t => t.id === (cur && cur.id));
+      i = Math.max(0, Math.min(list.length - 1, i + dir));
+      this.setState({ tSelId: list[i].id });
+    } else if (v === 'settings') {
+      const order = ['accounts', 'style', 'intel'];
+      let i = order.indexOf(this.state.setSel);
+      i = Math.max(0, Math.min(order.length - 1, i + dir));
+      this.setState({ setSel: order[i] });
+    }
+  }
+  markRead(id) { this.setState(s => ({ emails: s.emails.map(e => e.id === id ? Object.assign({}, e, { unread: false }) : e) })); }
+
+  selectEmail(id) { this.setState({ selId: id }); this.markRead(id); if (this.state.comp.forId && this.state.comp.forId !== id) this.resetComp(); }
+  resetComp() { this.clearDictTimers(); this.setState({ comp: { mode: 'idle', forId: null, shown: '', secs: 0, text: '', editing: false, usedAlt: false, manual: false } }); }
+
+  // ─── archive / undo ───
+  archiveSel() {
+    const em = this.selEmail(); if (!em) return;
+    const list = this.visibleEmails(); const i = list.findIndex(e => e.id === em.id);
+    const next = list[i + 1] || list[i - 1] || null;
+    this.setState(s => ({ emails: s.emails.map(e => e.id === em.id ? Object.assign({}, e, { leaving: true }) : e) }));
+    this.later(() => {
+      this.setState(s => ({ emails: s.emails.map(e => e.id === em.id ? Object.assign({}, e, { status: 'out', leaving: false }) : e), selId: next ? next.id : s.selId }));
+      this._lastArch = em.id;
+      this.toast('Filed away — z to undo');
+      if (this.state.comp.forId === em.id) this.resetComp();
+    }, 240);
+  }
+  undoArchive() {
+    const id = this._lastArch; if (!id) { this.toast('Nothing to undo'); return; }
+    this._lastArch = null;
+    this.setState(s => ({ emails: s.emails.map(e => e.id === id ? Object.assign({}, e, { status: 'in' }) : e), selId: id }));
+    this.toast('Back in the inbox');
+  }
+
+  // ─── dictation ───
+  clearDictTimers() { ['_dt', '_bt', '_ct', '_dd', '_fin'].forEach(k => { if (this[k]) { clearInterval(this[k]); clearTimeout(this[k]); this[k] = null; } }); }
+  startDictation() {
+    const em = this.selEmail(); if (!em || this.state.view !== 'inbox') return;
+    if (!em.dict) { this.toast('Nothing to answer here — the owl found no question for you.'); return; }
+    this.clearDictTimers();
+    this.setState({ comp: { mode: 'listening', forId: em.id, shown: '', secs: 0, text: '', editing: false, usedAlt: false, manual: false } });
+    const words = em.dict.split(' '); let wi = 0;
+    this._dt = this.every(() => {
+      wi++;
+      if (wi > words.length) { this.finishListening(); return; }
+      this.setState(s => ({ comp: Object.assign({}, s.comp, { shown: words.slice(0, wi).join(' ') }) }));
+    }, 150);
+    this._bt = this.every(() => this.setState({ barsSeed: Math.random() }), 110);
+    this._ct = this.every(() => this.setState(s => ({ comp: Object.assign({}, s.comp, { secs: s.comp.secs + 1 }) })), 1000);
+  }
+  finishListening() {
+    if (this.state.comp.mode !== 'listening') return;
+    this.clearDictTimers();
+    this.setState(s => ({ comp: Object.assign({}, s.comp, { mode: 'drafting' }) }));
+    this._dd = this.every(() => this.setState(s => ({ draftDots: s.draftDots.length >= 3 ? '.' : s.draftDots + '.' })), 320);
+    this._fin = this.later(() => {
+      clearInterval(this._dd);
+      const em = this.state.emails.find(e => e.id === this.state.comp.forId);
+      this.setState(s => ({ comp: Object.assign({}, s.comp, { mode: 'ready', text: em ? em.draft : '', editing: false, usedAlt: false }) }));
+    }, 1100);
+  }
+  redraft() {
+    const em = this.state.emails.find(e => e.id === this.state.comp.forId); if (!em) return;
+    const alt = !this.state.comp.usedAlt;
+    this.setState(s => ({ comp: Object.assign({}, s.comp, { mode: 'drafting' }) }));
+    this._fin = this.later(() => {
+      this.setState(s => ({ comp: Object.assign({}, s.comp, { mode: 'ready', text: alt ? (em.draft2 || em.draft) : em.draft, usedAlt: alt, editing: false }) }));
+    }, 700);
+  }
+  openManualReply() {
+    const em = this.selEmail(); if (!em || this.state.view !== 'inbox' || !em.dict) return;
+    const greet = em.acct === 'nachtvogel' ? 'hey!\n' : (em.acct === 'hotmail' && em.id === 'hausverwaltung' ? 'Sehr geehrte Damen und Herren,\n' : 'Hi ' + em.from.split(' ')[0] + ',\n');
+    this.setState({ comp: { mode: 'ready', forId: em.id, shown: '', secs: 0, text: greet, editing: true, usedAlt: false, manual: true } });
+  }
+  sendDraft() {
+    const c = this.state.comp; if (c.mode !== 'ready') return;
+    const em = this.state.emails.find(e => e.id === c.forId); if (!em) return;
+    const addr = this.ADDR[em.acct];
+    if (em.expectReply) {
+      this.setState(s => ({ waiting: s.waiting.concat([{ id: 'w_' + em.id, from: em.from, addr: em.addr, subject: em.subject, days: 0, nudged: false, gist: 'you replied today — the owl starts counting', sentLine: 'You replied today. If ' + em.from.split(' ')[0] + ' stays quiet, the owl will suggest a nudge.', nudge: 'Hi ' + em.from.split(' ')[0] + ',\njust checking this reached you.\nLena' }]) }));
+    }
+    this.setState(s => ({ emails: s.emails.map(e => e.id === em.id ? Object.assign({}, e, { status: 'out' }) : e) }));
+    this.resetComp();
+    this.toast('Sent as ' + addr + (em.expectReply ? ' — thread moved to WAITING' : ' — thread filed away'));
+  }
+
+  // ─── tasks ───
+  acceptTask() {
+    const em = this.selEmail(); if (!em || !em.task || em.taskState !== 'suggested') return;
+    this.setState(s => ({
+      emails: s.emails.map(e => e.id === em.id ? Object.assign({}, e, { taskState: 'accepted' }) : e),
+      tasks: [{ id: 'tk_' + em.id, label: em.task.label, due: em.task.due, src: em.from + ' — ' + em.subject, srcId: em.id, done: false }].concat(s.tasks)
+    }));
+    this.toast('Task added — ' + em.task.label);
+  }
+  dismissTask() {
+    const em = this.selEmail(); if (!em || !em.task || em.taskState !== 'suggested') return;
+    this.setState(s => ({ emails: s.emails.map(e => e.id === em.id ? Object.assign({}, e, { taskState: 'dismissed' }) : e) }));
+    this.toast('Dismissed — the owl won\u2019t mention it again');
+  }
+  toggleTask(id) {
+    this.setState(s => ({ tasks: s.tasks.map(t => t.id === id ? Object.assign({}, t, { done: !t.done }) : t) }));
+  }
+
+  // ─── waiting / nudge ───
+  sendNudge() {
+    const w = this.selWaiting(); if (!w || w.nudged) return;
+    this.setState(s => ({ waiting: s.waiting.map(x => x.id === w.id ? Object.assign({}, x, { nudged: true }) : x) }));
+    this.toast('Nudge sent to ' + w.from + ' — in your voice, gently');
+  }
+  dropWaiting() {
+    const w = this.selWaiting(); if (!w) return;
+    this.setState(s => ({ waiting: s.waiting.filter(x => x.id !== w.id) }));
+    this.toast('Stopped waiting on ' + w.from);
+  }
+
+  // ─── voice ───
+  retrainVoice(key) {
+    this.setState(s => ({ voices: s.voices.map(v => v.key === key ? Object.assign({}, v, { training: true, pct: 0 }) : v) }));
+    const iv = this.every(() => {
+      const v = this.state.voices.find(x => x.key === key);
+      if (!v) { clearInterval(iv); return; }
+      if (v.pct >= 100) {
+        clearInterval(iv);
+        this.setState(s => ({ voices: s.voices.map(x => x.key === key ? Object.assign({}, x, { training: false, pct: 0 }) : x) }));
+        this.toast('Voice refreshed — the owl reread your sent mail');
+        return;
+      }
+      this.setState(s => ({ voices: s.voices.map(x => x.key === key ? Object.assign({}, x, { pct: Math.min(100, x.pct + 7) }) : x) }));
+    }, 60);
+  }
+
+  // ─── onboarding ───
+  addOauth(provider) {
+    const key = 'acc_' + Math.random().toString(36).slice(2, 7);
+    const addr = provider === 'Google' ? 'lena.hartmann@gmail.com' : 'l.hartmann@outlook.de';
+    this.setState(s => ({ accounts: s.accounts.concat([{ key, provider, glyph: provider === 'Google' ? 'G' : 'M', addr: '', threads: '', status: 'auth', removable: true }]) }));
+    this.later(() => this.setState(s => ({ accounts: s.accounts.map(a => a.key === key ? Object.assign({}, a, { status: 'indexing', addr }) : a) })), 1400);
+    this.later(() => {
+      this.setState(s => ({ accounts: s.accounts.map(a => a.key === key ? Object.assign({}, a, { status: 'ok', threads: 'first sync done' }) : a) }));
+      this.toast('✓ ' + addr + ' connected — the owl starts learning that style');
+    }, 3000);
+  }
+  imapConnectFn() {
+    const s = this.state;
+    if (!s.imapAddr.includes('@') || !s.imapHost || !s.imapPass) { this.toast('Address, host and app password — then we\u2019re in'); return; }
+    const key = 'acc_' + Math.random().toString(36).slice(2, 7);
+    const addr = s.imapAddr;
+    this.setState(st => ({ imapOpen: false, imapAddr: '', imapHost: '', imapPass: '', accounts: st.accounts.concat([{ key, provider: 'IMAP', glyph: '@', addr, threads: '', status: 'indexing', removable: true }]) }));
+    this.later(() => {
+      this.setState(st => ({ accounts: st.accounts.map(a => a.key === key ? Object.assign({}, a, { status: 'ok', threads: 'first sync done' }) : a) }));
+      this.toast('✓ ' + addr + ' connected via IMAP');
+    }, 1800);
+  }
+  removeAcct(key) {
+    const a = this.state.accounts.find(x => x.key === key);
+    if (!a) return;
+    if (!a.removable) { this.toast('This demo inbox needs its three addresses — disconnect one you added'); return; }
+    this.setState(s => ({ accounts: s.accounts.filter(x => x.key !== key) }));
+    this.toast(a.addr + ' disconnected');
+  }
+  saveKeyFn() {
+    const k = this.state.orKey.trim();
+    if (k.indexOf('sk-or-') === 0 && k.length > 14) { this.setState({ orSaved: true }); this.toast('✓ Key saved locally — the owl wakes up'); }
+    else this.toast('That doesn\u2019t look like an OpenRouter key (sk-or-…)');
+  }
+  shortModel(id) { return id.split('/')[1]; }
+  obConnect(key) {
+    this.setState(s => ({ obProviders: s.obProviders.map(p => p.key === key ? Object.assign({}, p, { status: 'connecting' }) : p) }));
+    this.later(() => {
+      this.setState(s => ({ obProviders: s.obProviders.map(p => p.key === key ? Object.assign({}, p, { status: 'done' }) : p) }));
+    }, 900 + Math.random() * 600);
+  }
+  obNext() {
+    if (this.state.obStep === 1) { this.setState({ obStep: 2 }); return; }
+    if (this.state.obStep === 2) {
+      if (!this.state.obProviders.some(p => p.status === 'done')) { this.toast('Connect at least one address'); return; }
+      this.setState({ obStep: 3 });
+      this.state.obTrain.forEach((row, i) => {
+        this.later(() => {
+          const iv = this.every(() => {
+            const r = this.state.obTrain[i];
+            if (r.pct >= 100) { clearInterval(iv); return; }
+            this.setState(s => ({ obTrain: s.obTrain.map((x, xi) => xi === i ? Object.assign({}, x, { pct: Math.min(100, x.pct + 4) }) : x) }));
+          }, 45);
+        }, i * 500);
+      });
+    }
+  }
+  obFinish() {
+    if (!this.state.obTrain.every(t => t.pct >= 100)) return;
+    try { localStorage.setItem('noctua_onboarded', '1'); } catch (e) {}
+    this.setState({ onboard: false });
+    this.later(() => this.toast('Welcome. Press ? for the keys — or just start with j and k.'), 600);
+  }
+  obSkipFn() {
+    try { localStorage.setItem('noctua_onboarded', '1'); } catch (e) {}
+    this.setState({ onboard: false });
+  }
+
+  // ─── palette ───
+  palCommands() {
+    const cmds = [];
+    const sel = this.selEmail();
+    this.state.waiting.filter(w => !w.nudged).forEach(w => {
+      cmds.push({ label: 'Review nudge for ' + w.from, note: w.days + 'd silent', key: '↵', act: () => { this.setState({ view: 'waiting', wSelId: w.id }); } });
+    });
+    if (sel && sel.dict) cmds.push({ label: 'Dictate a reply to ' + sel.from.split(' ')[0], note: 'the hero move', key: 'v', act: () => this.startDictation() });
+    if (sel) cmds.push({ label: 'Summarize thread', note: 'the owl\u2019s gist', key: '⇧s', act: () => this.toast('The owl: ' + sel.gist) });
+    if (sel && sel.task && sel.taskState === 'suggested') cmds.push({ label: 'Accept found task', note: sel.task.due, key: 't', act: () => this.acceptTask() });
+    cmds.push({ label: 'Go to Inbox', note: '', key: '⌘1', act: () => this.setState({ view: 'inbox' }) });
+    cmds.push({ label: 'Go to Waiting', note: this.state.waiting.length + ' open', key: '⌘2', act: () => this.setState({ view: 'waiting' }) });
+    cmds.push({ label: 'Go to Tasks', note: '', key: '⌘3', act: () => this.setState({ view: 'tasks' }) });
+    cmds.push({ label: 'Your style', note: 'one per address', key: 'g s', act: () => this.setState({ view: 'settings', setSel: 'style' }) });
+    cmds.push({ label: 'Filter: fernweh only', note: '', key: '1', act: () => this.setState({ filter: 'fernweh' }) });
+    cmds.push({ label: 'Filter: hotmail only', note: '', key: '2', act: () => this.setState({ filter: 'hotmail' }) });
+    cmds.push({ label: 'Filter: nachtvogel only', note: '', key: '3', act: () => this.setState({ filter: 'nachtvogel' }) });
+    cmds.push({ label: 'Open Settings', note: 'accounts · key · models', key: '⌘,', act: () => this.setState({ view: 'settings' }) });
+    cmds.push({ label: 'Add an email address', note: 'Google · Microsoft · IMAP', key: '', act: () => this.setState({ view: 'settings', setSel: 'accounts' }) });
+    cmds.push({ label: 'Choose models', note: this.shortModel(this.state.scanModel) + ' · ' + this.shortModel(this.state.writeModel), key: '', act: () => this.setState({ view: 'settings', setSel: 'intel' }) });
+    cmds.push({ label: 'Show keyboard shortcuts', note: '', key: '?', act: () => this.setState({ help: true }) });
+    cmds.push({ label: 'Replay onboarding', note: '', key: '', act: () => this.setState({ onboard: true, obStep: 1 }) });
+    return cmds;
+  }
+  palFiltered() {
+    const q = this.state.pal.q.toLowerCase().trim();
+    const all = this.palCommands();
+    if (!q) return all;
+    return all.filter(c => (c.label + ' ' + c.note).toLowerCase().includes(q));
+  }
+  runPal(c) { this.setState({ pal: { open: false, q: '', idx: 0 } }); c.act(); }
+
+  // ─── keyboard ───
+  onKey(e) {
+    const tag = (e.target && e.target.tagName) || '';
+    const typing = tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable);
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      this.setState(s => ({ pal: { open: !s.pal.open, q: '', idx: 0 }, help: false }));
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && (e.key === '1' || e.key === '2' || e.key === '3')) {
+      e.preventDefault();
+      const vmap = { '1': 'inbox', '2': 'waiting', '3': 'tasks' };
+      this.setState({ view: vmap[e.key] });
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+      e.preventDefault();
+      this.setState({ view: 'settings' });
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (this.state.pal.open) { this.setState({ pal: { open: false, q: '', idx: 0 } }); return; }
+      if (this.state.help) { this.setState({ help: false }); return; }
+      if (this.state.comp.mode !== 'idle') { this.resetComp(); return; }
+      return;
+    }
+    if (typing) return;
+    if (this.state.pal.open) return;
+
+    if (this.state.onboard) {
+      if (e.key === 'Enter') { this.state.obStep === 3 ? this.obFinish() : this.obNext(); }
+      return;
+    }
+
+    if (this.state.gPend) {
+      const map = { i: 'inbox', w: 'waiting', t: 'tasks', e: 'settings' };
+      if (e.key === 's') { this.setState({ view: 'settings', setSel: 'style', gPend: false }); return; }
+      if (map[e.key]) this.setState({ view: map[e.key], gPend: false });
+      else this.setState({ gPend: false });
+      return;
+    }
+
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === 'g') { this.setState({ gPend: true }); this.later(() => this.setState({ gPend: false }), 1100); return; }
+    if (k === '?') { this.setState(s => ({ help: !s.help })); return; }
+    if (k === 'j') { this.moveSel(1); return; }
+    if (k === 'k') { this.moveSel(-1); return; }
+    if (k === 'v') { if (this.state.comp.mode === 'listening') { this.finishListening(); } else { this.startDictation(); } return; }
+    if (k === 'Enter') {
+      if (this.state.comp.mode === 'listening') { this.finishListening(); return; }
+      if (this.state.view === 'waiting') { this.sendNudge(); return; }
+      if (this.state.view === 'inbox' && this.state.comp.mode === 'ready' && !this.state.comp.editing) { this.sendDraft(); return; }
+      return;
+    }
+    if (k === 'e') {
+      if (this.state.comp.mode === 'ready') { this.setState(s => ({ comp: Object.assign({}, s.comp, { editing: !s.comp.editing }) })); return; }
+      if (this.state.view === 'inbox') { this.archiveSel(); }
+      return;
+    }
+    if (k === 'r') { this.openManualReply(); return; }
+    if (k === 'R') { if (this.state.comp.mode === 'ready') this.redraft(); return; }
+    if (k === 'S') { const sel = this.selEmail(); if (sel) this.toast('The owl: ' + sel.gist); return; }
+    if (k === 'z') { this.undoArchive(); return; }
+    if (k === 't') { if (this.state.view === 'inbox') this.acceptTask(); return; }
+    if (k === 'x') { if (this.state.view === 'inbox') this.dismissTask(); return; }
+    if (k === 'd') { if (this.state.view === 'waiting') this.dropWaiting(); return; }
+    if (k === 'o') { if (this.state.view === 'tasks') { const t = this.selTask(); if (t && t.srcId) this.openTaskSource(t); } return; }
+    if (k === ' ') { if (this.state.view === 'tasks') { e.preventDefault(); const t = this.selTask(); if (t) this.toggleTask(t.id); } return; }
+    if (k === '1' || k === '2' || k === '3') {
+      const map = { 1: 'fernweh', 2: 'hotmail', 3: 'nachtvogel' };
+      this.setState(s => ({ filter: s.filter === map[k] ? 'all' : map[k] }));
+      return;
+    }
+  }
+
+  openTaskSource(t) {
+    const em = this.state.emails.find(e => e.id === t.srcId && e.status === 'in');
+    if (em) { this.setState({ view: 'inbox', selId: em.id }); this.markRead(em.id); }
+    else this.toast('That thread is filed away');
+  }
+
+  // ─── render ───
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accentColor ?? '#C2452C';
+    const showGists = this.props.showGists ?? true;
+    const railShow = (this.props.showRail ?? true) && !s.onboard;
+    const sel = this.selEmail();
+    const selW = this.selWaiting();
+    const selT = this.selTask();
+    const comp = s.comp;
+    const compFor = comp.forId ? s.emails.find(e => e.id === comp.forId) : null;
+    const visible = this.visibleEmails();
+
+    // inbox rows
+    const rows = visible.map(em => {
+      const isSel = sel && em.id === sel.id;
+      const suggested = em.task && em.taskState === 'suggested';
+      const accepted = em.task && em.taskState === 'accepted';
+      const chipTask = suggested || accepted ? 'TASK · ' + em.task.due : null;
+      const chipDraft = comp.mode === 'ready' && comp.forId === em.id;
+      return {
+        from: em.from, time: em.time, gist: em.gist, unread: !!em.unread,
+        acctTag: em.acct !== 'fernweh' ? '· ' + em.acct : '',
+        badge: em.acct === 'fernweh' ? 'F' : (em.acct === 'hotmail' ? 'H' : 'N'),
+        badgeStyle: 'width:13px;height:13px;flex:none;display:flex;align-items:center;justify-content:center;box-sizing:border-box;font:600 7.5px \u0027IBM Plex Mono\u0027,monospace;' + (em.acct === 'fernweh' ? 'background:#17150F;color:#F4F1EA' : (em.acct === 'hotmail' ? 'border:1px solid #17150F;color:#17150F' : 'background:var(--ac,#C2452C);color:#F4F1EA')),
+        showGist: showGists, chipTask, chipDraft, hasChips: !!(chipTask || chipDraft),
+        wrapStyle: 'overflow:hidden;transition:max-height .24s ease,opacity .18s ease;max-height:' + (em.leaving ? '0px' : '130px') + ';opacity:' + (em.leaving ? 0 : 1),
+        rowStyle: 'padding:10px 18px;border-bottom:1px solid #DAD4C6;cursor:pointer;border-left:3px solid ' + (isSel ? '#17150F' : 'transparent') + ';background:' + (isSel ? '#FDFCF8' : 'transparent'),
+        nameStyle: 'font:' + (em.unread ? '600' : '400') + ' 13.5px \u0027Newsreader\u0027,serif;color:' + (em.unread ? '#17150F' : '#57503f') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0',
+        gistStyle: 'font:400 12px \u0027Newsreader\u0027,serif;font-style:italic;color:' + (em.unread ? '#57503f' : '#8a8272') + ';margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis',
+        select: () => this.selectEmail(em.id)
+      };
+    });
+
+    // waiting rows
+    const wrows = s.waiting.map(w => {
+      const isSel = selW && w.id === selW.id;
+      return {
+        from: w.from, gist: w.gist, nudged: w.nudged,
+        daysLabel: w.days === 0 ? 'today' : w.days + 'd silent',
+        rowStyle: 'padding:11px 18px;border-bottom:1px solid #DAD4C6;cursor:pointer;border-left:3px solid ' + (isSel ? '#17150F' : 'transparent') + ';background:' + (isSel ? '#FDFCF8' : 'transparent'),
+        select: () => this.setState({ wSelId: w.id })
+      };
+    });
+
+    // task rows
+    const trows = s.tasks.map(t => {
+      const isSel = selT && t.id === selT.id;
+      return {
+        label: t.label, due: t.due, src: t.src, done: t.done,
+        rowStyle: 'padding:11px 18px;border-bottom:1px solid #DAD4C6;cursor:pointer;border-left:3px solid ' + (isSel ? '#17150F' : 'transparent') + ';background:' + (isSel ? '#FDFCF8' : 'transparent'),
+        labelStyle: 'font:400 13.5px \u0027Newsreader\u0027,serif;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' + (t.done ? 'text-decoration:line-through;color:#9a9184' : 'color:#17150F'),
+        dueStyle: 'flex:none;font:500 8.5px \u0027IBM Plex Mono\u0027,monospace;' + (t.done ? 'color:#9a9184;border:1px solid #EAE5D9' : 'color:#F4F1EA;background:var(--ac,#C2452C);border:1px solid var(--ac,#C2452C)') + ';padding:1px 6px',
+        select: () => this.setState({ tSelId: t.id }),
+        toggle: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.toggleTask(t.id); }
+      };
+    });
+
+    // voice cards
+    const vcards = s.voices.map(v => ({
+      addr: v.addr, stats: v.stats, sample: v.sample, training: v.training,
+      traits: v.traits.map(t => ({ t })),
+      barStyle: 'height:4px;background:var(--ac,#C2452C);width:' + v.pct + '%;transition:width .1s linear',
+      togStyle: 'width:26px;height:14px;border:1.5px solid #17150F;display:inline-flex;align-items:center;padding:1px;box-sizing:border-box;background:' + (v.learn ? '#17150F' : 'transparent'),
+      togDotStyle: 'width:8px;height:8px;background:' + (v.learn ? '#F4F1EA' : '#17150F') + ';margin-left:' + (v.learn ? '12px' : '0') + ';transition:margin .15s ease',
+      retrainLabel: v.training ? 'READING…' : 'RETRAIN',
+      toggleLearn: () => this.setState(st => ({ voices: st.voices.map(x => x.key === v.key ? Object.assign({}, x, { learn: !x.learn }) : x) })),
+      retrain: () => { if (!v.training) this.retrainVoice(v.key); }
+    }));
+
+    // onboarding
+    const obProviders = s.obProviders.map(p => ({
+      glyph: p.glyph, name: p.name, addr: p.addr,
+      note: p.status === 'done' ? '✓ ' + p.threads : (p.status === 'connecting' ? 'connecting…' : ''),
+      btnLabel: p.status === 'done' ? 'CONNECTED' : (p.status === 'connecting' ? '···' : 'CONNECT'),
+      btnStyle: 'cursor:pointer;font:500 9px \u0027IBM Plex Mono\u0027,monospace;letter-spacing:1px;padding:5px 12px;flex:none;' + (p.status === 'done' ? 'color:#6E6759;border:1px solid #DAD4C6' : 'color:#F4F1EA;background:#17150F'),
+      connect: () => { if (p.status === 'idle') this.obConnect(p.key); }
+    }));
+    const anyConn = s.obProviders.some(p => p.status === 'done');
+    const doneConn = s.obProviders.filter(p => p.status === 'done');
+    const trainDone = s.obTrain.every(t => t.pct >= 100);
+    const obTrain = s.obTrain.map(t => ({
+      addr: t.addr, replies: t.replies,
+      pctLabel: t.pct >= 100 ? 'DONE' : t.pct + '%',
+      barStyle: 'height:5px;background:var(--ac,#C2452C);width:' + t.pct + '%;transition:width .08s linear',
+      traits: t.pct >= 100 ? t.traits : (t.pct > 0 ? 'reading your sent replies…' : '')
+    }));
+
+    // composer bits
+    const bars = Array.from({ length: 14 }, (_, i) => {
+      const h = comp.mode === 'listening' ? 4 + Math.abs(Math.sin(s.barsSeed * 37 + i * 1.7)) * 16 : 4;
+      return { style: 'width:3px;flex:none;background:' + (h > 13 ? 'var(--ac,#C2452C)' : '#6E6759') + ';height:' + Math.round(h) + 'px;transition:height .1s ease' };
+    });
+    const mm = String(Math.floor(comp.secs / 60)).padStart(2, '0');
+    const ss = String(comp.secs % 60).padStart(2, '0');
+    const draftParas = (comp.text || '').split('\n').map(l => ({ line: l }));
+
+    // palette
+    const filtered = this.palFiltered();
+    const idx = Math.min(s.pal.idx, Math.max(0, filtered.length - 1));
+    const palResults = filtered.slice(0, 9).map((c, i) => ({
+      label: c.label, note: c.note, key: c.key,
+      rowStyle: 'display:flex;align-items:center;gap:10px;padding:9px 15px;cursor:pointer;border-left:2px solid ' + (i === idx ? 'var(--ac,#C2452C)' : 'transparent') + ';background:' + (i === idx ? '#F4F1EA' : 'transparent'),
+      labelStyle: 'font:500 12.5px \u0027Newsreader\u0027,serif;color:' + (i === idx ? '#17150F' : '#57503f'),
+      run: () => this.runPal(c)
+    }));
+
+    // rail
+    const railTasks = s.tasks.filter(t => !t.done).slice(0, 3).map(t => ({
+      label: t.label, due: t.due, done: t.done,
+      labelStyle: 'font:400 12px \u0027Newsreader\u0027,serif;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#17150F',
+      dueStyle: 'flex:none;font:500 8px \u0027IBM Plex Mono\u0027,monospace;color:#F4F1EA;background:var(--ac,#C2452C);padding:1px 5px',
+      toggle: () => this.toggleTask(t.id)
+    }));
+    const railNudges = s.waiting.map((w, i) => ({
+      from: w.from, days: w.days === 0 ? 'new' : w.days + 'd',
+      btnLabel: w.nudged ? '✓ SENT' : 'NUDGE',
+      btnStyle: 'cursor:pointer;flex:none;font:500 8.5px \u0027IBM Plex Mono\u0027,monospace;padding:2px 8px;' + (w.nudged ? 'color:#9a9184;border:1px solid #EAE5D9' : (i === 0 ? 'color:#F4F1EA;background:#17150F' : 'color:#6E6759;border:1px solid #DAD4C6')),
+      go: () => this.setState({ view: 'waiting', wSelId: w.id })
+    }));
+
+    const SCAN = [
+      { id: 'google/gemini-2.5-flash', note: 'fast · very cheap', tag: '$0.10/M' },
+      { id: 'anthropic/claude-haiku-4.5', note: 'sharp gists, frugal', tag: '$0.25/M' },
+      { id: 'openai/gpt-5-mini', note: 'balanced', tag: '$0.30/M' },
+      { id: 'mistralai/mistral-small-3', note: 'EU-hosted option', tag: '$0.08/M' }
+    ];
+    const WRITE = [
+      { id: 'anthropic/claude-sonnet-4.5', note: 'best prose — nails your style', tag: '$3/M' },
+      { id: 'openai/gpt-5', note: 'strong all-rounder', tag: '$5/M' },
+      { id: 'google/gemini-2.5-pro', note: 'long threads, big context', tag: '$2.50/M' },
+      { id: 'deepseek/deepseek-v4', note: 'the budget writer', tag: '$0.60/M' }
+    ];
+    const mrow = (m, cur, set, msg) => ({
+      id: m.id, note: m.note, tag: m.tag, sel: m.id === cur,
+      rowStyle: 'display:flex;align-items:center;gap:10px;padding:7px 10px;cursor:pointer;border:1px solid ' + (m.id === cur ? '#17150F' : '#DAD4C6') + ';background:' + (m.id === cur ? '#FDFCF8' : 'transparent'),
+      pick: () => { this.setState(set(m.id)); this.toast(msg + ' ' + this.shortModel(m.id)); }
+    });
+    const scanRows = SCAN.map(m => mrow(m, s.scanModel, id => ({ scanModel: id }), 'Scanning now runs on'));
+    const writeRows = WRITE.map(m => mrow(m, s.writeModel, id => ({ writeModel: id }), 'Drafts now written by'));
+    const glyphSt = (a) => 'width:15px;height:15px;flex:none;display:flex;align-items:center;justify-content:center;box-sizing:border-box;font:600 8px \u0027IBM Plex Mono\u0027,monospace;' + (a.glyph === 'H' || a.glyph === 'M' ? 'border:1px solid #17150F;color:#17150F' : (a.glyph === 'N' || a.glyph === '@' ? 'background:var(--ac,#C2452C);color:#F4F1EA' : 'background:#17150F;color:#F4F1EA'));
+    const accRows = s.accounts.map(a => ({
+      glyph: a.glyph, glyphStyle: glyphSt(a),
+      addr: a.status === 'auth' ? 'waiting for browser sign-in…' : a.addr,
+      sub: a.provider + (a.threads ? ' · ' + a.threads : ''),
+      status: a.status === 'ok' ? '✓ synced' : (a.status === 'auth' ? 'sign-in…' : 'indexing…'),
+      statusStyle: 'flex:none;font:500 9px \u0027IBM Plex Mono\u0027,monospace;' + (a.status === 'ok' ? 'color:#17150F' : 'color:var(--ac,#C2452C)'),
+      remove: () => this.removeAcct(a.key)
+    }));
+    const setSecs = [
+      { id: 'accounts', name: 'Accounts', sub: s.accounts.length + ' connected · Google, Microsoft, IMAP' },
+      { id: 'style', name: 'Style', sub: s.voices.map(v => v.traits[0]).join(' · ') + ' — one per address' },
+      { id: 'intel', name: 'Intelligence', sub: s.orSaved ? this.shortModel(s.scanModel) + ' scans · ' + this.shortModel(s.writeModel) + ' writes' : 'bring your own OpenRouter key' }
+    ];
+    const setRows = setSecs.map(x => ({
+      name: x.name, sub: x.sub,
+      rowStyle: 'padding:11px 18px;border-bottom:1px solid #DAD4C6;cursor:pointer;border-left:3px solid ' + (s.setSel === x.id ? '#17150F' : 'transparent') + ';background:' + (s.setSel === x.id ? '#FDFCF8' : 'transparent'),
+      select: () => this.setState({ setSel: x.id })
+    }));
+    const acctOfSel = sel ? sel.acct : 'fernweh';
+    const filterChip = (key, active) => 'cursor:pointer;font:500 8px \u0027IBM Plex Mono\u0027,monospace;letter-spacing:.5px;padding:2px 7px;' + (active ? 'color:#F4F1EA;background:#17150F' : 'color:#6E6759;border:1px solid #DAD4C6');
+    const nav = (active) => 'cursor:pointer;letter-spacing:.5px;' + (active ? 'color:#17150F;border-bottom:2px solid var(--ac,#C2452C);padding-bottom:2px;font-weight:600' : 'color:#6E6759');
+
+    const openTasks = s.tasks.filter(t => !t.done).length;
+
+    return {
+      accent, gHint: s.gPend ? 'g — i inbox · w waiting · t tasks · s style · e settings' : '',
+      isOnboarding: s.onboard, isApp: !s.onboard && s.booted,
+      obStep1: s.obStep === 1, obStep2: s.obStep === 2, obStep3: s.obStep === 3,
+      obProviders, obTrain,
+      obNext: () => this.obNext(), obSkip: () => this.obSkipFn(), obFinish: () => this.obFinish(),
+      obContinueStyle: 'cursor:pointer;font:500 11px \u0027IBM Plex Mono\u0027,monospace;letter-spacing:1px;padding:9px 18px;' + (anyConn ? 'color:#F4F1EA;background:#17150F' : 'color:#9a9184;border:1px solid #DAD4C6'),
+      obThreadNote: doneConn.length ? doneConn.length + ' of 3 connected — indexed locally' : 'nothing leaves your machine',
+      obCtaStyle: 'cursor:pointer;font:500 11px \u0027IBM Plex Mono\u0027,monospace;letter-spacing:1px;padding:9px 18px;' + (trainDone ? 'color:#F4F1EA;background:#17150F' : 'color:#9a9184;border:1px solid #DAD4C6'),
+
+      writingAs: this.ADDR[acctOfSel],
+      chipAllStyle: filterChip('all', s.filter === 'all'), chip1Style: filterChip('fernweh', s.filter === 'fernweh'),
+      chip2Style: filterChip('hotmail', s.filter === 'hotmail'), chip3Style: filterChip('nachtvogel', s.filter === 'nachtvogel'),
+      filterAll: () => this.setState({ filter: 'all' }), filter1: () => this.setState({ filter: 'fernweh' }),
+      filter2: () => this.setState({ filter: 'hotmail' }), filter3: () => this.setState({ filter: 'nachtvogel' }),
+      inboxCount: visible.length, waitingCount: s.waiting.length, tasksCount: openTasks,
+      navInboxStyle: nav(s.view === 'inbox'), navWaitingStyle: nav(s.view === 'waiting'), navTasksStyle: nav(s.view === 'tasks'), navVoiceStyle: nav(s.view === 'voice'),
+      goInbox: () => this.setState({ view: 'inbox' }), goWaiting: () => this.setState({ view: 'waiting' }),
+      goTasks: () => this.setState({ view: 'tasks' }), goVoice: () => this.setState({ view: 'voice' }),
+      openPalette: () => this.setState({ pal: { open: true, q: '', idx: 0 } }),
+
+      viewInbox: s.view === 'inbox', viewWaiting: s.view === 'waiting', viewTasks: s.view === 'tasks', viewVoice: s.view === 'voice',
+      rows, inboxEmpty: s.booted && visible.length === 0,
+      wrows, waitingEmpty: s.waiting.length === 0, trows, vcards,
+
+      sheetEmail: s.view === 'inbox' && !!sel, sheetWaiting: s.view === 'waiting' && !!selW,
+      sheetTask: s.view === 'tasks' && !!selT, sheetVoice: s.view === 'voice',
+      selSubject: sel ? sel.subject : '', 
+      selMeta: sel ? (sel.from + ' \u2039' + sel.addr + '\u203A → ' + this.ADDR[sel.acct] + ' · ' + sel.time).toUpperCase() : '',
+      bodyParas: sel ? sel.body.map(p => ({ pre: p.pre, mark: p.mark, post: p.post, markStyle: p.mark ? 'border-bottom:2px solid var(--ac,#C2452C)' : '' })) : [],
+      taskShow: !!(sel && sel.task && sel.taskState === 'suggested'), taskDone: !!(sel && sel.task && sel.taskState === 'accepted'),
+      taskLabel: sel && sel.task ? sel.task.label : '', taskDue: sel && sel.task ? sel.task.due : '',
+      taskAccept: () => this.acceptTask(), taskDismiss: () => this.dismissTask(),
+
+      compIdle: comp.mode === 'idle' || (comp.forId && sel && comp.forId !== sel.id),
+      compListening: comp.mode === 'listening' && !!sel && comp.forId === sel.id,
+      compDrafting: comp.mode === 'drafting' && !!sel && comp.forId === sel.id,
+      compReady: comp.mode === 'ready' && !!sel && comp.forId === sel.id,
+      hasDict: !comp.manual, notEditing: !comp.editing, isEditing: comp.editing,
+      dictClock: mm + ':' + ss, dictShown: comp.shown, dictFull: compFor ? compFor.dict : '', bars, draftDots: s.draftDots,
+      voiceTag: this.VOICETAG[acctOfSel],
+      draftLabel: comp.manual ? 'YOUR REPLY — the owl stays out of it' : (comp.usedAlt ? 'REDRAFTED — ANOTHER TAKE' : 'DRAFTED FROM YOUR DICTATION'),
+      draftParas, draftText: comp.text,
+      editChange: (ev) => this.setState(st => ({ comp: Object.assign({}, st.comp, { text: ev.target.value }) })),
+      editRef: (el) => { if (el && this.state.comp.editing) el.focus(); },
+      editBtnLabel: comp.editing ? 'E DONE EDITING' : 'E EDIT',
+      sendDraft: () => this.sendDraft(),
+      toggleEdit: () => this.setState(st => ({ comp: Object.assign({}, st.comp, { editing: !st.comp.editing }) })),
+      redraft: () => this.redraft(), startDictation: () => this.startDictation(), discardDraft: () => this.resetComp(),
+
+      wSubject: selW ? selW.subject : '', 
+      wMeta: selW ? ('YOU → ' + selW.from + ' \u2039' + selW.addr + '\u203A · SENT ' + (selW.days === 0 ? 'TODAY' : selW.days + ' DAYS AGO')).toUpperCase() : '',
+      wSentLine: selW ? selW.sentLine : '',
+      wSilenceLine: selW ? (selW.days === 0 ? 'Sent today — the owl starts counting tonight.' : selW.days + ' days without an answer. The owl suggests a gentle nudge.') : '',
+      wNotNudged: !!(selW && !selW.nudged && selW.days > 0), wIsNudged: !!(selW && (selW.nudged || selW.days === 0)),
+      wNudgeParas: selW ? selW.nudge.split('\n').map(l => ({ line: l })) : [],
+      wSendNudge: () => this.sendNudge(), wDrop: () => this.dropWaiting(),
+
+      tSheetLabel: selT ? selT.label : '', tSheetDue: selT ? selT.due : '',
+      tSheetLabelStyle: 'font:500 21px \u0027Newsreader\u0027,serif;margin-top:6px;' + (selT && selT.done ? 'text-decoration:line-through;color:#9a9184' : ''),
+      tSheetFrom: selT ? selT.src.split(' — ')[0] : '', tSheetTime: '', tSheetGist: selT ? selT.src.split(' — ')[1] || '' : '',
+      tSheetHasSrc: !!(selT && selT.srcId), tSheetToggleLabel: selT && selT.done ? 'REOPEN' : 'DONE',
+      tSheetToggle: () => { if (selT) this.toggleTask(selT.id); }, tSheetOpen: () => { if (selT) this.openTaskSource(selT); },
+
+      railShow, owlStatus: comp.mode === 'listening' ? 'listening…' : comp.mode === 'drafting' ? 'drafting…' : 'working quietly',
+      railDraftHas: comp.mode === 'ready' && !!compFor, railDraftNone: comp.mode !== 'ready',
+      railDraftTitle: compFor ? 'Reply to ' + compFor.from : '',
+      railDraftExcerpt: comp.text ? comp.text.split('\n').filter(l => l.trim())[1] || comp.text.split('\n')[0] : '',
+      railDraftReview: () => { if (compFor) { this.setState({ view: 'inbox', selId: compFor.id }); } },
+      railTasks, railNudges, railVoiceNote: this.RAILVOICE[acctOfSel],
+
+      viewSettings: s.view === 'settings', goSettings: () => this.setState({ view: 'settings' }),
+      navSettingsStyle: nav(s.view === 'settings'), setRows,
+      sheetSetAccounts: s.view === 'settings' && s.setSel === 'accounts',
+      sheetSetIntel: s.view === 'settings' && s.setSel === 'intel',
+      sheetSetStyle: s.view === 'settings' && s.setSel === 'style',
+      accRows, scanRows, writeRows,
+      addGoogle: () => this.addOauth('Google'), addMicrosoft: () => this.addOauth('Microsoft'),
+      toggleImap: () => this.setState(st => ({ imapOpen: !st.imapOpen })),
+      imapOpen: s.imapOpen, imapAddr: s.imapAddr, imapHost: s.imapHost, imapPass: s.imapPass,
+      imapAddrChange: (ev) => this.setState({ imapAddr: ev.target.value }),
+      imapHostChange: (ev) => this.setState({ imapHost: ev.target.value }),
+      imapPassChange: (ev) => this.setState({ imapPass: ev.target.value }),
+      imapConnect: () => this.imapConnectFn(),
+      orKey: s.orKey,
+      orChange: (ev) => this.setState({ orKey: ev.target.value, orSaved: false }),
+      orKeyDown: (ev) => { if (ev.key === 'Enter') this.saveKeyFn(); },
+      orSave: () => this.saveKeyFn(),
+      orStatus: s.orSaved ? '✓ saved · sk-or-•••• — in the macOS keychain, never leaves this machine' : 'no key yet — scanning & drafting are paused until you add one',
+      palShow: s.pal.open, palQuery: s.pal.q, palEmpty: filtered.length === 0,
+      palChange: (ev) => this.setState({ pal: Object.assign({}, this.state.pal, { q: ev.target.value, idx: 0 }) }),
+      palKeys: (ev) => {
+        if (ev.key === 'ArrowDown') { ev.preventDefault(); this.setState(st => ({ pal: Object.assign({}, st.pal, { idx: Math.min(filtered.length - 1, st.pal.idx + 1) }) })); }
+        else if (ev.key === 'ArrowUp') { ev.preventDefault(); this.setState(st => ({ pal: Object.assign({}, st.pal, { idx: Math.max(0, st.pal.idx - 1) }) })); }
+        else if (ev.key === 'Enter') { const c = filtered[Math.min(this.state.pal.idx, filtered.length - 1)]; if (c) this.runPal(c); }
+        else if (ev.key === 'Escape') { this.setState({ pal: { open: false, q: '', idx: 0 } }); }
+      },
+      palRef: (el) => { if (el && this.state.pal.open) el.focus(); },
+      palResults,
+      closePalette: () => this.setState({ pal: { open: false, q: '', idx: 0 } }),
+      eatClick: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); },
+
+      helpShow: s.help, closeHelp: () => this.setState({ help: false }),
+      toastShow: !!s.toast, toastMsg: s.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

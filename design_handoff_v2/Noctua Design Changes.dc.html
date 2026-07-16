@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Noctua — Design Changes</title>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #E9E4D8; }
+    body { -webkit-font-smoothing: antialiased; }
+    a { color: #C2452C; text-decoration: none; }
+    a:hover { color: #17150F; }
+    ::selection { background: #F0E7D8; }
+    @keyframes owlPupil { 0%, 94.4% { opacity: 1 } 95.4%, 98.6% { opacity: 0 } 99.6%, 100% { opacity: 1 } }
+    @keyframes owlLid { 0%, 94.4% { opacity: 0 } 95.4%, 98.6% { opacity: 1 } 99.6%, 100% { opacity: 0 } }
+    @keyframes owlScan { 0%, 24% { transform: translateX(-1px) } 44%, 74% { transform: translateX(1.1px) } 94%, 100% { transform: translateX(-1px) } }
+    @media (prefers-reduced-motion: reduce) { .owl-live circle, .owl-live path, .owl-live g { animation: none !important } }
+  </style>
+</helmet>
+
+<section style="padding: 48px 56px 24px; font-family: 'Newsreader', Georgia, serif; color: #17150F;">
+
+  <!-- Turn 4 header -->
+  <div style="display: flex; align-items: baseline; gap: 14px; max-width: 1240px;">
+    <span style="font: italic 500 22px 'Newsreader', serif;">Turn 4 — the owl, appearing</span>
+    <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .5px;">ONE MARK, FIVE POSES · WHERE SHE LIVES · MOTION DISCIPLINE — quiet, recurring, never in the reading column</span>
+  </div>
+
+  <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; margin-top: 30px; max-width: 1560px;">
+
+    <!-- ═══ 4a · The mark family ═══ -->
+    <div id="4a" style="width: 520px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#4a" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">4A</a>
+        <span style="font: 500 16px 'Newsreader', serif;">The mark — one owl, five poses</span>
+      </div>
+
+      <div data-screen-label="Owl mark family" style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); padding: 22px 24px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; text-align: center;">
+          <div style="display: grid; gap: 10px; justify-items: center;">
+            <svg width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.35" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.35" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #6E6759;">AWAKE<br><span style="color: #9A9184;">default</span></span>
+          </div>
+          <div style="display: grid; gap: 10px; justify-items: center;">
+            <svg width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><path d="M5.75 8.6h2.7M11.55 8.6h2.7" stroke="#17150F" stroke-width="1.35" stroke-linecap="round"></path><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #6E6759;">BLINK<br><span style="color: #9A9184;">120ms</span></span>
+          </div>
+          <div style="display: grid; gap: 10px; justify-items: center;">
+            <svg width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><path d="M5.75 8.3q1.35 1.6 2.7 0M11.55 8.3q1.35 1.6 2.7 0" stroke="#17150F" stroke-width="1.35" stroke-linecap="round" fill="none"></path><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #6E6759;">ASLEEP<br><span style="color: #9A9184;">no key · zero</span></span>
+          </div>
+          <div style="display: grid; gap: 10px; justify-items: center;">
+            <svg class="owl-live" width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><g style="animation: owlScan 3.6s ease-in-out infinite;"><circle cx="7.1" cy="8.6" r="1.2" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.2" fill="#17150F"></circle></g><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #6E6759;">SCANNING<br><span style="color: #9A9184;">searching · drafting</span></span>
+          </div>
+          <div style="display: grid; gap: 10px; justify-items: center;">
+            <svg width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.8" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.8" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #6E6759;">LISTENING<br><span style="color: #9A9184;">dictation</span></span>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid #DAD4C6; margin-top: 18px; padding-top: 14px; display: flex; align-items: center; gap: 18px;">
+          <span style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; color: #9A9184;">SCALES</span>
+          <svg width="26" height="24" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.5" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.5" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.35"></path></svg>
+          <svg width="17" height="15" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.7" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.7" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.5"></path></svg>
+          <span style="display: inline-flex; align-items: baseline; gap: 7px; font: italic 400 12px 'Newsreader', serif; color: #57503F;"><svg width="15" height="13" viewBox="0 0 20 18" fill="none" style="align-self: center;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><path d="M5.6 8.3q1.5 1.7 3 0M11.4 8.3q1.5 1.7 3 0" stroke="#17150F" stroke-width="1.5" stroke-linecap="round" fill="none"></path></svg>inline beside text, 13–15px</span>
+          <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 10px; background: #17150F; padding: 7px 12px;"><span style="display: inline-flex; gap: 3px;"><span style="width: 3px; height: 3px; border-radius: 50%; background: #C2452C;"></span><span style="width: 3px; height: 3px; border-radius: 50%; background: #C2452C;"></span></span><span style="font: 400 10px 'IBM Plex Mono', monospace; color: #F4F1EA;">eyes in the dark — toast form</span></span>
+        </div>
+      </div>
+      <div style="font: 400 12px/1.55 'Newsreader', serif; color: #57503F; margin-top: 10px;">
+        It's the retired search-trigger owl, promoted to system mark: same path, ink-only, strokes thicken as it shrinks (1.35 → 1.7). Poses change <em>only the eyes</em> — outline and beak never move. On ink surfaces the owl reduces to two accent dots: eyes in the dark. Ships as one component: <span style="font: 500 10px 'IBM Plex Mono', monospace;">&lt;OwlGlyph pose size /&gt;</span> with <span style="font: 500 10px 'IBM Plex Mono', monospace;">awake · blink · asleep · scan · listen</span>.
+      </div>
+
+      <!-- 4c rules under 4a -->
+      <div id="4c" style="margin-top: 26px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <a href="#4c" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">4C</a>
+          <span style="font: 500 16px 'Newsreader', serif;">Discipline — why she stays charming</span>
+        </div>
+        <div style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+          <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+            <li><strong>One living owl per screen.</strong> The rail owl is the only one that moves; every owl on a sheet is a static stamp.</li>
+            <li><strong>Blink is rare:</strong> 120ms every 8–14s (randomized per mount via <span style="font: 500 10px 'IBM Plex Mono', monospace;">animation-delay</span>), never while listening, never two owls in sync.</li>
+            <li><strong>Motion budget ≤ 1.1px</strong> (scan) — no bouncing, no rotation, no scale. <span style="font: 500 10px 'IBM Plex Mono', monospace;">prefers-reduced-motion</span>: all poses freeze to their static frame.</li>
+            <li><strong>Never near reading or writing:</strong> no owl in mail bodies, list rows, the composer, or print/PDF output. Never in the masthead — the Noctua wordmark is the brand there.</li>
+            <li><strong>Ink only.</strong> Accent is reserved for the two-dot toast form on ink ground.</li>
+            <li><strong>Poses mean something.</strong> Asleep = can't work (no key) or nothing to do (zero states). Scan = working. Listen = mic open. Never decorative mood-switching.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 4b · Where she lives ═══ -->
+    <div id="4b" style="width: 660px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#4b" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">4B</a>
+        <span style="font: 500 16px 'Newsreader', serif;">Where she lives — seven placements</span>
+      </div>
+
+      <!-- Rail header states -->
+      <div data-screen-label="Rail owl states" style="background: #EFEBE2; border: 1px solid #17150F; padding: 13px 15px;">
+        <div style="display: grid; gap: 11px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <svg class="owl-live" width="17" height="15" viewBox="0 0 20 18" fill="none" style="align-self: center;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><g style="animation: owlPupil 11s infinite;"><circle cx="7.1" cy="8.6" r="1.7" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.7" fill="#17150F"></circle></g><path d="M5.5 8.6h3.2M11.3 8.6h3.2" stroke="#17150F" stroke-width="1.5" stroke-linecap="round" style="animation: owlLid 11s infinite; opacity: 0;"></path><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.5"></path></svg>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">quiet.</span>
+            <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">← blinks every 8–14s (live)</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 8px; border-top: 1px solid #DAD4C6; padding-top: 10px;">
+            <svg width="17" height="15" viewBox="0 0 20 18" fill="none" style="align-self: center;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="2.1" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="2.1" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.5"></path></svg>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">listening···</span>
+            <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">eyes wide, no motion</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 8px; border-top: 1px solid #DAD4C6; padding-top: 10px;">
+            <svg class="owl-live" width="17" height="15" viewBox="0 0 20 18" fill="none" style="align-self: center;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><g style="animation: owlScan 3.6s ease-in-out infinite;"><circle cx="7.1" cy="8.6" r="1.5" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.5" fill="#17150F"></circle></g><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.5"></path></svg>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">drafting···</span>
+            <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">scan while transcribing/drafting (live)</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 8px; border-top: 1px solid #DAD4C6; padding-top: 10px;">
+            <svg width="17" height="15" viewBox="0 0 20 18" fill="none" style="align-self: center;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><path d="M5.6 8.3q1.5 1.7 3 0M11.4 8.3q1.5 1.7 3 0" stroke="#17150F" stroke-width="1.5" stroke-linecap="round" fill="none"></path><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.5"></path></svg>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">asleep — no key.</span>
+            <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">pose follows comp.mode / key status</span>
+          </div>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">1 · OWL RAIL HEADER — THE ONLY LIVING OWL; 16PX BEFORE “THE OWL”, POSE = STATUS</div>
+
+      <!-- Empty states -->
+      <div style="display: flex; gap: 14px; margin-top: 16px;">
+        <div data-screen-label="Inbox zero owl" style="flex: 1; background: #F4F1EA; border: 1px solid #17150F; padding: 30px 20px; text-align: center;">
+          <svg width="30" height="27" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.5" stroke-linejoin="round"></path><path d="M5.7 8.3q1.4 1.65 2.8 0M11.5 8.3q1.4 1.65 2.8 0" stroke="#17150F" stroke-width="1.4" stroke-linecap="round" fill="none"></path><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.35"></path></svg>
+          <div style="font: italic 400 15px 'Newsreader', serif; color: #57503F; margin-top: 10px;">Nobody owes you a reply.</div>
+          <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #9A9184; margin-top: 6px;">RARE. ENJOY IT.</div>
+        </div>
+        <div data-screen-label="Owl view empty" style="flex: 1; background: #FDFCF8; border: 1px solid #17150F; padding: 30px 20px; text-align: center;">
+          <svg width="44" height="40" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.35" fill="#C2452C"></circle><circle cx="12.9" cy="8.6" r="1.35" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+          <div style="font: italic 400 15px 'Newsreader', serif; color: #57503F; margin-top: 10px;">Ask your mailbox.</div>
+          <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #9A9184; margin-top: 6px;">2,318 THREADS — WITH SOURCES</div>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">2 · SHEETEMPTY GETS AN ASLEEP STAMP (30PX) — “NOTHING NEEDS YOU” · 3 · OWL-VIEW EMPTY: THE .OWL-MARK DOTS BECOME THE FULL MARK, KEEPING ITS ACCENT+INK EYE PAIR</div>
+
+      <!-- Inline moments -->
+      <div data-screen-label="Inline owl moments" style="background: #FDFCF8; border: 1px solid #DAD4C6; margin-top: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-bottom: 1px solid #EAE5D9;">
+          <svg class="owl-live" width="15" height="13" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.7" stroke-linejoin="round"></path><g style="animation: owlScan 3.6s ease-in-out infinite;"><circle cx="7.1" cy="8.6" r="1.5" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.5" fill="#17150F"></circle></g></svg>
+          <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">THE OWL</span>
+          <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">answering···</span>
+          <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">4 · ANSWER LABEL WHILE STREAMING — SCAN, 13PX</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-bottom: 1px solid #EAE5D9;">
+          <span style="font: 500 14px 'Newsreader', serif; color: #9A9184;">Ask the owl: <em>“hetzner rechnung”</em></span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto;"><svg width="15" height="13" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#6E6759" stroke-width="1.7" stroke-linejoin="round"></path><path d="M5.6 8.3q1.5 1.7 3 0M11.4 8.3q1.5 1.7 3 0" stroke="#6E6759" stroke-width="1.5" stroke-linecap="round" fill="none"></path></svg><span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">the owl sleeps — add a key in Intelligence</span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 11px 16px;">
+          <span style="display: inline-flex; align-items: center; gap: 10px; background: #17150F; padding: 8px 14px;"><span style="display: inline-flex; gap: 3px;"><span style="width: 3px; height: 3px; border-radius: 50%; background: #C2452C;"></span><span style="width: 3px; height: 3px; border-radius: 50%; background: #C2452C;"></span></span><span style="font: 400 11px 'IBM Plex Mono', monospace; color: #F4F1EA;">The owl's gist: she can do Thursday, asks for 15:00.</span></span>
+          <span style="margin-left: auto; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">6 · OWL-ORIGIN TOASTS: EYE-DOTS REPLACE THE SQUARE</span>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">5 · THE ASK ROW'S SLEEP NOTE GETS THE ASLEEP GLYPH (MUTED INK) — SAME GLYPH IN INTELSHEET'S NO-KEY NOTE</div>
+
+      <!-- Onboarding hero -->
+      <div data-screen-label="Onboarding hero owl" style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); padding: 36px 24px; margin-top: 16px; text-align: center;">
+        <svg width="64" height="58" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.2" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.35" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.35" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.1"></path></svg>
+        <div style="font: italic 500 26px 'Newsreader', serif; margin-top: 14px;">Noctua</div>
+        <div style="font: 400 9.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759; margin-top: 6px;">THE OWL WORKS WHILE YOU SLEEP</div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">7 · ONBOARDING WELCOME — HER ONE HERO MOMENT, 64PX ABOVE THE WORDMARK (STATIC)</div>
+    </div>
+
+  </div>
+</section>
+
+<section style="padding: 24px 56px 24px; font-family: 'Newsreader', Georgia, serif; color: #17150F; border-top: 1px dashed #DAD4C6; margin-top: 24px;">
+
+  <!-- Turn 3 header -->
+  <div style="display: flex; align-items: baseline; gap: 14px; max-width: 1240px;">
+    <span style="font: italic 500 22px 'Newsreader', serif;">Turn 3 — Part II fixes, visualized</span>
+    <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .5px;">COMPOSE IDENTITY · ACCOUNT SAFETY · RULES · CATEGORY OVERRIDE · SMALL STROKES — companions to the review's Part II</span>
+  </div>
+
+  <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; margin-top: 30px; max-width: 1420px;">
+
+    <!-- ═══ 3a · Compose identity & sending details ═══ -->
+    <div id="3a" style="width: 660px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#3a" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3A</a>
+        <span style="font: 500 16px 'Newsreader', serif;">Compose — visible identity, honest sending</span>
+      </div>
+
+      <div data-screen-label="Compose identity" style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); padding: 20px 24px;">
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <span style="font: 500 21px 'Newsreader', serif;">New message</span>
+          <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #9A9184;">FROM</span>
+          <span style="display: inline-grid; grid-template-columns: 18px auto 10px; align-items: center; gap: 7px; border: 1px solid #17150F; background: #F0E7D8; padding: 5px 8px; cursor: pointer;">
+            <span style="width: 12px; height: 12px; background: #c3b8e0; border: 1px solid rgba(23,21,15,.34);"></span>
+            <span style="font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .35px;">Fernweh · tim@fernweh.studio</span>
+            <svg viewBox="0 0 10 7" style="width: 10px; height: 7px; fill: none; stroke: #17150F; stroke-width: 1.2; transform: rotate(180deg);"><path d="M1 1.5 5 5.5 9 1.5"></path></svg>
+          </span>
+        </div>
+        <!-- open letterpress From menu -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+          <div style="width: 292px; border: 1px solid #17150F; background: #FDFCF8; box-shadow: 4px 4px 0 rgba(23,21,15,.14);">
+            <div style="display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 8px; padding: 8px 9px; border-bottom: 1px solid #EAE5D9; background: #F9F7F1;">
+              <span style="width: 12px; height: 12px; background: #c3b8e0; border: 1px solid rgba(23,21,15,.34);"></span>
+              <span style="display: grid; gap: 2px; min-width: 0;"><strong style="font: 500 10px 'IBM Plex Mono', monospace;">Fernweh</strong><small style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">tim@fernweh.studio</small></span>
+              <span style="color: #C2452C; font: 600 12px 'IBM Plex Mono', monospace;">✓</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 8px; padding: 8px 9px; border-bottom: 1px solid #EAE5D9;">
+              <span style="width: 12px; height: 12px; background: #f0d9a8; border: 1px solid rgba(23,21,15,.34);"></span>
+              <span style="display: grid; gap: 2px; min-width: 0;"><strong style="font: 500 10px 'IBM Plex Mono', monospace;">Hotmail</strong><small style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">lena.hartmann@hotmail.de</small></span>
+              <span style="font: 500 8px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; background: #F4F1EA; color: #6E6759; padding: 1px 3px;">2</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 8px; padding: 8px 9px;">
+              <span style="width: 12px; height: 12px; background: #b9d6c3; border: 1px solid rgba(23,21,15,.34);"></span>
+              <span style="display: grid; gap: 2px; min-width: 0;"><strong style="font: 500 10px 'IBM Plex Mono', monospace;">Nachtvogel</strong><small style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">hi@nachtvogel.app</small></span>
+              <span style="font: 500 8px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; background: #F4F1EA; color: #6E6759; padding: 1px 3px;">3</span>
+            </div>
+          </div>
+        </div>
+        <div style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #C2452C; margin-top: 10px;">↳ switched to fernweh — last used for jonas@fernweh.studio</div>
+
+        <div style="border-top: 1px solid #DAD4C6; margin-top: 14px; padding-top: 10px; display: flex; align-items: baseline; gap: 10px;">
+          <span style="width: 52px; flex: none; font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759;">TO</span>
+          <span style="display: inline-flex; align-items: center; gap: 5px; border: 1px solid #DAD4C6; background: #F9F7F1; padding: 2px 7px; font: 400 10.5px 'IBM Plex Mono', monospace;">lena@studiomora.de <span style="color: #9A9184;">×</span></span>
+          <span title="doubtful address" style="display: inline-flex; align-items: center; gap: 5px; border: 1px solid #C2452C; background: #F9F7F1; padding: 2px 7px; font: 400 10.5px 'IBM Plex Mono', monospace; color: #C2452C;">jonas@web <span>×</span></span>
+        </div>
+
+        <div style="border-top: 1px solid #DAD4C6; margin-top: 12px; padding-top: 12px; display: flex; align-items: center; gap: 10px;">
+          <span style="display: inline-flex; align-items: center; gap: 8px; font: 500 10px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 8px 14px;">SEND MESSAGE <span style="border: 1px solid #B5AFA3; padding: 0 4px; font-size: 8.5px;">⌘↵</span></span>
+          <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; border: 1px solid #DAD4C6; padding: 2px 6px; color: #6E6759;">NO SUBJECT</span>
+        </div>
+      </div>
+
+      <div style="font: 400 12px/1.55 'Newsreader', serif; color: #57503F; margin-top: 10px;">
+        The From picker reuses the list pane's account menu (swatch · name · email · hotkey). The accent switch-note appears for ~4s when the autopilot flips the account — a manual pick wins and silences it. Doubtful addresses (@ but no domain dot) keep their chip, in accent with a title. <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; border: 1px solid #DAD4C6; padding: 1px 5px;">NO SUBJECT</span> shows only while the subject is empty. Esc files the draft and returns to the inbox.
+      </div>
+    </div>
+
+    <!-- ═══ 3b · Account safety states ═══ -->
+    <div id="3b" style="width: 640px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#3b" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3B</a>
+        <span style="font: 500 16px 'Newsreader', serif;">Accounts — the three states that were missing</span>
+      </div>
+
+      <div data-screen-label="Disconnect confirm" style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 11px 13px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font: 600 8px 'IBM Plex Mono', monospace; background: #c3b8e0; border: 1px solid rgba(23,21,15,.4);">G</span>
+          <span style="min-width: 0; flex: 1;">
+            <span style="display: block; font: 500 13px 'Newsreader', serif;">Fernweh</span>
+            <span style="display: block; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759; margin-top: 2px;">tim@fernweh.studio</span>
+          </span>
+          <span style="font: italic 400 12px 'Newsreader', serif; color: #57503F;">removes the account + its local index</span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .5px; border: 1px solid #C2452C; color: #C2452C; padding: 5px 10px; cursor: pointer;">YES, DISCONNECT</span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .5px; color: #F4F1EA; background: #17150F; padding: 6px 12px; cursor: pointer;">KEEP</span>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">SECOND-CLICK STATE OF “DISCONNECT” · REVERTS ON ESC, BLUR, OR AFTER 5S</div>
+
+      <div data-screen-label="OAuth waiting" style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 11px 13px; margin-top: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font: 600 8px 'IBM Plex Mono', monospace; border: 1px solid #17150F; background: #FDFCF8;">G</span>
+          <span style="min-width: 0; flex: 1;">
+            <span style="display: block; font: 500 13px 'Newsreader', serif;">Google Mail</span>
+            <span style="display: block; font: 400 9.5px 'IBM Plex Mono', monospace; color: #C2452C; margin-top: 3px;">waiting for the browser sign-in··· <span style="color: #6E6759;">— check your browser window</span></span>
+          </span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px solid #DAD4C6; padding: 4px 10px; cursor: pointer;">CANCEL</span>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">REPLACES THE BARE “···” · CANCEL ABORTS THE OAUTH ROUNDTRIP</div>
+
+      <div data-screen-label="Sync error" style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 11px 13px; margin-top: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font: 600 8px 'IBM Plex Mono', monospace; background: #f0d9a8; border: 1px solid rgba(23,21,15,.4);">@</span>
+          <span style="min-width: 0; flex: 1;">
+            <span style="display: block; font: 500 13px 'Newsreader', serif;">Hotmail</span>
+            <span style="display: block; font: italic 400 12px 'Newsreader', serif; color: #57503F; margin-top: 3px;">IMAP: connection refused (993) — since 11:42</span>
+          </span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">sync failed</span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .5px; border: 1px solid #17150F; color: #17150F; padding: 4px 10px; cursor: pointer;">RETRY</span>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">THE STORED ERROR TEXT, INLINE — ONE ACCENT WORD IS NOT A DIAGNOSIS</div>
+
+      <!-- Remote images default -->
+      <div data-screen-label="Remote images default" style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 11px 13px; margin-top: 14px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759;">PRIVACY</div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+          <span style="width: 26px; height: 14px; border: 1.5px solid #17150F; display: inline-flex; align-items: center; padding: 1px; box-sizing: border-box;"><span style="width: 8px; height: 8px; background: #17150F;"></span></span>
+          <span style="font: 400 10px 'IBM Plex Mono', monospace;">block remote images until I allow them</span>
+          <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #9A9184;">per-sender allow remembers your choice</span>
+        </div>
+      </div>
+      <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">DEFAULT FLIPPED TO MATCH THE README'S PROMISE · CAPTIONED AS A PRIVACY SETTING, PHRASED AS PROTECTION-ON</div>
+    </div>
+
+    <!-- ═══ 3c · Rules, letterpress ═══ -->
+    <div id="3c" style="width: 620px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#3c" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3C</a>
+        <span style="font: 500 16px 'Newsreader', serif;">Rules — the last old-theme island, repatriated</span>
+      </div>
+      <div data-screen-label="Rules letterpress" style="background: #F9F7F1; border: 1px solid #17150F; padding: 14px;">
+        <div style="display: flex; align-items: baseline; gap: 8px;">
+          <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">RULES</span>
+          <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #9A9184;">describe it — the owl builds it deterministically</span>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <span style="flex: 1; border: 1px solid #DAD4C6; background: #FDFCF8; padding: 7px 10px; font: italic 400 11.5px 'Newsreader', serif; color: #9A9184;">e.g. “always archive Hetzner invoices and make a task”</span>
+          <span style="flex: none; font: 500 10px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 8px 14px; cursor: pointer;">DRAFT — ↵</span>
+        </div>
+
+        <div style="background: #FDFCF8; border: 1px solid #DAD4C6; padding: 12px 14px; margin-top: 12px;">
+          <div style="font: 600 13.5px 'Newsreader', serif;">Hetzner invoices → archive + task</div>
+          <div style="font: italic 400 12.5px/1.5 'Newsreader', serif; color: #57503F; margin-top: 4px;">When a mail from billing@hetzner.com contains “Rechnung”, archive it and create a task due in 7 days.</div>
+          <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #6E6759; margin-top: 9px; cursor: pointer;">SHOW RULE JSON ▸</div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <span style="font: 500 9.5px 'IBM Plex Mono', monospace; letter-spacing: .5px; color: #F4F1EA; background: #17150F; padding: 5px 12px; cursor: pointer;">ACTIVATE RULE</span>
+            <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px solid #DAD4C6; padding: 5px 10px; cursor: pointer;">DISCARD</span>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid #DAD4C6; margin-top: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px solid #EAE5D9;">
+            <span style="width: 26px; height: 14px; border: 1.5px solid #17150F; background: #17150F; display: inline-flex; align-items: center; padding: 1px; box-sizing: border-box; cursor: pointer;"><span style="width: 8px; height: 8px; background: #F4F1EA; margin-left: 12px;"></span></span>
+            <span style="font: 400 13px 'Newsreader', serif; flex: 1;">Newsletters older than a week → archive</span>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 6px;">12×</span>
+            <span style="font: 500 10px 'IBM Plex Mono', monospace; color: #9A9184; padding: 4px 6px; cursor: pointer;">×</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 9px 2px;">
+            <span style="width: 26px; height: 14px; border: 1.5px solid #17150F; display: inline-flex; align-items: center; padding: 1px; box-sizing: border-box; cursor: pointer;"><span style="width: 8px; height: 8px; background: #17150F;"></span></span>
+            <span style="font: 400 13px 'Newsreader', serif; color: #57503F; flex: 1;">Mails from the Hausverwaltung → task, due end of month</span>
+            <span style="font: 500 10px 'IBM Plex Mono', monospace; color: #9A9184; padding: 4px 6px; cursor: pointer;">×</span>
+          </div>
+        </div>
+      </div>
+      <div style="font: 400 12px/1.55 'Newsreader', serif; color: #57503F; margin-top: 10px;">
+        Human description leads; the JSON hides behind a disclosure. Rule rows use the toggle-track + list-row vocabulary; hit-count as an outline chip. All strings through strings.ts (EN shown; DE keeps today's copy).
+      </div>
+
+      <!-- 3f small strokes under 3c to balance columns -->
+      <div id="3f" style="margin-top: 26px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <a href="#3f" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3F</a>
+          <span style="font: 500 16px 'Newsreader', serif;">Small strokes</span>
+        </div>
+        <div data-screen-label="Sig background swatches" style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 12px 14px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759; margin-right: 4px;">IMAGE BACKGROUND</span>
+            <span title="transparent" style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #DAD4C6; background: linear-gradient(135deg, #FDFCF8 45%, #DAD4C6 45%, #DAD4C6 55%, #FDFCF8 55%); cursor: pointer;"></span>
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border: 2px solid #17150F; background: #F4F1EA; cursor: pointer;"></span>
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #DAD4C6; background: #c3b8e0; cursor: pointer;"></span>
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #DAD4C6; background: #f0d9a8; cursor: pointer;"></span>
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #DAD4C6; background: #b9d6c3; cursor: pointer;"></span>
+            <span style="width: 16px; height: 16px; box-sizing: border-box; border: 1px solid #DAD4C6; background: #17150F; cursor: pointer;"></span>
+          </div>
+        </div>
+        <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">CURATED SWATCHES (TRANSPARENT · PAPER · PASTELS · INK) REPLACE THE OS COLOR PICKER</div>
+
+        <div data-screen-label="Masthead new mail" style="background: #F4F1EA; border: 1px dashed #DAD4C6; padding: 10px 14px; margin-top: 14px; display: inline-flex; align-items: center; gap: 14px; font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">
+          <span>SEARCH <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">/</span></span>
+          <span style="color: #17150F;">NEW MAIL <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘N</span></span>
+          <span>INBOX 14 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘1</span></span>
+          <span style="color: #9A9184;">…</span>
+        </div>
+        <div style="font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184; margin-top: 6px;">COMPOSE GETS A POINTER ENTRY — A QUIET NAV ITEM, NOT A BUTTON BOX</div>
+      </div>
+    </div>
+
+    <!-- ═══ 3d · Category override ═══ -->
+    <div id="3d" style="width: 380px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <a href="#3d" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3D</a>
+        <span style="font: 500 16px 'Newsreader', serif;">Category override — bound &amp; letterpress</span>
+      </div>
+      <div data-screen-label="Override overlay" style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.18);">
+        <div style="padding: 10px 14px; border-bottom: 1px solid #17150F;">
+          <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">SET CATEGORY</span>
+          <span style="display: block; font: 500 13.5px 'Newsreader', serif; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Re: Nebenkostenabrechnung 2025</span>
+        </div>
+        <div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid #C2452C; background: #F4F1EA;"><span style="font: 400 13.5px 'Newsreader', serif; flex: 1;">Personal</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">1</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Work</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">2</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Newsletter</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">3</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Promotions</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">4</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Notifications</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">5</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Transactional</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">6</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 7px 11px; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; flex: 1;">Other</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">7</span></div>
+          <div style="display: flex; align-items: baseline; gap: 10px; padding: 7px 14px 8px 11px; border-top: 1px solid #EAE5D9; border-left: 3px solid transparent;"><span style="font: 400 13.5px 'Newsreader', serif; color: #9A9184; flex: 1;">Let the owl decide again</span><span style="font: 500 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">0</span></div>
+        </div>
+        <div style="display: flex; gap: 12px; padding: 8px 14px; border-top: 1px solid #DAD4C6; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">
+          <span>1–7 / 0 SET</span><span>↑↓ CHOOSE</span><span>ESC CLOSE</span>
+        </div>
+      </div>
+      <div style="font: 400 12px/1.55 'Newsreader', serif; color: #57503F; margin-top: 10px;">
+        Bound to <span style="font: 500 10.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; padding: 1px 5px;">l</span> on the selected thread and listed in the help overlay — the component exists and works; it just had no door. Rows use the palette vocabulary (accent bar, serif label, kbd chip); the correction still permanently outranks the model.
+      </div>
+
+      <!-- 3e voice card truth -->
+      <div id="3e" style="margin-top: 26px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <a href="#3e" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">3E</a>
+          <span style="font: 500 16px 'Newsreader', serif;">Voice card — freshness &amp; honest failure</span>
+        </div>
+        <div data-screen-label="Voice card states" style="background: #F9F7F1; border: 1px solid #17150F; padding: 13px 15px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <span style="font: 500 12px 'Newsreader', serif;">Fernweh</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">tim@fernweh.studio</span>
+            <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">132 replies · updated today</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px;">
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #57503F; border: 1px solid #DAD4C6; padding: 1px 6px;">warm</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #57503F; border: 1px solid #DAD4C6; padding: 1px 6px;">brief</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #57503F; border: 1px solid #DAD4C6; padding: 1px 6px;">em-dashes</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #57503F; border: 1px solid #DAD4C6; padding: 1px 6px;">EN/DE</span>
+          </div>
+          <div style="height: 4px; background: #EAE5D9; margin-top: 11px;"><span style="display: block; height: 4px; width: 38%; background: #C2452C;"></span></div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+            <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">FAILED — the model refused the request</span>
+            <span style="margin-left: auto; font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .5px; border: 1px solid #17150F; padding: 4px 10px; cursor: pointer;">RETRY</span>
+          </div>
+        </div>
+        <div style="font: 400 12px/1.55 'Newsreader', serif; color: #57503F; margin-top: 10px;">
+          “132 replies · updated today” restores the spec's trust signal (from the profile's timestamp). A failed retrain freezes the bar and says so inline — RETRY re-runs this account only; nothing pretends to be 100%. Instructions textarea flushes on unmount (no lost edits).
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section style="padding: 24px 56px 24px; font-family: 'Newsreader', Georgia, serif; color: #17150F; border-top: 1px dashed #DAD4C6; margin-top: 24px;">
+
+  <!-- Turn 2 header -->
+  <div style="display: flex; align-items: baseline; gap: 14px; max-width: 1240px;">
+    <span style="font: italic 500 22px 'Newsreader', serif;">Turn 2 — search folds into the owl</span>
+    <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .5px;">SEMANTIC MAIL SEARCH LEAVES ⌘K · THE OWL VIEW BECOMES SEARCH-FIRST · MASTHEAD TRIGGER RETIRED</span>
+  </div>
+
+  <!-- ═══════════════════════ 2a · Owl view = search + ask ═══════════════════════ -->
+  <div id="2a" style="margin-top: 30px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <a href="#2a" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">2A</a>
+      <span style="font: 500 16px 'Newsreader', serif;">The owl, search-first — hits while you type, an answer when you ask</span>
+      <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">input moves to the sheet top (supersedes <a href="#1a" style="border-bottom: 1px solid #DAD4C6;">1a</a>'s bottom input) · live hits are free &amp; local · ↵ spends tokens only on request</span>
+    </div>
+
+    <div style="width: 1180px; height: 762px; background: #F4F1EA; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.12); display: flex; flex-direction: column; overflow: hidden;">
+
+      <!-- Masthead with retired search box: quiet SEARCH / item instead -->
+      <div data-screen-label="Owl search masthead" style="display: flex; flex: none; align-items: center; gap: 16px; border-bottom: 1px solid #17150F; padding: 16px 26px 12px 96px; position: relative;">
+        <span style="position: absolute; left: 22px; top: 22px; display: flex; gap: 8px;">
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></span>
+        </span>
+        <span style="font: italic 500 24px 'Newsreader', serif; letter-spacing: .5px;">Noctua</span>
+        <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: 1px;">TUE, 15 JULY 2026</span>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 14px; font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">
+          <span>SEARCH <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">/</span></span>
+          <span>INBOX 14 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘1</span></span>
+          <span>WAITING 3 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘2</span></span>
+          <span>TASKS 5 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘3</span></span>
+          <span style="color: #17150F; font-weight: 600; border-bottom: 2px solid #C2452C; padding-bottom: 2px;">OWL <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184; font-weight: 400;">⌘5</span></span>
+          <span>SETTINGS <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘,</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 8px; margin-left: 2px;">
+            <svg width="17" height="14" viewBox="0 0 17 14"><rect x="1" y="1" width="15" height="12" fill="none" stroke="#17150F" stroke-width="1.4"></rect><rect x="2.5" y="2.5" width="4" height="9" fill="#17150F"></rect></svg>
+            <svg width="17" height="14" viewBox="0 0 17 14"><rect x="1" y="1" width="15" height="12" fill="none" stroke="#17150F" stroke-width="1.4"></rect><rect x="10.5" y="2.5" width="4" height="9" fill="#17150F"></rect></svg>
+          </span>
+        </span>
+      </div>
+
+      <div style="display: flex; flex: 1; min-height: 0;">
+
+        <!-- Left pane: conversations (no selection while searching) -->
+        <div data-screen-label="Owl conversations pane" style="width: 400px; flex: none; display: flex; flex-direction: column; border-right: 1px solid #17150F;">
+          <div style="display: flex; flex: none; align-items: center; border-bottom: 1px solid #DAD4C6; padding: 9px 18px 7px;">
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759; flex: 1;">CONVERSATIONS</span>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #9A9184;">↳ = THE OWL'S ANSWER</span>
+          </div>
+          <div style="flex: 1; min-height: 0; overflow: hidden;">
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Which invoices arrived this month?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">14:32</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ Three — Hetzner, Adobe, and one DB ticket.</div>
+            </div>
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">What did Lena say about the offsite dates?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">MON</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ She holds 12–14 Sept; hotel still open.</div>
+            </div>
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">When is the Hausverwaltung deadline?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">4 JUL</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ Objections until 31 July, in writing.</div>
+            </div>
+          </div>
+          <div style="display: flex; flex: none; align-items: baseline; gap: 12px; border-top: 1px solid #17150F; padding: 10px 18px; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">
+            <span><span style="color: #17150F;">j/k</span> move</span>
+            <span><span style="color: #17150F;">↵</span> open</span>
+            <span><span style="color: #17150F;">n</span> new question</span>
+            <span><span style="color: #17150F;">?</span> keys</span>
+          </div>
+        </div>
+
+        <!-- Center: search-first sheet -->
+        <div data-screen-label="Owl search sheet" style="flex: 1; min-width: 0; display: flex; padding: 18px 20px;">
+          <div style="flex: 1; min-width: 0; background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); display: flex; flex-direction: column; overflow: hidden;">
+
+            <!-- Input row at sheet top -->
+            <div style="display: flex; flex: none; align-items: center; gap: 12px; padding: 15px 20px; border-bottom: 1px solid #17150F;">
+              <span style="font: 600 16px 'IBM Plex Mono', monospace; color: #6E6759;">›</span>
+              <span style="flex: 1; font: 500 15px 'IBM Plex Mono', monospace; color: #17150F;">hetzner rechnung<span style="display: inline-block; width: 8px; height: 15px; background: #C2452C; vertical-align: text-bottom; margin-left: 2px;"></span></span>
+              <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: .55px; color: #9A9184;">ESC CLEAR</span>
+            </div>
+
+            <div style="flex: 1; min-height: 0; overflow: hidden;">
+
+              <!-- Ask row: always first -->
+              <div style="display: flex; align-items: baseline; gap: 11px; padding: 12px 20px 13px 17px; border-left: 3px solid #C2452C; background: #F4F1EA; cursor: pointer;">
+                <span style="font: 500 14px 'Newsreader', serif; color: #17150F;">Ask the owl: <em>“hetzner rechnung”</em></span>
+                <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #C2452C;">SYNTHESIZED ANSWER · CITES THE HITS BELOW</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">↵</span>
+              </div>
+
+              <!-- Live hits -->
+              <div style="padding: 9px 20px 5px 17px; font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.25px; color: #C2452C; border-top: 1px solid #DAD4C6;">MAIL · BEST MATCHES <span style="color: #9A9184; letter-spacing: .5px;">· LIVE FROM YOUR INDEX, NO TOKENS SPENT</span></div>
+
+              <div style="display: grid; gap: 4px; padding: 11px 20px 12px 17px; border-top: 1px solid #EAE5D9; border-left: 3px solid transparent; cursor: pointer;">
+                <div style="display: flex; align-items: baseline; gap: 14px; min-width: 0;">
+                  <span style="font: 550 15px 'Newsreader', serif; color: #17150F; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Your Hetzner invoice for June</span>
+                  <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .35px;">2 JUL</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 10px; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; min-width: 0;">
+                  <span style="max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Hetzner Online ‹billing@hetzner.com›</span>
+                  <span style="color: #9A9184;">fernweh / inbox</span>
+                  <span style="margin-left: auto; flex: none; color: #C2452C; font-size: 8px; letter-spacing: .6px;">CLEAR MATCH</span>
+                </div>
+                <div style="font: 400 12.5px/1.35 'Newsreader', serif; color: #57503F; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;">Invoice 2026-0642 for your cloud servers: €34.10 incl. VAT. The amount will be auto-debited on 8 July. No action needed.</div>
+              </div>
+
+              <div style="display: grid; gap: 4px; padding: 11px 20px 12px 17px; border-top: 1px solid #EAE5D9; border-left: 3px solid #17150F; background: #F4F1EA; cursor: pointer;">
+                <div style="display: flex; align-items: baseline; gap: 14px; min-width: 0;">
+                  <span style="font: 550 15px 'Newsreader', serif; color: #17150F; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Rechnung Mai — Hetzner Cloud</span>
+                  <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .35px;">2 JUN</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 10px; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; min-width: 0;">
+                  <span style="max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Hetzner Online ‹billing@hetzner.com›</span>
+                  <span style="color: #9A9184;">fernweh / archive</span>
+                  <span style="margin-left: auto; flex: none; display: inline-flex; gap: 10px; align-items: baseline;"><span style="color: #C2452C; font-size: 8px; letter-spacing: .6px;">CLEAR MATCH</span><span style="border: 1px solid #DAD4C6; padding: 1px 5px; color: #6E6759;">↵ OPEN</span></span>
+                </div>
+                <div style="font: 400 12.5px/1.35 'Newsreader', serif; color: #57503F; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;">Ihre Rechnung über 34,10 € für den Abrechnungszeitraum Mai. Vielen Dank für Ihr Vertrauen.</div>
+              </div>
+
+              <div style="display: grid; gap: 4px; padding: 11px 20px 12px 17px; border-top: 1px solid #EAE5D9; border-left: 3px solid transparent; cursor: pointer;">
+                <div style="display: flex; align-items: baseline; gap: 14px; min-width: 0;">
+                  <span style="font: 550 15px 'Newsreader', serif; color: #17150F; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Server migration next steps</span>
+                  <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .35px;">27 JUN</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 10px; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; min-width: 0;">
+                  <span style="max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Jonas Weber ‹jonas@fernweh.studio›</span>
+                  <span style="color: #9A9184;">fernweh / inbox</span>
+                  <span style="margin-left: auto; flex: none; color: #C2452C; font-size: 8px; letter-spacing: .6px; opacity: .65;">POSSIBLE</span>
+                </div>
+                <div style="font: 400 12.5px/1.35 'Newsreader', serif; color: #57503F; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;">…we can cancel the old Hetzner box once DNS flips — that kills the second invoice from August on. I'd do it before the 8th.</div>
+              </div>
+
+            </div>
+
+            <!-- Index status: moves here from the palette footer -->
+            <div style="display: flex; flex: none; gap: 14px; padding: 9px 20px; border-top: 1px solid #DAD4C6; font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .5px; color: #9A9184;">
+              <span><span style="color: #17150F;">↑↓</span> HITS</span>
+              <span><span style="color: #17150F;">↵</span> OPEN SELECTED · ASK WHEN NONE</span>
+              <span style="margin-left: auto;">THE OWL INDEXES 2,318 THREADS · 96% EMBEDDED · LOCAL</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Owl rail unchanged -->
+        <div data-screen-label="Owl rail" style="width: 290px; flex: none; display: flex; flex-direction: column; gap: 11px; border-left: 1px solid #17150F; background: #EFEBE2; padding: 14px 15px 12px; box-sizing: border-box;">
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">searching — locally.</span>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">DRAFTS</div>
+            <div style="font: italic 400 11.5px/1.55 'Newsreader', serif; color: #9A9184; margin-top: 8px;">Nothing in the tray. ⌘D dictates a reply.</div>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="display: flex; align-items: baseline;">
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">TASKS</span>
+              <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">5 open →</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <span style="width: 11px; height: 11px; border: 1.5px solid #17150F; flex: none;"></span>
+              <span style="font: 400 12px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">Send Q3 numbers to Jonas</span>
+              <span style="font: 500 8px 'IBM Plex Mono', monospace; color: #F4F1EA; background: #C2452C; padding: 1px 5px; flex: none;">FRI</span>
+            </div>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="display: flex; align-items: baseline;">
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">WAITING</span>
+              <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">3 waiting →</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <span style="font: 400 12.5px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">mora@studiomora.de <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">4d</span></span>
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; color: #F4F1EA; background: #17150F; padding: 2px 8px; flex: none;">NUDGE</span>
+            </div>
+          </div>
+          <div style="margin-top: auto; border-top: 1px solid #DAD4C6; padding: 9px 2px 0;">
+            <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759;">YOUR STYLE</div>
+            <div style="font: italic 400 11.5px/1.5 'Newsreader', serif; color: #57503F; margin-top: 4px;">Drafts as tim@fernweh.studio — warm, brief, em-dashes.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 24px; margin-top: 20px; align-items: flex-start;">
+      <div style="width: 560px; background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">BEHAVIOR — SEARCH ↔ ASK, ONE INPUT</div>
+        <ul style="margin: 10px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+          <li><strong>Typing</strong> streams live hits from the local index (FTS + embeddings, the existing useSemanticSearch) — instant, free, debounced 300ms. No LLM call yet.</li>
+          <li><strong>↑↓</strong> moves through hits; <strong>↵ on a hit opens the thread</strong> (existing palette jump logic). <strong>↵ with none selected asks the owl</strong> — the ask row is always first and shows exactly what will be spent.</li>
+          <li>Asking converts the query into a conversation (the <a href="#1a" style="border-bottom: 1px solid #DAD4C6;">1a</a> layout: question title, streamed answer, sources = the hits). The input stays at the sheet top for follow-ups; <span style="font: 500 10px 'IBM Plex Mono', monospace;">n</span> starts fresh.</li>
+          <li>Entry points: <span style="font: 500 10px 'IBM Plex Mono', monospace;">/</span> and ⌘F open this view with the input focused (both currently open the palette); ⌘5 / masthead OWL navigates without focusing.</li>
+          <li>Index status ("2,318 threads · 96% embedded · local") moves from the palette footer to this sheet's footer — it belongs where search lives.</li>
+          <li>No key saved? Hits still work (local). Only the ask row is disabled: <em>"the owl sleeps — add a key in Intelligence"</em>.</li>
+        </ul>
+      </div>
+      <div style="width: 480px; background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">WHY THIS SPLIT</div>
+        <p style="font: 400 12.5px/1.55 'Newsreader', serif; color: #26221A; margin: 10px 0 0;">"Find that mail" and "answer this question" share one retrieval engine but differ in cost and intent. Fusing them into one input with an explicit ask row keeps lookup instant and makes the token-spending step a visible, deliberate escalation — while ⌘K goes back to being a command palette that opens in 0ms and never surprises you with a search.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ 2b · Slim palette + quiet masthead ═══════════════════════ -->
+  <div id="2b" style="margin-top: 64px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <a href="#2b" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">2B</a>
+      <span style="font: 500 16px 'Newsreader', serif;">⌘K, commands only — and the boxed search trigger retires</span>
+      <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">no mode routing, no skeletons, no owl glyph crammed into a button</span>
+    </div>
+
+    <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap;">
+
+      <!-- Slim palette -->
+      <div data-screen-label="Slim command palette" style="width: 640px;">
+        <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.18);">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 17px; border-bottom: 1px solid #17150F;">
+            <span style="font: 600 16px 'IBM Plex Mono', monospace; color: #6E6759;">›</span>
+            <span style="flex: 1; font: 500 15px 'IBM Plex Mono', monospace; color: #17150F;">nu<span style="display: inline-block; width: 8px; height: 15px; background: #C2452C; vertical-align: text-bottom; margin-left: 2px;"></span></span>
+            <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; color: #9A9184;">ESC</span>
+          </div>
+          <div style="padding: 9px 17px 5px; font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.25px; color: #6E6759;">COMMANDS</div>
+          <div style="display: flex; align-items: baseline; gap: 11px; padding: 8px 16px 9px 14px; border-left: 3px solid #C2452C; background: #F4F1EA; cursor: pointer;">
+            <span style="font: 500 14px 'Newsreader', serif; color: #17150F;">Nudge mora@studiomora.de</span>
+            <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #C2452C;">4d silent</span>
+            <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">↵</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 11px; padding: 8px 16px 9px 14px; border-left: 3px solid transparent; cursor: pointer;">
+            <span style="font: 500 14px 'Newsreader', serif; color: #57503F;">New mail</span>
+            <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">⌘N</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 11px; padding: 8px 16px 9px 14px; border-left: 3px solid transparent; cursor: pointer;">
+            <span style="font: 500 14px 'Newsreader', serif; color: #57503F;">Search &amp; ask the owl</span>
+            <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">mail search lives here now</span>
+            <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">/</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 11px; padding: 8px 16px 9px 14px; border-left: 3px solid transparent; cursor: pointer;">
+            <span style="font: 500 14px 'Newsreader', serif; color: #57503F;">Only fernweh</span>
+            <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; color: #6E6759; padding: 1px 5px;">1</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 11px; padding: 8px 16px 9px 14px; border-left: 3px solid transparent; cursor: pointer;">
+            <span style="font: 500 14px 'Newsreader', serif; color: #57503F;">Replay onboarding</span>
+          </div>
+          <div style="display: flex; gap: 14px; padding: 9px 17px; border-top: 1px solid #DAD4C6; font: 400 8.5px 'IBM Plex Mono', monospace; color: #9A9184;">
+            <span>↑↓ CHOOSE</span>
+            <span>↵ RUN</span>
+            <span style="margin-left: auto;">MAIL SEARCH: <span style="color: #17150F;">/</span> — WITH THE OWL</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="width: 480px; display: flex; flex-direction: column; gap: 20px;">
+        <!-- Masthead before/after -->
+        <div data-screen-label="Masthead trigger before after">
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin-bottom: 6px;">TODAY — BOXED TRIGGER (RETIRED)</div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; border: 1px solid #DAD4C6; border-left: 2px solid #C2452C; background: #FDFCF8; padding: 5px 6px 5px 5px; font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: .5px; color: #17150F; opacity: .55; text-decoration: line-through;">
+            <svg width="17" height="15" viewBox="0 0 20 18" fill="none"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.35" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.35" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            SEARCH <span style="border: 1px solid #DAD4C6; padding: 1px 3px; font-size: 8px; color: #6E6759;">⌘K</span>
+          </div>
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin: 14px 0 6px;">NEW — A NAV ITEM LIKE ITS SIBLINGS</div>
+          <div style="display: inline-flex; align-items: center; gap: 14px; font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px dashed #DAD4C6; padding: 8px 12px;">
+            <span style="color: #17150F;">SEARCH <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">/</span></span>
+            <span>INBOX 14 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘1</span></span>
+            <span style="color: #9A9184;">…</span>
+          </div>
+        </div>
+        <div style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+          <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">BEHAVIOR</div>
+          <ul style="margin: 10px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+            <li>⌘K filters commands only — the router, search debounce, mail section and skeletons come out of the palette. It opens instantly and stays one screen tall.</li>
+            <li>Contextual commands stay first (nudges with days, dictate, accept task), then navigation, filters, settings — unchanged.</li>
+            <li>A <em>"Search &amp; ask the owl"</em> command bridges old muscle memory; typing a query-looking string still offers it as the top hint.</li>
+            <li>Masthead: the boxed trigger is replaced by a <span style="font: 500 10px 'IBM Plex Mono', monospace;">SEARCH /</span> item styled exactly like the nav items (mono, kbd chip, accent underline when the owl view is active via search). One visual system, no special box.</li>
+            <li><span style="font: 500 10px 'IBM Plex Mono', monospace;">/</span> and ⌘F → owl view, input focused. ⌘K → commands. Help overlay documents the split.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<section style="padding: 24px 56px 96px; font-family: 'Newsreader', Georgia, serif; color: #17150F; border-top: 1px dashed #DAD4C6; margin-top: 24px;">
+
+  <!-- Turn header -->
+  <div style="display: flex; align-items: baseline; gap: 14px; max-width: 1240px;">
+    <span style="font: italic 500 22px 'Newsreader', serif;">Noctua — design changes</span>
+    <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .5px;">CHAT VIEW · ONBOARDING KEY STEP · UNIFIED TOAST — companions to claude-code-tasks.md</span>
+  </div>
+
+  <!-- ═══════════════════════ 1a · Chat view ═══════════════════════ -->
+  <div id="1a" style="margin-top: 30px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <a href="#1a" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">1A</a>
+      <span style="font: 500 16px 'Newsreader', serif;">Ask the owl — letterpress chat view</span>
+      <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">masthead entry OWL ⌘5 · conversations pane replaces the borrowed Tasks list · sources styled like palette mail hits</span>
+    </div>
+
+    <!-- App frame 1180 -->
+    <div style="width: 1180px; height: 762px; background: #F4F1EA; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.12); display: flex; flex-direction: column; overflow: hidden;">
+
+      <!-- Masthead -->
+      <div data-screen-label="Chat masthead" style="display: flex; flex: none; align-items: center; gap: 16px; border-bottom: 1px solid #17150F; padding: 16px 26px 12px 96px; position: relative;">
+        <span style="position: absolute; left: 22px; top: 22px; display: flex; gap: 8px;">
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></span>
+          <span style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></span>
+        </span>
+        <span style="font: italic 500 24px 'Newsreader', serif; letter-spacing: .5px;">Noctua</span>
+        <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: 1px;">TUE, 15 JULY 2026</span>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 14px; font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; border: 1px solid #DAD4C6; border-left: 2px solid #C2452C; background: #FDFCF8; padding: 5px 6px 5px 5px; font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: .5px; color: #17150F;">
+            <svg width="17" height="15" viewBox="0 0 20 18" fill="none" style="opacity:.82;"><path d="M2.5 2.2 6 4.6A9.5 9.5 0 0 1 10 3.7a9.5 9.5 0 0 1 4 .9l3.5-2.4v7.1c0 4-3.3 6.5-7.5 6.5S2.5 13.3 2.5 9.3V2.2Z" stroke="#17150F" stroke-width="1.35" stroke-linejoin="round"></path><circle cx="7.1" cy="8.6" r="1.35" fill="#17150F"></circle><circle cx="12.9" cy="8.6" r="1.35" fill="#17150F"></circle><path d="m8.8 12 1.2 1 1.2-1" stroke="#17150F" stroke-width="1.2"></path></svg>
+            SEARCH
+            <span style="border: 1px solid #DAD4C6; padding: 1px 3px; font-size: 8px; color: #6E6759;">⌘K</span>
+          </span>
+          <span>INBOX 14 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘1</span></span>
+          <span>WAITING 3 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘2</span></span>
+          <span>TASKS 5 <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘3</span></span>
+          <span style="color: #17150F; font-weight: 600; border-bottom: 2px solid #C2452C; padding-bottom: 2px;">OWL <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184; font-weight: 400;">⌘5</span></span>
+          <span>SETTINGS <span style="border: 1px solid #DAD4C6; padding: 0 3px; font-size: 8px; color: #9A9184;">⌘,</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 8px; margin-left: 2px;">
+            <svg width="17" height="14" viewBox="0 0 17 14"><rect x="1" y="1" width="15" height="12" fill="none" stroke="#17150F" stroke-width="1.4"></rect><rect x="2.5" y="2.5" width="4" height="9" fill="#17150F"></rect></svg>
+            <svg width="17" height="14" viewBox="0 0 17 14"><rect x="1" y="1" width="15" height="12" fill="none" stroke="#17150F" stroke-width="1.4"></rect><rect x="10.5" y="2.5" width="4" height="9" fill="#17150F"></rect></svg>
+          </span>
+        </span>
+      </div>
+
+      <div style="display: flex; flex: 1; min-height: 0;">
+
+        <!-- Left pane: conversations -->
+        <div data-screen-label="Chat conversations pane" style="width: 400px; flex: none; display: flex; flex-direction: column; border-right: 1px solid #17150F;">
+          <div style="display: flex; flex: none; align-items: center; border-bottom: 1px solid #DAD4C6; padding: 9px 18px 7px;">
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759; flex: 1;">CONVERSATIONS</span>
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #9A9184;">↳ = THE OWL'S ANSWER</span>
+          </div>
+          <div style="flex: 1; min-height: 0; overflow: hidden;">
+
+            <div style="padding: 10px 18px 10px 15px; border-bottom: 1px solid #DAD4C6; border-left: 3px solid #17150F; background: #FDFCF8;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Which invoices arrived this month?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">14:32</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #57503F; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ Three — Hetzner, Adobe, and one DB ticket.</div>
+            </div>
+
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">What did Lena say about the offsite dates?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">MON</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ She holds 12–14 Sept; hotel still open.</div>
+            </div>
+
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">When is the Hausverwaltung deadline?</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">4 JUL</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ Objections until 31 July, in writing.</div>
+            </div>
+
+            <div style="padding: 10px 18px; border-bottom: 1px solid #DAD4C6;">
+              <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="font: 400 13.5px 'Newsreader', serif; color: #57503F; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Summarize my unread mail</span>
+                <span style="margin-left: auto; flex: none; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">28 JUN</span>
+              </div>
+              <div style="font: italic 400 12px 'Newsreader', serif; color: #8A8272; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">↳ Two asks, one invoice, the rest can wait.</div>
+            </div>
+
+          </div>
+          <div style="display: flex; flex: none; align-items: baseline; gap: 12px; border-top: 1px solid #17150F; padding: 10px 18px; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759;">
+            <span><span style="color: #17150F;">j/k</span> move</span>
+            <span><span style="color: #17150F;">↵</span> open</span>
+            <span><span style="color: #17150F;">n</span> new question</span>
+            <span><span style="color: #17150F;">?</span> keys</span>
+          </div>
+        </div>
+
+        <!-- Center: conversation sheet -->
+        <div data-screen-label="Chat sheet" style="flex: 1; min-width: 0; display: flex; padding: 18px 20px;">
+          <div style="flex: 1; min-width: 0; background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); display: flex; flex-direction: column; overflow: hidden;">
+
+            <div style="flex: 1; min-height: 0; overflow: hidden; padding: 24px 28px 0;">
+              <div style="font: 500 21px 'Newsreader', serif;">Which invoices arrived this month?</div>
+              <div style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; letter-spacing: .5px; margin-top: 5px;">YOU ASKED · TODAY 14:32 · THE OWL SEARCHED 2,318 THREADS</div>
+
+              <div style="border-top: 1px solid #17150F; margin-top: 18px;"></div>
+              <div style="border-top: 1px solid #17150F; margin-top: 2px;"></div>
+
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 16px;">
+                <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">THE OWL</span>
+                <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">answered from 3 threads · nothing left this machine</span>
+              </div>
+              <div style="font: 400 14.5px/1.7 'Newsreader', serif; color: #26221A; margin-top: 8px; max-width: 640px;">
+                Three invoices this month. Hetzner billed <strong>€34.10</strong> on 2 July <a href="#1a" style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C;">[1]</a> — the receipt says it's already paid. Adobe renewed automatically at <strong>€23.79</strong> on 5 July <a href="#1a" style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C;">[2]</a>. And Deutsche Bahn sent <strong>€49.90</strong> for the Berlin ticket on 11 July <a href="#1a" style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C;">[3]</a> — that one is a one-off.
+              </div>
+              <div style="font: italic 400 12.5px 'Newsreader', serif; color: #57503F; margin-top: 8px;">Adobe is the only recurring charge — say the word and I'll watch for the next one.</div>
+
+              <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759; margin-top: 20px;">SOURCES</div>
+              <div style="background: #F9F7F1; border: 1px solid #DAD4C6; margin-top: 8px; max-width: 640px;">
+                <div style="display: flex; align-items: baseline; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #EAE5D9;">
+                  <span style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C; flex: none;">[1]</span>
+                  <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 550 13.5px 'Newsreader', serif;">Your Hetzner invoice for June</span>
+                  <span style="flex: none; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">fernweh / inbox · 2 JUL</span>
+                  <span style="flex: none; margin-left: auto; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; cursor: pointer;">OPEN →</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #EAE5D9;">
+                  <span style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C; flex: none;">[2]</span>
+                  <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 550 13.5px 'Newsreader', serif;">Your Adobe subscription renewal</span>
+                  <span style="flex: none; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">hotmail / inbox · 5 JUL</span>
+                  <span style="flex: none; margin-left: auto; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; cursor: pointer;">OPEN →</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 10px; padding: 10px 14px;">
+                  <span style="font: 500 10px 'IBM Plex Mono', monospace; color: #C2452C; flex: none;">[3]</span>
+                  <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 550 13.5px 'Newsreader', serif;">Ihre Buchung: Berlin Hbf, 11.07.</span>
+                  <span style="flex: none; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">hotmail / archive · 11 JUL</span>
+                  <span style="flex: none; margin-left: auto; font: 400 9.5px 'IBM Plex Mono', monospace; color: #6E6759; cursor: pointer;">OPEN →</span>
+                </div>
+              </div>
+
+              <!-- Follow-up exchange, ink strip = the user's turn -->
+              <div style="display: flex; align-items: baseline; gap: 10px; background: #17150F; color: #F4F1EA; padding: 9px 12px; margin-top: 20px; max-width: 640px;">
+                <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #B5AFA3; flex: none;">YOU · 14:34</span>
+                <span style="font: 400 13.5px 'Newsreader', serif;">Which of those can I expense?</span>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 12px;">
+                <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">THE OWL</span>
+              </div>
+              <div style="font: 400 14.5px/1.7 'Newsreader', serif; color: #26221A; margin-top: 6px; max-width: 640px;">
+                Hetzner and the DB ticket went to your fernweh address — both look like business<span style="display: inline-block; width: 8px; height: 15px; background: #C2452C; vertical-align: text-bottom; margin-left: 2px;"></span>
+              </div>
+            </div>
+
+            <!-- Input row pinned to sheet bottom -->
+            <div style="flex: none; margin-top: 18px;">
+              <div style="border-top: 1px solid #17150F;"></div>
+              <div style="border-top: 1px solid #17150F; margin-top: 2px;"></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 28px 6px;">
+                <span style="font: 600 16px 'IBM Plex Mono', monospace; color: #6E6759;">›</span>
+                <span style="flex: 1; font: italic 400 14px 'Newsreader', serif; color: #9A9184;">Ask a follow-up…</span>
+                <span style="font: 500 10px 'IBM Plex Mono', monospace; border: 1px solid #DAD4C6; padding: 1px 6px; color: #17150F;">↵</span>
+              </div>
+              <div style="padding: 0 28px 14px 52px; font: 400 8.5px 'IBM Plex Mono', monospace; letter-spacing: .65px; color: #9A9184;">RETRIEVAL RUNS ON YOUR LOCAL INDEX · ONLY THE EXCERPTS IT FINDS GO TO YOUR MODEL</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Owl rail (unchanged, shown for frame fidelity) -->
+        <div data-screen-label="Chat owl rail" style="width: 290px; flex: none; display: flex; flex-direction: column; gap: 11px; border-left: 1px solid #17150F; background: #EFEBE2; padding: 14px 15px 12px; box-sizing: border-box;">
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">THE OWL</span>
+            <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">quiet.</span>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">DRAFTS</div>
+            <div style="font: italic 400 11.5px/1.55 'Newsreader', serif; color: #9A9184; margin-top: 8px;">Nothing in the tray. ⌘D dictates a reply.</div>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="display: flex; align-items: baseline;">
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">TASKS</span>
+              <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">5 open →</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <span style="width: 11px; height: 11px; border: 1.5px solid #17150F; flex: none;"></span>
+              <span style="font: 400 12px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">Send Q3 numbers to Jonas</span>
+              <span style="font: 500 8px 'IBM Plex Mono', monospace; color: #F4F1EA; background: #C2452C; padding: 1px 5px; flex: none;">FRI</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <span style="width: 11px; height: 11px; border: 1.5px solid #17150F; flex: none;"></span>
+              <span style="font: 400 12px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">Object to the Nebenkosten letter</span>
+              <span style="font: 500 8px 'IBM Plex Mono', monospace; color: #F4F1EA; background: #C2452C; padding: 1px 5px; flex: none;">31 JUL</span>
+            </div>
+          </div>
+          <div style="background: #FDFCF8; border: 1px solid #17150F; box-shadow: 3px 3px 0 rgba(23,21,15,.08); padding: 11px 13px;">
+            <div style="display: flex; align-items: baseline;">
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">WAITING</span>
+              <span style="margin-left: auto; font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">3 waiting →</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+              <span style="font: 400 12.5px 'Newsreader', serif; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">mora@studiomora.de <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">4d</span></span>
+              <span style="font: 500 8.5px 'IBM Plex Mono', monospace; color: #F4F1EA; background: #17150F; padding: 2px 8px; flex: none;">NUDGE</span>
+            </div>
+          </div>
+          <div style="margin-top: auto; border-top: 1px solid #DAD4C6; padding: 9px 2px 0;">
+            <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759;">YOUR STYLE</div>
+            <div style="font: italic 400 11.5px/1.5 'Newsreader', serif; color: #57503F; margin-top: 4px;">Drafts as tim@fernweh.studio — warm, brief, em-dashes.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 1a side artifacts -->
+    <div style="display: flex; gap: 24px; margin-top: 20px; align-items: flex-start;">
+      <div data-screen-label="Chat empty state" style="width: 560px; background: #FDFCF8; border: 1px solid #17150F; box-shadow: 6px 6px 0 rgba(23,21,15,.1); padding: 48px 40px; text-align: center;">
+        <div style="width: 40px; height: 40px; border: 1.5px solid #17150F; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #C2452C;"></span>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #17150F;"></span>
+        </div>
+        <div style="font: italic 400 18px 'Newsreader', serif; color: #57503F; margin-top: 16px;">Ask your mailbox.</div>
+        <div style="font: 400 9px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #9A9184; margin-top: 6px;">THE OWL ANSWERS FROM 2,318 THREADS — WITH SOURCES</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 22px; align-items: center;">
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px solid #DAD4C6; padding: 6px 12px; cursor: pointer;">WHICH INVOICES ARRIVED THIS MONTH?</span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px solid #DAD4C6; padding: 6px 12px; cursor: pointer;">WHAT WAS THE LAST SECURITY ALERT?</span>
+          <span style="font: 500 9px 'IBM Plex Mono', monospace; color: #6E6759; border: 1px solid #DAD4C6; padding: 6px 12px; cursor: pointer;">SUMMARIZE MY UNREAD MAIL</span>
+        </div>
+      </div>
+      <div style="width: 480px; background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">BEHAVIOR</div>
+        <ul style="margin: 10px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+          <li>Masthead gains <span style="font: 500 10px 'IBM Plex Mono', monospace;">OWL ⌘5</span> between TASKS and SETTINGS; active state = 600 + 2px accent underline, like the others.</li>
+          <li>Left pane lists past conversations (persisted), j/k navigable; <span style="font: 500 10px 'IBM Plex Mono', monospace;">n</span> starts a new question and focuses the input.</li>
+          <li>User turns are ink strips; owl turns are serif body with accent <span style="font: 500 10px 'IBM Plex Mono', monospace;">[n]</span> citations; streaming shows the block cursor ▍ in accent.</li>
+          <li>Source rows reuse the palette-mail-row pattern; <span style="font: 500 10px 'IBM Plex Mono', monospace;">OPEN →</span> jumps to the thread (existing openThread path).</li>
+          <li>Input is a real textarea, mono prompt <span style="font: 500 10px 'IBM Plex Mono', monospace;">›</span>; plain ↵ asks (no mail is sent from this view — safe), ⇧↵ newline, Esc clears.</li>
+          <li>Empty state offers the three suggestion chips (from strings.ts, both languages).</li>
+          <li>All copy through <span style="font: 500 10px 'IBM Plex Mono', monospace;">strings.ts</span> — this mock is the EN reference; DE mirrors the handoff tone.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ 1b · Onboarding key step ═══════════════════════ -->
+  <div id="1b" style="margin-top: 64px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <a href="#1b" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">1B</a>
+      <span style="font: 500 16px 'Newsreader', serif;">Onboarding — the key step, and training that admits it's paused</span>
+      <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">welcome → connect → key → training (4 steps; Enter advances)</span>
+    </div>
+
+    <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap;">
+
+      <!-- Step 3 of 4: key -->
+      <div data-screen-label="Onboarding key step" style="width: 620px; box-sizing: border-box; background: #FDFCF8; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.1); padding: 40px 44px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">STEP 3 OF 4 — THE OWL'S EYES</div>
+        <div style="font: 500 24px 'Newsreader', serif; margin-top: 8px;">Bring your own key</div>
+        <div style="font: italic 400 13.5px/1.6 'Newsreader', serif; color: #57503F; margin-top: 4px;">Gists, tasks and drafts run on OpenRouter with your key. Calls go straight there — nothing passes through us.</div>
+
+        <div style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 14px; margin-top: 22px;">
+          <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #6E6759;">OPENROUTER API KEY</div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <span style="flex: 1; border: 1px solid #DAD4C6; background: #FDFCF8; padding: 7px 10px; font: 400 11.5px 'IBM Plex Mono', monospace; color: #17150F;">sk-or-v1-••••••••••••••••3kf2</span>
+            <span style="flex: none; font: 500 10px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 8px 14px; cursor: pointer;">SAVE — ↵</span>
+          </div>
+          <div style="font: 400 9px 'IBM Plex Mono', monospace; color: #17150F; margin-top: 8px;">✓ saved · sk-or-•••• — in the macOS keychain, it never leaves this machine</div>
+          <div style="font: 400 9px 'IBM Plex Mono', monospace; color: #9A9184; margin-top: 4px;">no account yet? openrouter.ai/keys — a few cents cover a busy week</div>
+        </div>
+
+        <div style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #9A9184; margin-top: 12px;">MODELS COME WITH SENSIBLE DEFAULTS — CHANGE THEM ANYTIME IN SETTINGS → INTELLIGENCE</div>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-top: 26px;">
+          <span style="font: 500 11px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 9px 18px; cursor: pointer;">TRAIN MY VOICE — ↵</span>
+          <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #9A9184; border-bottom: 1px solid #DAD4C6; cursor: pointer;">skip — the owl sleeps until then</span>
+        </div>
+      </div>
+
+      <!-- Step 4 of 4: training, paused variant -->
+      <div data-screen-label="Onboarding training paused" style="width: 620px; box-sizing: border-box; background: #FDFCF8; border: 1px solid #17150F; box-shadow: 8px 8px 0 rgba(23,21,15,.1); padding: 40px 44px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: #C2452C;">STEP 4 OF 4 — YOUR VOICE <span style="color: #9A9184; letter-spacing: 1px;">· SHOWN WHEN THE KEY WAS SKIPPED</span></div>
+        <div style="font: 500 24px 'Newsreader', serif; margin-top: 8px;">The owl learns how you write</div>
+        <div style="font: italic 400 13.5px/1.6 'Newsreader', serif; color: #57503F; margin-top: 4px;">It reads your sent folder — per address — and drafts in that voice.</div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 22px;">
+          <div style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 12px 14px;">
+            <div style="display: flex; align-items: baseline; gap: 10px;">
+              <span style="font: 500 12px 'Newsreader', serif;">Fernweh</span>
+              <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">tim@fernweh.studio</span>
+              <span style="margin-left: auto; font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">PAUSED — NO KEY</span>
+            </div>
+            <div style="height: 5px; background: #EAE5D9; margin-top: 8px;"></div>
+          </div>
+          <div style="background: #F9F7F1; border: 1px solid #DAD4C6; padding: 12px 14px;">
+            <div style="display: flex; align-items: baseline; gap: 10px;">
+              <span style="font: 500 12px 'Newsreader', serif;">Hotmail</span>
+              <span style="font: 400 9px 'IBM Plex Mono', monospace; color: #6E6759;">lena.hartmann@hotmail.de</span>
+              <span style="margin-left: auto; font: 500 9px 'IBM Plex Mono', monospace; color: #C2452C;">PAUSED — NO KEY</span>
+            </div>
+            <div style="height: 5px; background: #EAE5D9; margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; background: #F9F7F1; border: 1px solid #17150F; padding: 10px 14px; margin-top: 14px;">
+          <span style="font: italic 400 13px 'Newsreader', serif; color: #57503F; flex: 1;">The owl can't read without its eyes. Add the key and training runs on its own.</span>
+          <span style="flex: none; font: 500 9px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 5px 12px; cursor: pointer;">ADD KEY</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-top: 26px;">
+          <span style="font: 500 11px 'IBM Plex Mono', monospace; letter-spacing: 1px; color: #F4F1EA; background: #17150F; padding: 9px 18px; cursor: pointer;">ENTER YOUR MAIL — ↵</span>
+          <span style="font: 400 9.5px 'IBM Plex Mono', monospace; color: #9A9184;">mail works without a key — the owl just sleeps</span>
+        </div>
+      </div>
+
+      <div style="width: 480px; background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">BEHAVIOR</div>
+        <ul style="margin: 10px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+          <li>Flow becomes welcome → connect → <strong>key</strong> → training. Enter advances, as today.</li>
+          <li>Key save = existing Intelligence-sheet IPC (<span style="font: 500 10px 'IBM Plex Mono', monospace;">safeStorage</span>); status line mirrors its "✓ saved" copy.</li>
+          <li>With a saved key, step 4 behaves exactly as today (bars fill, traits appear at 100%).</li>
+          <li>Skipping the key shows step 4 in the paused state — bars empty, <span style="font: 500 10px 'IBM Plex Mono', monospace;">PAUSED — NO KEY</span>, never a fake 100%. ADD KEY returns to step 3 with the input focused.</li>
+          <li>Training auto-resumes when a key is saved later (the existing retrain path); no user action needed.</li>
+          <li>If <span style="font: 500 10px 'IBM Plex Mono', monospace;">ai:refreshStyle</span> fails <em>with</em> a key, the row shows <span style="font: 500 10px 'IBM Plex Mono', monospace;">FAILED — RETRY</span> instead of silently completing.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ 1c · Unified toast ═══════════════════════ -->
+  <div id="1c" style="margin-top: 64px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <a href="#1c" style="font: 600 10px 'IBM Plex Mono', monospace; background: #17150F; color: #F4F1EA; padding: 3px 8px; letter-spacing: 1px;">1C</a>
+      <span style="font: 500 16px 'Newsreader', serif;">One toast queue — four variants, one position</span>
+      <span style="font: 400 10px 'IBM Plex Mono', monospace; color: #6E6759;">replaces PaperToast + OutboxToast + UpdateBanner surface</span>
+    </div>
+
+    <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap;">
+      <div style="width: 640px; display: flex; flex-direction: column; gap: 18px;">
+
+        <div data-screen-label="Toast info">
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin-bottom: 6px;">INFO · AUTO-DISMISS 3.6S</div>
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: #17150F; color: #F4F1EA; border: 1px solid #17150F; box-shadow: 4px 4px 0 rgba(23,21,15,.2); padding: 10px 16px;">
+            <span style="width: 7px; height: 7px; background: #C2452C; flex: none;"></span>
+            <span style="font: 400 12px 'IBM Plex Mono', monospace;">The owl's gist: she can do Thursday, asks to move it to 15:00.</span>
+          </div>
+        </div>
+
+        <div data-screen-label="Toast action">
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin-bottom: 6px;">ACTION · LIVES THE FULL UNDO WINDOW (5S)</div>
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: #17150F; color: #F4F1EA; border: 1px solid #17150F; box-shadow: 4px 4px 0 rgba(23,21,15,.2); padding: 8px 10px 8px 16px;">
+            <span style="width: 7px; height: 7px; background: #C2452C; flex: none;"></span>
+            <span style="font: 400 12px 'IBM Plex Mono', monospace;">Filed.</span>
+            <span style="font: 500 9.5px 'IBM Plex Mono', monospace; letter-spacing: .7px; border: 1px solid #B5AFA3; color: #F4F1EA; padding: 5px 10px; cursor: pointer;">UNDO <span style="border: 1px solid #B5AFA3; padding: 0 4px; font-size: 8.5px; margin-left: 4px;">Z</span></span>
+          </div>
+        </div>
+
+        <div data-screen-label="Toast countdown">
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin-bottom: 6px;">COUNTDOWN · UNDO-SEND — HOLDS UNTIL SENT, THEN CONFIRMS</div>
+          <div style="display: inline-flex; flex-direction: column; background: #17150F; color: #F4F1EA; border: 1px solid #17150F; box-shadow: 4px 4px 0 rgba(23,21,15,.2);">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 16px;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: #C2452C; flex: none;"></span>
+              <span style="font: 400 12px 'IBM Plex Mono', monospace;">Sending as tim@fernweh.studio in 4s</span>
+              <span style="font: 500 9.5px 'IBM Plex Mono', monospace; letter-spacing: .7px; border: 1px solid #B5AFA3; color: #F4F1EA; padding: 5px 10px; cursor: pointer;">UNDO <span style="border: 1px solid #B5AFA3; padding: 0 4px; font-size: 8.5px; margin-left: 4px;">⌘Z</span></span>
+            </div>
+            <div style="height: 2px; background: rgba(244,241,234,.18);">
+              <div style="height: 2px; width: 55%; background: #C2452C;"></div>
+            </div>
+          </div>
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: #17150F; color: #F4F1EA; border: 1px solid #17150F; box-shadow: 4px 4px 0 rgba(23,21,15,.2); padding: 10px 16px; margin-left: 18px;">
+            <span style="width: 7px; height: 7px; background: #C2452C; flex: none;"></span>
+            <span style="font: 400 12px 'IBM Plex Mono', monospace;">Sent as tim@fernweh.studio — thread moved to WAITING</span>
+          </div>
+        </div>
+
+        <div data-screen-label="Toast error">
+          <div style="font: 500 8px 'IBM Plex Mono', monospace; letter-spacing: 1.2px; color: #9A9184; margin-bottom: 6px;">ERROR · STAYS UNTIL DISMISSED</div>
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: #17150F; color: #F4F1EA; border: 1px solid #C2452C; box-shadow: 4px 4px 0 rgba(23,21,15,.2); padding: 8px 10px 8px 16px;">
+            <span style="width: 7px; height: 7px; background: #C2452C; flex: none;"></span>
+            <span style="font: 400 12px 'IBM Plex Mono', monospace; color: #F4F1EA;">Send failed — the server refused the connection.</span>
+            <span style="font: 500 9.5px 'IBM Plex Mono', monospace; letter-spacing: .7px; border: 1px solid #C2452C; color: #F4F1EA; padding: 5px 10px; cursor: pointer;">RETRY</span>
+            <span style="font: 500 9.5px 'IBM Plex Mono', monospace; letter-spacing: .7px; color: #B5AFA3; padding: 5px 4px; cursor: pointer;">DISMISS</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="width: 480px; background: #F9F7F1; border: 1px solid #DAD4C6; padding: 16px 20px;">
+        <div style="font: 500 8.5px 'IBM Plex Mono', monospace; letter-spacing: 1.5px; color: #C2452C;">QUEUE RULES</div>
+        <ul style="margin: 10px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font: 400 12.5px/1.5 'Newsreader', serif; color: #26221A;">
+          <li>One toast visible at a time, bottom-center 26px, max-width 70% — the existing PaperToast geometry.</li>
+          <li>Priority: <strong>countdown &gt; error &gt; action &gt; info</strong>. A countdown preempts an info toast (queued info shows after, if still fresh &lt; 8s).</li>
+          <li>Action toasts live exactly as long as their offer (filed = the 5s archive window). Info keeps 3.6s. Errors persist.</li>
+          <li>Undo-send becomes the countdown variant: rec-dot pulses, hairline progress runs down, UNDO ⌘Z cancels — replacing OutboxToast wholesale.</li>
+          <li>Update notice becomes an info toast with a RESTART action instead of the top banner.</li>
+          <li>Toasts announce via <span style="font: 500 10px 'IBM Plex Mono', monospace;">role="status"</span> (errors: <span style="font: 500 10px 'IBM Plex Mono', monospace;">role="alert"</span>); actions are real buttons.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</section>
+</x-dc>
+</body>
+</html>

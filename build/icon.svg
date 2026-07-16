@@ -1,0 +1,73 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Noctua-App-Icon: Steinkauz (Athene noctua) — zwei goldene Augen und eine
+    Mondsichel auf nächtlichem Squircle. Quelle für build/icon.icns,
+    build/icon.png und resources/icon.png (scripts/generate-icons.mjs).
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#262013"/>
+      <stop offset="0.55" stop-color="#171310"/>
+      <stop offset="1" stop-color="#0e0c0a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.62">
+      <stop offset="0" stop-color="#e0aa4e" stop-opacity="0.16"/>
+      <stop offset="0.6" stop-color="#e0aa4e" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#e0aa4e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="iris" cx="0.42" cy="0.38" r="0.75">
+      <stop offset="0" stop-color="#f2c878"/>
+      <stop offset="0.55" stop-color="#e0aa4e"/>
+      <stop offset="1" stop-color="#b57f2a"/>
+    </radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle mit macOS-üblichem Rand-Padding -->
+  <g filter="url(#drop)">
+    <rect x="100" y="100" width="824" height="824" rx="186" fill="url(#bg)"/>
+    <rect x="100" y="100" width="824" height="824" rx="186" fill="url(#glow)"/>
+    <rect x="102" y="102" width="820" height="820" rx="184" fill="none"
+          stroke="#e0aa4e" stroke-opacity="0.22" stroke-width="3"/>
+  </g>
+
+  <!-- Mondsichel -->
+  <path d="M 776 214
+           A 64 64 0 1 0 840 326
+           A 82 82 0 0 1 776 214 Z"
+        fill="#f0d9a8" opacity="0.85"/>
+  <!-- Stern -->
+  <path d="M 262 236 l 7 20 20 7 -20 7 -7 20 -7 -20 -20 -7 20 -7 Z"
+        fill="#f0d9a8" opacity="0.55"/>
+
+  <!-- Augen: Ring, Iris, Pupille, Lichtpunkt -->
+  <g>
+    <circle cx="398" cy="516" r="152" fill="#0c0a07"/>
+    <circle cx="398" cy="516" r="152" fill="none" stroke="#e0aa4e" stroke-width="13"/>
+    <circle cx="398" cy="516" r="97" fill="url(#iris)"/>
+    <circle cx="398" cy="516" r="45" fill="#120e08"/>
+    <circle cx="376" cy="492" r="15" fill="#f7e8c4"/>
+  </g>
+  <g>
+    <circle cx="626" cy="516" r="152" fill="#0c0a07"/>
+    <circle cx="626" cy="516" r="152" fill="none" stroke="#e0aa4e" stroke-width="13"/>
+    <circle cx="626" cy="516" r="97" fill="url(#iris)"/>
+    <circle cx="626" cy="516" r="45" fill="#120e08"/>
+    <circle cx="604" cy="492" r="15" fill="#f7e8c4"/>
+  </g>
+
+  <!-- Federansatz über den Augen -->
+  <path d="M 268 402 Q 398 328 512 398 Q 626 328 756 402"
+        fill="none" stroke="#e0aa4e" stroke-opacity="0.5" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- Schnabel -->
+  <path d="M 512 636 L 552 690 Q 512 744 512 744 Q 512 744 472 690 Z" fill="#c08c30"/>
+
+  <!-- Brustgefieder: drei Chevrons -->
+  <g fill="none" stroke="#e0aa4e" stroke-width="10" stroke-linecap="round" stroke-opacity="0.35">
+    <path d="M 442 786 L 512 822 L 582 786"/>
+    <path d="M 462 830 L 512 856 L 562 830"/>
+  </g>
+</svg>
