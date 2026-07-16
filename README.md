@@ -1,9 +1,22 @@
+<div align="center">
+
+<img src="resources/icon.png" alt="Noctua-Logo" width="128" />
+
 # Noctua
 
-AI-first Mail-Client für macOS. Eingehende Mails werden lokal ausgewertet und
-per LLM kategorisiert, priorisiert und zusammengefasst; Antworten entwirft die
-AI in deiner Stimme — **gesendet wird immer von dir**. Local-first: Mails,
-Index und Schlüssel bleiben auf deinem Rechner.
+**AI-first Mail-Client für macOS** — die Eule sortiert, du entscheidest.
+
+[![CI](https://github.com/Schereo/noctua/actions/workflows/ci.yml/badge.svg)](https://github.com/Schereo/noctua/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/package-json/v/Schereo/noctua?label=version&color=c2452c)](CHANGELOG.md)
+[![Plattform](https://img.shields.io/badge/macOS-Apple%20Silicon-17150f?logo=apple&logoColor=f4f1ea)](#loslegen)
+[![Lizenz](https://img.shields.io/badge/lizenz-MIT-8a8069)](LICENSE)
+
+</div>
+
+Eingehende Mails werden lokal ausgewertet und per LLM kategorisiert,
+priorisiert und zusammengefasst; Antworten entwirft die AI in deiner Stimme —
+**gesendet wird immer von dir**. Local-first: Mails, Index und Schlüssel
+bleiben auf deinem Rechner.
 
 > Persönliches Projekt, gebaut für den Eigenbedarf und als Experiment, wie
 > weit „AI-first" in einem Mail-Client tragen kann. Getestet auf macOS

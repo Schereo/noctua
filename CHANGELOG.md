@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.88.1] - 2026-07-16
+
+### Geändert
+
+- **README-Header für GitHub**: zentriertes Eulen-Logo mit Tagline und Badges (CI-Status, Version aus package.json, Plattform, MIT-Lizenz) in den Farben des Letterpress-Themes. Die dynamischen Badges (CI, Version) rendern erst, sobald das Repo öffentlich ist.
+
 ## [0.88.0] - 2026-07-16
 
 ### Geändert

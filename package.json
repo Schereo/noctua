@@ -1,6 +1,6 @@
 {
   "name": "noctua",
-  "version": "0.88.0",
+  "version": "0.88.1",
   "description": "AI-first mail client for macOS",
   "main": "./out/main/index.js",
   "author": "Tim Sigl",
