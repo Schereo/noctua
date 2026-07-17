@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.91.0] - 2026-07-16
+
+### Geändert
+
+- **On-Device-Triage erkennt wieder Aufgaben — jetzt zweistufig und eval-getrieben** (M88): Statt der Abschaltung aus 0.90.1 stellt das Apple-Modell jetzt zuerst EINE enge Gate-Frage („Bittet ein Mensch den Kontoinhaber persönlich um etwas, gibt es eine echte Frist für ihn, oder wartet jemand auf seine Antwort?") und erst bei Ja dürfen action_items und Antwort-Erwartung Aufgaben erzeugen. Das kleine Modell beantwortet die isolierte Frage deutlich zuverlässiger, als es Aufgaben im Gesamturteil extrahiert: Auf einem neuen 24-Mail-Eval-Set (12 Fallen wie Newsletter-CTAs, Werbe-Fristen, Paket-Tracking, Verteiler-Mails; 10 echte Bitten; 2 Edge-Cases) steigt die Aufgaben-Precision von 64 % auf **100 %** bei 90 % Recall — dreifach gemessen, stabil. Kostet einen zweiten Modell-Aufruf (~2×1,4 s/Mail, Hintergrund-Queue). Das Eval-Harness liegt unter `scripts/apple-triage-eval/` (Gold-Labels + Runner) — Prompt-Änderungen dort nachmessen statt nach Gefühl texten; der DeepSeek-Vergleich lässt sich damit später ergänzen.
+
 ## [0.90.1] - 2026-07-16
 
 ### Geändert

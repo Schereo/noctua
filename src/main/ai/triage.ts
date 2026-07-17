@@ -8,7 +8,7 @@ import {
   getTriageProvider,
   providerBody
 } from './openrouter'
-import { AppleGuardrailError, appleFmStatus, appleTriage } from './apple-fm'
+import { AppleGuardrailError, appleFmStatus, appleGate, appleTriage } from './apple-fm'
 import { logUsage } from './budget'
 import { createTasksFromTriage, isUserAuthoredMail } from '../db/repos/tasks'
 import { isForwardWithoutRequest, textBeforeForwardedMessage } from '../mail/forwarded'
@@ -53,6 +53,23 @@ const triageResultSchema = z.object({
   addressed_to_me: z.boolean().default(true),
   confidence: z.number().min(0).max(1).default(0.5)
 })
+
+/**
+ * Aufgaben-Gate fürs On-Device-Modell (M88): eine einzige enge Frage. Die
+ * Formulierung ist eval-getrieben (scripts/apple-triage-eval) — Änderungen
+ * dort nachmessen, nicht nach Gefühl umtexten.
+ */
+export const APPLE_GATE_PROMPT = `Du prüfst für einen E-Mail-Client GENAU EINE Frage:
+Bittet in dieser Mail ein einzelner Mensch den im EMPFÄNGER-Block genannten
+Kontoinhaber PERSÖNLICH um etwas, existiert eine echte Frist für IHN
+(zahlen, Formular abgeben, buchen), oder wartet der Absender erkennbar auf
+eine persönliche Antwort des Kontoinhabers (z. B. eine direkte Frage an ihn)?
+
+NEIN bei: Newslettern, Werbung (auch mit Frist „nur bis Sonntag"),
+Benachrichtigungen von Diensten, Sicherheitshinweisen und Codes, Reports,
+automatischen Erinnerungen, Rundmails mit Gruppenanrede, Mails deren Anrede
+eine andere Person nennt, reinen Infos ohne Bitte.
+Im Zweifel: NEIN.`
 
 const SYSTEM_PROMPT = `Du bist der Triage-Klassifikator eines persönlichen E-Mail-Clients.
 Analysiere die E-Mail und antworte AUSSCHLIESSLICH mit einem JSON-Objekt, exakt in dieser Form:
@@ -250,6 +267,12 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
     const status = await appleFmStatus()
     // Modell lädt/It's off: Job ohne verbrannten Versuch zurücklegen (wie „kein Key")
     if (status.state !== 'available') return 'skipped-no-client'
+    // Zweistufig (M88): Erst die enge Gate-Frage („bittet ein Mensch den
+    // Kontoinhaber persönlich?"), dann das Gesamturteil. Das 3B-Modell
+    // beantwortet die isolierte Frage deutlich zuverlässiger, als es
+    // Aufgaben im Gesamturteil extrahiert — nur bei Gate=ja dürfen
+    // action_items und needs_reply Aufgaben erzeugen.
+    const gateOpen = await appleGate(APPLE_GATE_PROMPT, userPrompt)
     let parsed: TriageVerdict
     try {
       parsed = sanitizeAppleVerdict(await appleTriage(SYSTEM_PROMPT, userPrompt))
@@ -257,20 +280,13 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
       if (!(error instanceof AppleGuardrailError)) throw error
       parsed = neutralVerdict(row.subject)
     }
-    // Aufgaben-Ableitung ist für das On-Device-Modell bewusst AUS: das kleine
-    // Modell erkennt zu viele Schein-Aufgaben. Kategorie/Priorität/Zusammen-
-    // fassung/needs_reply bleiben — nur Tasks entstehen hier nicht.
-    parsed = { ...parsed, action_items: [] }
+    if (!gateOpen) parsed = { ...parsed, action_items: [], needs_reply: false }
     logUsage(db, 'apple/on-device', 0, 0, 0)
-    return persistVerdict(
-      db,
-      row,
-      messageId,
-      parsed,
-      'apple/on-device',
-      { inputTokens: 0, outputTokens: 0, costUsd: 0 },
-      { createTasks: false }
-    )
+    return persistVerdict(db, row, messageId, parsed, 'apple/on-device', {
+      inputTokens: 0,
+      outputTokens: 0,
+      costUsd: 0
+    })
   }
 
   if (!client) return 'skipped-no-client'

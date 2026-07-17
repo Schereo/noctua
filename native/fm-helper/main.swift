@@ -19,6 +19,17 @@ struct FMActionItem {
 }
 
 @Generable
+struct FMGate {
+  @Guide(
+    description:
+      "true NUR wenn ein Mensch den Kontoinhaber PERSÖNLICH um etwas bittet, eine echte Frist für IHN existiert oder er erkennbar auf eine persönliche Antwort wartet. false bei Newslettern, Werbung, Benachrichtigungen, Rundmails, Sicherheitshinweisen"
+  )
+  var isPersonalRequest: Bool
+  @Guide(description: "Begründung in einem kurzen Satz")
+  var reason: String
+}
+
+@Generable
 struct FMTriage {
   @Guide(
     description:
@@ -110,12 +121,24 @@ struct Helper {
         jsonLine(["id": -1, "ok": false, "error": "ungültige Anfrage"])
         continue
       }
+      let mode = request["mode"] as? String ?? "triage"
 
       do {
         // Frische Session je Anfrage: kein Kontextwachstum über Mails hinweg.
         let session = LanguageModelSession(instructions: instructions)
-        let response = try await session.respond(to: prompt, generating: FMTriage.self)
-        jsonLine(["id": id, "ok": true, "result": triagePayload(response.content)])
+        if mode == "gate" {
+          let response = try await session.respond(to: prompt, generating: FMGate.self)
+          jsonLine([
+            "id": id, "ok": true,
+            "result": [
+              "is_personal_request": response.content.isPersonalRequest,
+              "reason": response.content.reason
+            ]
+          ])
+        } else {
+          let response = try await session.respond(to: prompt, generating: FMTriage.self)
+          jsonLine(["id": id, "ok": true, "result": triagePayload(response.content)])
+        }
       } catch {
         jsonLine(["id": id, "ok": false, "error": String(describing: error)])
       }
