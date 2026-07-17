@@ -35,9 +35,16 @@ const baseReply = {
 
 function seedMail(
   db: Database.Database,
-  opts: { accountEmail: string; to: string[]; cc?: string[]; body: string; subject?: string }
+  opts: {
+    accountEmail: string
+    to: string[]
+    cc?: string[]
+    body: string
+    subject?: string
+    accountCreatedAt?: number
+  }
 ): number {
-  const acc = seedAccount(db, { email: opts.accountEmail })
+  const acc = seedAccount(db, { email: opts.accountEmail, createdAt: opts.accountCreatedAt })
   const folder = seedFolder(db, acc, '\\Inbox')
   const subject = opts.subject ?? 'Plakate und Sponsor Info'
   const res = upsertEnvelope(
@@ -162,6 +169,28 @@ describe('runTriage (Adressat-Erkennung, Modell gemockt)', () => {
 
     expect(await runTriage(db, msgId)).toBe('done')
     expect(countOpenTasks(db)).toBeGreaterThan(0)
+  })
+
+  it('historische Mails (vor Konto-Einrichtung) erzeugen keine Aufgaben', async () => {
+    const db = createTestDb()
+    // Konto JETZT eingerichtet — die Mail trägt das alte Default-Datum (2023)
+    const messageId = seedMail(db, {
+      accountEmail: 'lena.hartmann@example.org',
+      to: ['lena.hartmann@example.org'],
+      body: 'Hallo Lena,\n\nkannst du die Plakate abholen?',
+      accountCreatedAt: Date.now()
+    })
+    modelReply({ ...baseReply, addressed_to_me: true })
+
+    expect(await runTriage(db, messageId)).toBe('done')
+    // Triage/Annotation existiert — nur der Aufgaben-Schritt wurde übersprungen
+    const annotation = db
+      .prepare('SELECT category FROM ai_annotations WHERE message_id = ?')
+      .get(messageId)
+    expect(annotation).toBeTruthy()
+    expect(countOpenTasks(db)).toBe(0)
+    expect(db.prepare('SELECT count(*) n FROM tasks').get()).toEqual({ n: 0 })
+    closeTestDb(db)
   })
 
   it('User-Prompt enthält den EMPFÄNGER-Block mit Platzierung und Anrede', async () => {

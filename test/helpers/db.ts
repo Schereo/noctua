@@ -27,7 +27,7 @@ let accountSeq = 0
 /** Legt ein Test-Konto an und gibt dessen id zurück. */
 export function seedAccount(
   db: Database.Database,
-  overrides: Partial<{ email: string; provider: string; color: string }> = {}
+  overrides: Partial<{ email: string; provider: string; color: string; createdAt: number }> = {}
 ): number {
   accountSeq += 1
   const result = db
@@ -41,7 +41,9 @@ export function seedAccount(
       `Testkonto ${accountSeq}`,
       overrides.provider ?? 'imap',
       overrides.color ?? '#7c7ff2',
-      Date.now()
+      // Vor den makeEnvelope-Defaults (Nov 2023): Test-Mails gelten als
+      // nach der Konto-Einrichtung angekommen, außer ein Test will es anders.
+      overrides.createdAt ?? 1_600_000_000_000
     )
   return Number(result.lastInsertRowid)
 }
