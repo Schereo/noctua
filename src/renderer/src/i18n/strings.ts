@@ -769,8 +769,8 @@ const table = {
     de: 'Apple Intelligence — auf diesem Mac'
   },
   fmProviderAppleSub: {
-    en: 'triage runs on-device, mail text never leaves this machine — no task detection',
-    de: 'Triage läuft auf dem Gerät, Mail-Text verlässt den Rechner nicht — keine Aufgaben-Erkennung'
+    en: 'triage runs on-device, mail text never leaves this machine — tasks only for clear personal requests',
+    de: 'Triage läuft auf dem Gerät, Mail-Text verlässt den Rechner nicht — Aufgaben nur bei klarer persönlicher Bitte'
   },
   fmStateAvailable: { en: 'available', de: 'verfügbar' },
   fmStateOff: {

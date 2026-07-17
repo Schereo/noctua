@@ -154,7 +154,12 @@ function ensureServeProcess(binary: string): ChildProcessWithoutNullStreams {
   return child
 }
 
-function requestOnce(binary: string, instructions: string, prompt: string): Promise<unknown> {
+function requestOnce(
+  binary: string,
+  mode: 'triage' | 'gate',
+  instructions: string,
+  prompt: string
+): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const child = ensureServeProcess(binary)
     const id = nextId++
@@ -163,7 +168,7 @@ function requestOnce(binary: string, instructions: string, prompt: string): Prom
       reject(new Error('Zeitüberschreitung (60 s) — On-Device-Modell antwortet nicht'))
     }, 60_000)
     waiters.set(id, { resolve, reject, timer })
-    child.stdin.write(JSON.stringify({ id, instructions, prompt }) + '\n', (error) => {
+    child.stdin.write(JSON.stringify({ id, mode, instructions, prompt }) + '\n', (error) => {
       if (error) {
         waiters.delete(id)
         clearTimeout(timer)
@@ -183,13 +188,36 @@ export async function appleTriage(instructions: string, prompt: string): Promise
   if (!binary) throw new Error('noctua-fm fehlt — pnpm run build:fm')
 
   try {
-    return await requestOnce(binary, instructions, prompt)
+    return await requestOnce(binary, 'triage', instructions, prompt)
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     if (/guardrail/i.test(message)) throw new AppleGuardrailError(message.slice(0, 200))
     if (/context/i.test(message)) {
-      return await requestOnce(binary, instructions, prompt.slice(0, 6000))
+      return await requestOnce(binary, 'triage', instructions, prompt.slice(0, 6000))
     }
+    throw error
+  }
+}
+
+/**
+ * Aufgaben-Gate (M88): die enge Ja/Nein-Frage „bittet ein Mensch den
+ * Kontoinhaber persönlich?" beantwortet das kleine Modell deutlich
+ * zuverlässiger als die Extraktion im Gesamturteil (Eval: Precision
+ * 64 % → 100 % bei Recall 90 %). Fehler werten konservativ als Nein.
+ */
+export async function appleGate(instructions: string, prompt: string): Promise<boolean> {
+  const binary = helperPath()
+  if (!binary) throw new Error('noctua-fm fehlt — pnpm run build:fm')
+
+  try {
+    const result = (await requestOnce(binary, 'gate', instructions, prompt)) as {
+      is_personal_request?: boolean
+    }
+    return result?.is_personal_request === true
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    // Guardrail/Kontext: konservativ keine Aufgabe — Triage läuft trotzdem
+    if (/guardrail|context/i.test(message)) return false
     throw error
   }
 }
