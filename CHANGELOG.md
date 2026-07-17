@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.92.1] - 2026-07-16
+
+### Behoben
+
+- **Cloud-Triage: abgeschnittene Antworten bei Reasoning-Modellen** (Fund aus dem DeepSeek-Benchmark): `max_tokens: 500` zählte bei Hybrid-Reasonern wie DeepSeek v4 Flash die Denk-Tokens mit — Antworten endeten mit `finish_reason: length` mitten im JSON und verbrannten Retries. Jetzt 1200 Tokens Budget (der eigentliche Output bleibt ~150). Außerdem kann das Eval-Harness jetzt gegen OpenRouter messen: `OPENROUTER_API_KEY=… node scripts/apple-triage-eval/run.mjs deepseek`. Ergebnis auf dem 24-Mail-Set: DeepSeek P 100 %/R 100 %, Kategorie 91 %, ~7 s/Mail, ~0,015 ct/Mail — die zweistufige Apple-Pipeline hält bei der Aufgaben-Precision mit (100 %), liegt bei Recall (90 %) und Kategorien (~74 %) darunter, ist dafür lokal, kostenlos und schneller (~2,8 s/Mail).
+
 ## [0.92.0] - 2026-07-16
 
 ### Geändert
