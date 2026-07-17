@@ -254,4 +254,56 @@ if (variant === 'alle' || variant === 'v5') {
   })
 }
 
+// DeepSeek-Vergleich (Cloud-Pfad wie in prod: ein Aufruf, kein Gate).
+// Braucht OPENROUTER_API_KEY in der Umgebung; kostet ~1–2 Cent pro Lauf.
+async function askDeepseek(systemPrompt, prompt) {
+  const started = Date.now()
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'deepseek/deepseek-v4-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.1,
+      // Hybrid-Reasoner: Denk-Tokens zählen mit — 500 schneidet Antworten ab
+      max_tokens: 1200,
+      usage: { include: true }
+    })
+  })
+  const data = await response.json()
+  const raw = data.choices?.[0]?.message?.content ?? '{}'
+  let verdict
+  try {
+    verdict = JSON.parse(raw)
+  } catch {
+    verdict = { category: 'other', action_items: [], needs_reply: false, addressed_to_me: false }
+  }
+  return { verdict, ms: Date.now() - started, costUsd: data.usage?.cost ?? 0 }
+}
+
+if (variant === 'deepseek') {
+  if (!process.env.OPENROUTER_API_KEY) {
+    console.error('OPENROUTER_API_KEY fehlt — export OPENROUTER_API_KEY=sk-or-… und erneut starten')
+    process.exit(1)
+  }
+  let cost = 0
+  await runVariant(
+    helper,
+    'DeepSeek v4 Flash — Prod-Prompt, ein Aufruf (Cloud-Pfad)',
+    async (mail) => {
+      const { verdict, ms, costUsd } = await askDeepseek(PROMPT_V0, userPrompt(mail))
+      cost += costUsd
+      return { mail, verdict, ms, predicted: predictedTaskMail(verdict, mail) }
+    }
+  )
+  console.log(`  Kosten gesamt: $${cost.toFixed(4)}`)
+}
+
 helper.close()

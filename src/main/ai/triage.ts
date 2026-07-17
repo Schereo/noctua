@@ -312,7 +312,10 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
       ],
       response_format: { type: 'json_object' },
       temperature: 0.1,
-      max_tokens: 500,
+      // Reasoning-Modelle (z. B. DeepSeek v4 Flash) verbrauchen max_tokens
+      // auch für Denk-Tokens — 500 schnitt Antworten ab (finish=length)
+      // und verbrannte Retries. Der Output selbst bleibt ~150 Tokens.
+      max_tokens: 1200,
       // OpenRouter-Erweiterung: Kosten in der Response mitliefern
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...({ usage: { include: true } } as any)
