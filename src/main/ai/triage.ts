@@ -129,6 +129,8 @@ interface TriageRow {
   account_display_name: string | null
   account_name: string | null
   date: number | null
+  internal_date: number | null
+  account_created_at: number | null
   list_unsubscribe: number
   text_plain: string | null
   html_raw: string | null
@@ -250,8 +252,9 @@ export async function runTriage(db: Database.Database, messageId: number): Promi
   const row = db
     .prepare(
       `SELECT m.id, m.account_id, m.subject, m.from_name, m.from_addr, m.to_json, m.cc_json,
-              m.date, m.list_unsubscribe, b.text_plain, b.html_raw, a.email account_email,
-              a.display_name account_display_name, a.account_name,
+              m.date, m.internal_date, m.list_unsubscribe, b.text_plain, b.html_raw,
+              a.email account_email, a.display_name account_display_name, a.account_name,
+              a.created_at account_created_at,
               f.special_use folder_special_use
        FROM messages m LEFT JOIN message_bodies b ON b.message_id = m.id
        LEFT JOIN accounts a ON a.id = m.account_id
@@ -393,7 +396,14 @@ function persistVerdict(
     Date.now()
   )
 
-  if (options.createTasks !== false) {
+  // Historische Mails — angekommen, bevor das Konto eingerichtet wurde
+  // (Erst-Sync-Backfill) — erzeugen keine Aufgaben. Triage, Prioritäten und
+  // Anzeige bleiben unberührt; nur der Aufgaben-Schritt wird übersprungen.
+  const arrivedAt = row.internal_date ?? row.date
+  const historicalMail =
+    arrivedAt !== null && row.account_created_at !== null && arrivedAt < row.account_created_at
+
+  if (options.createTasks !== false && !historicalMail) {
     createTasksFromTriage(db, {
       sourceKind: 'mail',
       sourceId: messageId,

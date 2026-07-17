@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.92.0] - 2026-07-16
+
+### Geändert
+
+- **Keine Aufgaben mehr aus historischen Mails** (M89): Beim Einrichten eines Postfachs holt der Erst-Sync bis zu 90 Tage Historie — daraus entstanden bisher rückwirkend Aufgaben und Vorschläge. Jetzt erzeugen nur noch Mails Aufgaben, die NACH der Konto-Einrichtung angekommen sind (Server-Ankunftszeit vs. Einrichtungszeitpunkt); Triage, Kategorien, Prioritäten und Zusammenfassungen laufen für die Historie unverändert. Gilt für beide Scan-Provider und für bestehende Konten ohne Verhaltensänderung.
+
 ## [0.91.0] - 2026-07-16
 
 ### Geändert
