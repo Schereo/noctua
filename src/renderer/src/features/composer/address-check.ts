@@ -26,3 +26,11 @@ export function isChippableAddress(raw: string): boolean {
 export function isDoubtfulAddress(raw: string): boolean {
   return classifyAddress(raw) === 'doubtful'
 }
+
+/** Split free-form input into address candidates (comma/semicolon/whitespace). */
+export function parseAddresses(raw: string): string[] {
+  return raw
+    .split(/[,;\s]+/)
+    .map((part) => part.trim())
+    .filter((part) => part.includes('@'))
+}

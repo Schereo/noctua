@@ -21,7 +21,7 @@ import {
 import { useAccountSignature } from '@renderer/features/composer/useAccountSignature'
 import { FromAccountPicker } from '@renderer/features/composer/FromAccountPicker'
 import { FROM_AUTOPILOT_NOTE_MS, planAutoSwitch } from '@renderer/features/composer/from-autopilot'
-import { classifyAddress } from '@renderer/features/composer/address-check'
+import { classifyAddress, parseAddresses } from '@renderer/features/composer/address-check'
 import { useListeningAudio } from '@renderer/features/paper/useListeningAudio'
 import {
   isComposeDraftEmpty,
@@ -29,13 +29,6 @@ import {
   saveComposeDraft,
   type ComposeDraft
 } from '@renderer/lib/composeDraft'
-
-function parseAddresses(raw: string): string[] {
-  return raw
-    .split(/[,;\s]+/)
-    .map((part) => part.trim())
-    .filter((part) => part.includes('@'))
-}
 
 type ComposeMode = 'idle' | 'listening' | 'transcribing' | 'drafting'
 type CompositionMode = 'dictation' | 'idea'

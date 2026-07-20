@@ -1112,6 +1112,11 @@ const table = {
   replyScopeLabel: { en: 'REPLY TO', de: 'ANTWORT AN' },
   replyAllToggle: { en: 'REPLY ALL', de: 'ALLEN ANTWORTEN' },
   replyAllPlus: { en: '+{n}', de: '+{n}' },
+  replyExtraAria: {
+    en: 'Add recipients (to/CC/BCC)',
+    de: 'Weitere Empfänger hinzufügen (An/CC/BCC)'
+  },
+  replyExtraTo: { en: '+TO', de: '+AN' },
   replyAllToggleAria: {
     en: 'reply to all — {n} more recipients',
     de: 'allen antworten — {n} weitere Empfänger'

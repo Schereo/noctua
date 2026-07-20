@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.93.0] - 2026-07-20
+
+### Added
+
+- **Extra recipients when replying** (M90): The reply-to row now has a small + button that opens +TO/CC/BCC fields — with the same chip input and contact autocomplete as the composer. Added addresses merge into the computed reply set on send, deduplicated across fields (to beats cc beats bcc); the button shows a +N badge while extras are set, and they reset when switching threads or after sending.
+
 ## [0.92.1] - 2026-07-16
 
 ### Behoben
