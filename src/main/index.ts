@@ -47,7 +47,9 @@ function createWindow(): BrowserWindow {
     title: 'Noctua',
     backgroundColor: '#F4F1EA',
     titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 14 },
+    // Traffic lights vertically centered on the masthead wordmark: its box
+    // spans 18–42px (center 30), the buttons are 12px tall → top at 24.
+    trafficLightPosition: { x: 16, y: 24 },
     ...(process.platform !== 'darwin' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.93.2] - 2026-07-20
+
+### Fixed
+
+- **Traffic lights vertically centered on the masthead wordmark**: the macOS window buttons sat 10px too high next to the Noctua wordmark. Position derived from the measured wordmark box (center 30px, buttons 12px tall → y 24).
+
 ## [0.93.1] - 2026-07-20
 
 ### Changed
