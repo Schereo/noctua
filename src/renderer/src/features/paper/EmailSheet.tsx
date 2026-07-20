@@ -1482,9 +1482,11 @@ export function EmailSheet(): React.JSX.Element {
                 )}
                 <button
                   type="button"
-                  className="composer-reveal-btn flex-none"
+                  className="reply-extra-btn flex-none"
                   onClick={() => setExtrasOpen((open) => !open)}
                   aria-expanded={extrasOpen}
+                  data-open={extrasOpen}
+                  data-active={extraTo.length + extraCc.length + extraBcc.length > 0}
                   aria-label={t('replyExtraAria')}
                   title={t('replyExtraAria')}
                 >

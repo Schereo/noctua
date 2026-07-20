@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.93.1] - 2026-07-20
+
+### Changed
+
+- **The add-recipients button in the reply row is easier to spot** (follow-up to M90): instead of a bare plus glyph it is now a framed square in the filter-trigger vocabulary — 1px ink border, paper background, offset shadow; ink-filled while open, accent-filled with a +N badge while extra recipients are set.
+
 ## [0.93.0] - 2026-07-20
 
 ### Added
