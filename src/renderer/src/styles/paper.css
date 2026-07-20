@@ -2109,6 +2109,42 @@ kbd,
   max-width: min(280px, calc(100% - 8px));
 }
 
+/* Reply row: add-recipients button (M90). Framed like the filter triggers
+   so it reads as a control; fills with accent while extras are set. */
+.reply-extra-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 12px/1 var(--mono);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.reply-extra-btn:hover,
+.reply-extra-btn[data-open='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.reply-extra-btn[data-active='true'] {
+  border-color: var(--ac);
+  background: var(--ac);
+  color: var(--paper);
+  font-size: 10px;
+}
+
+.reply-extra-btn:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
 /* ── Filter-Zeile des Posteingangs (Design 7a) ─────────────────────── */
 .inbox-filter-row {
   position: relative;
