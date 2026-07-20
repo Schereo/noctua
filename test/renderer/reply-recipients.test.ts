@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { buildReplyRecipients, type ReplyMessage } from '@renderer/lib/reply-recipients'
+import {
+  buildReplyRecipients,
+  mergeRecipientFields,
+  type ReplyMessage
+} from '@renderer/lib/reply-recipients'
 
 // M80: Empfänger-Berechnung für r (Absender) und a (alle). Die eigenen
 // Adressen kommen aus accounts:list — der Nutzer kann mehrere Konten haben.
@@ -186,5 +190,29 @@ describe('buildReplyRecipients — Alle (a)', () => {
     const result = buildReplyRecipients(thread, [ME], 'all')
     expect(result?.to).toEqual([ME])
     expect(result?.cc).toEqual(['carol@firma.test'])
+  })
+})
+
+describe('mergeRecipientFields (M90 — extra reply recipients)', () => {
+  it('keeps each address in exactly one field, to beats cc beats bcc', () => {
+    expect(
+      mergeRecipientFields({
+        to: ['neele@example.eu', 'extra@example.org'],
+        cc: ['Extra@Example.org', 'cc@example.org', 'neele@example.eu'],
+        bcc: ['cc@example.org', 'bcc@example.org']
+      })
+    ).toEqual({
+      to: ['neele@example.eu', 'extra@example.org'],
+      cc: ['cc@example.org'],
+      bcc: ['bcc@example.org']
+    })
+  })
+
+  it('drops blanks and trims before comparing', () => {
+    expect(mergeRecipientFields({ to: ['  a@b.de  ', ''], cc: ['a@b.de'], bcc: [' '] })).toEqual({
+      to: ['  a@b.de  '],
+      cc: [],
+      bcc: []
+    })
   })
 })

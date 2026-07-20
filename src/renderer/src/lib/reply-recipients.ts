@@ -73,3 +73,24 @@ export function buildReplyRecipients(
   const subject = `Re: ${(lastForeign.subject ?? '').replace(/^(re|aw)\s*:\s*/i, '')}`
   return { to, cc, subject, replyToMessageId: last.id }
 }
+
+/**
+ * Merge extra recipients (M90: the + button in the reply row) into the
+ * computed reply set. Each address ends up in exactly one field — to beats
+ * cc beats bcc — and blank entries are dropped.
+ */
+export function mergeRecipientFields(fields: { to: string[]; cc: string[]; bcc: string[] }): {
+  to: string[]
+  cc: string[]
+  bcc: string[]
+} {
+  const seen = new Set<string>()
+  const takeUnique = (list: string[]): string[] =>
+    list.filter((addr) => {
+      const key = addr.trim().toLowerCase()
+      if (!key || seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  return { to: takeUnique(fields.to), cc: takeUnique(fields.cc), bcc: takeUnique(fields.bcc) }
+}

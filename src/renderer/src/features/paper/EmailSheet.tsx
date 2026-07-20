@@ -35,7 +35,9 @@ import {
 import { MessageAttachments } from '@renderer/features/paper/MessageAttachments'
 import { OverrideMenu } from '@renderer/features/inbox/OverrideMenu'
 import { useUiStore } from '@renderer/stores/ui'
-import { buildReplyRecipients } from '@renderer/lib/reply-recipients'
+import { buildReplyRecipients, mergeRecipientFields } from '@renderer/lib/reply-recipients'
+import { parseAddresses } from '@renderer/features/composer/address-check'
+import { RecipientInput } from '@renderer/features/composer/RecipientInput'
 
 /** MailFrame mit cid-Inline-Bildern (lazy) und echter Bild-Freigabe. */
 function InlineMailFrame({
@@ -235,7 +237,10 @@ function TriageSection({ triage }: { triage: TriageInfo }): React.JSX.Element {
         {triage.priority !== null && (
           <>
             <span aria-hidden="true">·</span>
-            <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center' }} aria-hidden="true">
+            <span
+              style={{ display: 'inline-flex', gap: 2, alignItems: 'center' }}
+              aria-hidden="true"
+            >
               {[1, 2, 3, 4, 5].map((step) => (
                 <span
                   key={step}
@@ -592,6 +597,27 @@ export function EmailSheet(): React.JSX.Element {
   const voiceTag = useVoiceTag(accountId, account?.accountName ?? null)
   const signature = useAccountSignature(account)
   const composerRef = useRef<MailComposerHandle>(null)
+  // Extra reply recipients (M90): opened via the + button in the reply-to
+  // row; applied on send on top of the computed reply/reply-all set.
+  const [extrasOpen, setExtrasOpen] = useState(false)
+  const [extraTo, setExtraTo] = useState<string[]>([])
+  const [extraCc, setExtraCc] = useState<string[]>([])
+  const [extraBcc, setExtraBcc] = useState<string[]>([])
+  const extraToText = useRef('')
+  const extraCcText = useRef('')
+  const extraBccText = useRef('')
+  const resetExtras = useCallback((): void => {
+    setExtrasOpen(false)
+    setExtraTo([])
+    setExtraCc([])
+    setExtraBcc([])
+    extraToText.current = ''
+    extraCcText.current = ''
+    extraBccText.current = ''
+  }, [])
+  useEffect(() => {
+    resetExtras()
+  }, [threadKey, resetExtras])
   const transcriptionOpRef = useRef(0)
   const generationRequestRef = useRef(0)
   const [hasRetryableRecording, setHasRetryableRecording] = useState(false)
@@ -955,13 +981,20 @@ export function EmailSheet(): React.JSX.Element {
     }
     const reply = buildReplyRecipients(messages.data, ownEmails, c.replyAll ? 'all' : 'sender')
     if (!reply) return
+    // Merge the extra recipients in, keeping each address in one field only
+    // (to beats cc beats bcc) and never duplicating an address.
+    const { to, cc, bcc } = mergeRecipientFields({
+      to: [...reply.to, ...extraTo, ...parseAddresses(extraToText.current)],
+      cc: [...reply.cc, ...extraCc, ...parseAddresses(extraCcText.current)],
+      bcc: [...extraBcc, ...parseAddresses(extraBccText.current)]
+    })
     const htmlBody = composerHtmlForSend(c.html, c.text)
     setComp({ mode: 'sending', error: null, errorKind: null })
     void invoke('compose:send', {
       accountId: account.id,
-      to: reply.to,
-      cc: reply.cc,
-      bcc: [],
+      to,
+      cc,
+      bcc,
       subject: reply.subject,
       textBody: c.text,
       htmlBody,
@@ -977,12 +1010,13 @@ export function EmailSheet(): React.JSX.Element {
           accountId: account.id,
           fromAddr: account.email,
           subject: reply.subject,
-          to: reply.to,
+          to,
           archive: c.threadKey
             ? { threadKey: c.threadKey, messageIds: messages.data!.map((m) => m.id) }
             : undefined
         })
         usePaper.getState().resetComp()
+        resetExtras()
       })
       .catch((err) => {
         const current = usePaper.getState().comp
@@ -993,7 +1027,18 @@ export function EmailSheet(): React.JSX.Element {
           errorKind: 'send'
         })
       })
-  }, [messages.data, account, ownEmails, beginSend, setComp, threadKey])
+  }, [
+    messages.data,
+    account,
+    ownEmails,
+    beginSend,
+    setComp,
+    threadKey,
+    extraTo,
+    extraCc,
+    extraBcc,
+    resetExtras
+  ])
 
   const updateDocument = useCallback(
     (document: ComposerDocument): void => {
@@ -1435,6 +1480,18 @@ export function EmailSheet(): React.JSX.Element {
                     </span>
                   </button>
                 )}
+                <button
+                  type="button"
+                  className="composer-reveal-btn flex-none"
+                  onClick={() => setExtrasOpen((open) => !open)}
+                  aria-expanded={extrasOpen}
+                  aria-label={t('replyExtraAria')}
+                  title={t('replyExtraAria')}
+                >
+                  {extraTo.length + extraCc.length + extraBcc.length > 0
+                    ? t('replyAllPlus', { n: extraTo.length + extraCc.length + extraBcc.length })
+                    : '+'}
+                </button>
               </div>
               {isReplyAll && replyTarget.cc.length > 0 && (
                 <div className="flex items-baseline gap-2.5" style={{ marginTop: 5, minWidth: 0 }}>
@@ -1448,6 +1505,51 @@ export function EmailSheet(): React.JSX.Element {
                   >
                     {replyTarget.cc.join(' · ')}
                   </span>
+                </div>
+              )}
+              {extrasOpen && (
+                <div style={{ marginTop: 6 }}>
+                  {(
+                    [
+                      {
+                        label: t('replyExtraTo'),
+                        chips: extraTo,
+                        set: setExtraTo,
+                        ref: extraToText
+                      },
+                      { label: t('composeCc'), chips: extraCc, set: setExtraCc, ref: extraCcText },
+                      {
+                        label: t('composeBcc'),
+                        chips: extraBcc,
+                        set: setExtraBcc,
+                        ref: extraBccText
+                      }
+                    ] as const
+                  ).map((field, index) => (
+                    <div
+                      key={field.label}
+                      className="flex items-start gap-2.5"
+                      style={{ padding: '4px 0', minWidth: 0 }}
+                    >
+                      <span
+                        className="mlabel flex-none"
+                        style={{ fontSize: 8, color: 'var(--muted)', width: 34, marginTop: 7 }}
+                      >
+                        {field.label}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <RecipientInput
+                          label=""
+                          chips={field.chips as string[]}
+                          onChipsChange={field.set}
+                          onTextChange={(text) => {
+                            field.ref.current = text
+                          }}
+                          autoFocus={index === 0}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
