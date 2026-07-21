@@ -64,7 +64,7 @@ function seedMail(db: Database.Database, mail: SeedMail): number {
 }
 
 function vector(fill: number): Float32Array {
-  return new Float32Array(384).fill(fill)
+  return new Float32Array(768).fill(fill)
 }
 
 function indexVector(db: Database.Database, messageId: number, embedding: Float32Array): void {

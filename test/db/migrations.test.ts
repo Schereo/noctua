@@ -12,7 +12,7 @@ describe('migrations', () => {
 
   it('wenden alle Migrationen sauber an und setzen user_version', () => {
     db = createTestDb()
-    expect(db.pragma('user_version', { simple: true })).toBe(21)
+    expect(db.pragma('user_version', { simple: true })).toBe(22)
   })
 
   it('erzwingt eindeutige Postfachnamen unabhängig von Großschreibung', () => {
@@ -220,7 +220,7 @@ describe('migrations', () => {
     db = createTestDb()
     const { runMigrations } = await import('@main/db/migrate')
     const result = runMigrations(db)
-    expect(result).toEqual({ from: 21, to: 21 })
+    expect(result).toEqual({ from: 22, to: 22 })
   })
 
   it('bereinigt Aufgaben aus kontenuebergreifenden Selbst-Sends', async () => {
@@ -271,7 +271,7 @@ describe('migrations', () => {
     `)
     db.pragma('user_version = 11')
     const { runMigrations } = await import('@main/db/migrate')
-    expect(runMigrations(db)).toEqual({ from: 11, to: 21 })
+    expect(runMigrations(db)).toEqual({ from: 11, to: 22 })
     expect(db.prepare('SELECT count(*) count FROM tasks').get()).toEqual({ count: 0 })
     expect(
       db

@@ -4,8 +4,8 @@ import type Database from 'better-sqlite3'
 import { htmlToText } from '../mail/parser'
 import { cleanupSearchOrphans, refreshMessageSearchIndex } from '../mail/ingest'
 
-export const EMBEDDING_MODEL = 'Xenova/multilingual-e5-small'
-const DIMS = 384
+export const EMBEDDING_MODEL = 'Xenova/multilingual-e5-base'
+const DIMS = 768
 const BATCH = 8
 const SCAN_LIMIT = 48
 const POLL_INTERVAL_MS = 60_000

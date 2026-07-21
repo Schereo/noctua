@@ -61,7 +61,7 @@ describe('EmbeddingIndexer status', () => {
       .get(messageIds[0]) as { content_hash: string }
     db.prepare('INSERT INTO message_vecs (rowid, embedding) VALUES (?, ?)').run(
       BigInt(messageIds[0]),
-      Buffer.from(new Float32Array(384).buffer)
+      Buffer.from(new Float32Array(768).buffer)
     )
     db.prepare(
       `UPDATE message_embedding_state
@@ -80,7 +80,7 @@ describe('EmbeddingIndexer status', () => {
     storeTestBody(db, message.messageId, 'Eine Plakatiererlaubnis der Stadt')
     db.prepare('INSERT INTO message_vecs (rowid, embedding) VALUES (?, ?)').run(
       BigInt(message.messageId),
-      Buffer.from(new Float32Array(384).buffer)
+      Buffer.from(new Float32Array(768).buffer)
     )
     db.prepare(
       `UPDATE message_embedding_state
