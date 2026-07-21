@@ -18,6 +18,7 @@ import { stopAppleFm } from './ai/apple-fm'
 import { openExternalSafe } from './util/links'
 import { installAppMenu } from './menu'
 import { cleanupForwardTasksWithoutRequest } from './db/repos/tasks'
+import { reindexHtmlOnlyMessages } from './mail/ingest'
 
 // Bewusst KEIN app.setName('Noctua'): das würde den bestehenden userData-/
 // Safe-Storage-Namen verändern. Im Dev liefert scripts/prepare-dev-app.mjs die
@@ -124,6 +125,7 @@ app
 
     const db = openDb()
     cleanupForwardTasksWithoutRequest(db)
+    reindexHtmlOnlyMessages(db)
     if (isDev) seedFromEnv(db)
     registerIpcHandlers(handlers)
 

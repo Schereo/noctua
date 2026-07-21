@@ -5,7 +5,8 @@ import {
   storeBody,
   applyFlagUpdate,
   cleanupSearchOrphans,
-  deleteByUids
+  deleteByUids,
+  reindexHtmlOnlyMessages
 } from '@main/mail/ingest'
 import { EMBEDDING_MODEL } from '@main/ai/embeddings'
 import { createTestDb, closeTestDb, seedAccount, seedFolder, makeEnvelope } from '../helpers/db'
@@ -273,5 +274,47 @@ describe('applyFlagUpdate & deleteByUids', () => {
     expect(cleanupSearchOrphans(db)).toEqual({ fts: 1, vectors: 1, states: 0 })
     expect(db.prepare('SELECT count(*) count FROM messages_fts').get()).toEqual({ count: 0 })
     expect(db.prepare('SELECT count(*) count FROM message_vecs').get()).toEqual({ count: 0 })
+  })
+})
+
+describe('reindexHtmlOnlyMessages (M94)', () => {
+  it('re-indexes html-only bodies once and sets the settings flag', () => {
+    const db = createTestDb()
+    const acc = seedAccount(db, { email: 'lena@test.de' })
+    const folder = seedFolder(db, acc, '\\Inbox')
+    const res = upsertEnvelope(
+      db,
+      acc,
+      folder,
+      makeEnvelope({ uid: 77, messageId: '<html77@t>', subject: 'Nur HTML' })
+    )!
+    db.prepare('UPDATE messages SET body_state = ? WHERE id = ?').run('full', res.messageId)
+    db.prepare(
+      'INSERT INTO message_bodies (message_id, text_plain, html_raw) VALUES (?, NULL, ?)'
+    ).run(
+      res.messageId,
+      '<html><body><p>' + 'x'.repeat(60) + ' Wattenmeerwanderung im Herbst</p></body></html>'
+    )
+    // Simulate the migration-021 state: FTS row without the html body text
+    db.prepare('DELETE FROM messages_fts WHERE rowid = ?').run(res.messageId)
+    db.prepare(
+      'INSERT INTO messages_fts (rowid, subject, sender, recipients, body) VALUES (?, ?, ?, ?, ?)'
+    ).run(res.messageId, 'Nur HTML', '', '', '')
+
+    expect(
+      db
+        .prepare(`SELECT count(*) n FROM messages_fts WHERE messages_fts MATCH '"wattenmeer"'`)
+        .get()
+    ).toEqual({ n: 0 })
+
+    expect(reindexHtmlOnlyMessages(db)).toBe(1)
+    expect(
+      db
+        .prepare(`SELECT count(*) n FROM messages_fts WHERE messages_fts MATCH '"wattenmeer"'`)
+        .get()
+    ).toEqual({ n: 1 })
+    // Second run is a no-op thanks to the settings flag
+    expect(reindexHtmlOnlyMessages(db)).toBe(0)
+    closeTestDb(db)
   })
 })
