@@ -150,6 +150,31 @@ describe('semanticSearch', () => {
     if (db) closeTestDb(db)
   })
 
+  it('findet Absender trotz Tippfehler über den Sender-Kanal (M92)', async () => {
+    db = createTestDb()
+    const accountId = seedAccount(db, { email: 'tim@example.org' })
+    const inbox = seedFolder(db, accountId, '\\Inbox')
+    seedMail(db, {
+      accountId,
+      folderId: inbox,
+      uid: 51,
+      threadKey: 'stadt',
+      subject: 'AW: Aufstellung von Großflächentafeln',
+      body: 'Standortliste im Anhang.',
+      fromName: 'Bütefisch, Jens',
+      fromAddr: 'Jens.Buetefisch@stadt.example'
+    })
+
+    const result = await semanticSearch(
+      db,
+      { q: 'was ist die letzte mail von jens buetfisch', limit: 5 },
+      { embedQuery: async () => [] }
+    )
+    const hit = result.hits.find((h) => h.threadKey === 'stadt')
+    expect(hit).toBeTruthy()
+    expect(hit!.signals).toContain('sender')
+  })
+
   it('findet Substrings in Komposita und faltet ß/ss (M91)', async () => {
     db = createTestDb()
     const accountId = seedAccount(db, { email: 'tim@example.org' })

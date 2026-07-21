@@ -3,6 +3,7 @@ import type { SemanticSearchHit, SemanticSearchIndex, SemanticSearchSignal } fro
 import { embedQuery, embeddingIndexer } from '../ai/embeddings'
 import { htmlToText } from '../mail/parser'
 import { foldSharpS } from './fold'
+import { fuzzySenderMessageIds } from './fuzzy-sender'
 import { dedupeByThread, reciprocalRankFusion } from './ranking'
 
 export interface SemanticSearchInput {
@@ -418,11 +419,15 @@ export async function searchSemantic(
   // dadurch parallel Modell-/I/O-Arbeit erledigen.
   const vectorPromise = semanticCandidates(db, query, candidateLimit, input.accountId, dependencies)
   const lexical = ftsCandidates(db, query, candidateLimit, input.accountId)
+  // Typo-tolerant sender channel: "mail von jens buetfisch" finds the sender
+  // even when FTS misses because of a dropped letter (M92).
+  const senderIds = fuzzySenderMessageIds(db, queryTerms(query), 24, input.accountId)
   const semantic = await vectorPromise
 
   const ranked = reciprocalRankFusion([
     { signal: 'fulltext', messageIds: lexical.map((row) => row.messageId), weight: 1.05 },
-    { signal: 'semantic', messageIds: semantic.map((row) => row.messageId) }
+    { signal: 'semantic', messageIds: semantic.map((row) => row.messageId) },
+    { signal: 'sender', messageIds: senderIds, weight: 1.1 }
   ])
   const rowsById = loadRows(
     db,
