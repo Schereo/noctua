@@ -84,20 +84,51 @@ describe('semantic search ranking', () => {
     expect(ranked.find((row) => row.messageId === 1)?.signals).toEqual(['fulltext'])
   })
 
-  it('dedupliziert erst die fertig gerankten Nachrichten je Thread', () => {
+  it('collapses ranked messages per thread, keeping rank order', () => {
     expect(
       dedupeByThread(
         [
-          { id: 11, threadKey: 'a' },
-          { id: 12, threadKey: 'a' },
-          { id: 21, threadKey: 'b' }
+          { id: 11, threadKey: 'a', date: 3 },
+          { id: 12, threadKey: 'a', date: 1 },
+          { id: 21, threadKey: 'b', date: 2 }
         ],
         10
       )
     ).toEqual([
-      { id: 11, threadKey: 'a' },
-      { id: 21, threadKey: 'b' }
+      { id: 11, threadKey: 'a', date: 3 },
+      { id: 21, threadKey: 'b', date: 2 }
     ])
+  })
+
+  it('shows the newest matching message of a thread, not the bm25 winner', () => {
+    // Regression (Tim, 2026-07-20): a long March forward outranked the fresh
+    // Friday mail and masked it in the results.
+    expect(
+      dedupeByThread(
+        [
+          { id: 460, threadKey: 'gm:186', date: 1741181331000 },
+          { id: 2686, threadKey: 'gm:186', date: 1784303254000 },
+          { id: 21, threadKey: 'b', date: 5 }
+        ],
+        10
+      )
+    ).toEqual([
+      { id: 2686, threadKey: 'gm:186', date: 1784303254000 },
+      { id: 21, threadKey: 'b', date: 5 }
+    ])
+  })
+
+  it('respects the limit by thread position, not by representative choice', () => {
+    expect(
+      dedupeByThread(
+        [
+          { id: 1, threadKey: 'a', date: 1 },
+          { id: 2, threadKey: 'b', date: 9 },
+          { id: 3, threadKey: 'a', date: 7 }
+        ],
+        1
+      )
+    ).toEqual([{ id: 3, threadKey: 'a', date: 7 }])
   })
 
   it('entfernt Frage-Füllwörter und baut eine fehlertolerante OR-Prefix-Suche', () => {
