@@ -7,6 +7,7 @@ import {
   fuzzySenderThreadKeys
 } from '@main/search/fuzzy-sender'
 import { queryTerms } from '@main/search/semantic'
+import { buildRetrievalText } from '@main/ai/chat'
 import { closeTestDb, createTestDb, seedAccount, seedFolder } from '../helpers/db'
 
 // Typo-tolerant sender lookup (M92) — regression built from Tim's real case:
@@ -107,3 +108,37 @@ describe('fuzzySenderMatches', () => {
     expect(fuzzySenderMatches(db, ['von'])).toEqual([])
   })
 })
+
+describe('buildRetrievalText (M93 — Folgefragen)', () => {
+  let db: Database.Database
+  afterEach(() => closeTestDb(db))
+
+  it('löst Pronomen über den Gesprächsverlauf auf', () => {
+    db = createTestDbForRetrieval()
+    const history = [
+      { role: 'user' as const, content: 'Was waren die letzten mail von jens buetefisch' },
+      { role: 'assistant' as const, content: 'Die letzten beiden Mails von Jens Bütefisch waren …' }
+    ]
+    const text = buildRetrievalText('Kannst du mir alle mails von ihm geben?', history)
+    const matches = fuzzySenderMatches(db, queryTerms(text))
+    expect(matches.map((m) => m.addr)).toEqual(['jens.buetefisch@stadt.example'])
+  })
+
+  it('lässt Erstfragen unverändert', () => {
+    expect(buildRetrievalText('Was kam heute an?', [])).toBe('Was kam heute an?')
+  })
+})
+
+function createTestDbForRetrieval(): Database.Database {
+  const fresh = createTestDb()
+  const accountId = seedAccount(fresh, { email: 'tim@example.org' })
+  const inbox = seedFolder(fresh, accountId, '\\Inbox')
+  fresh
+    .prepare(
+      `INSERT INTO messages (account_id, folder_id, uid, message_id, thread_key, subject,
+         from_addr, from_name, date, body_state)
+       VALUES (?, ?, 9, '<r9@t>', 'stadt', 'Betreff', 'Jens.Buetefisch@stadt.example', 'Bütefisch, Jens', 1784000000000, 'full')`
+    )
+    .run(accountId, inbox)
+  return fresh
+}
