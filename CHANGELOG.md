@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.96.0] - 2026-07-21
+
+### Added
+
+- **Owl query expansion knows the mailbox's senders** (M95): asking "Nachricht von meiner Bank" failed because nothing links "Bank" to N26. The keyword-expansion prompt now includes a compact inventory of the mailbox's top senders (display names, deduped), so category questions ("meine Bank", "mein Hoster", "meine Versicherung") resolve to the senders that actually exist in this mailbox.
+
 ## [0.95.2] - 2026-07-21
 
 ### Fixed

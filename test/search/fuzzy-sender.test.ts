@@ -7,7 +7,7 @@ import {
   fuzzySenderThreadKeys
 } from '@main/search/fuzzy-sender'
 import { queryTerms } from '@main/search/semantic'
-import { buildRetrievalText } from '@main/ai/chat'
+import { buildRetrievalText, senderInventory } from '@main/ai/chat'
 import { closeTestDb, createTestDb, seedAccount, seedFolder } from '../helpers/db'
 
 // Typo-tolerant sender lookup (M92) — regression built from Tim's real case:
@@ -142,3 +142,15 @@ function createTestDbForRetrieval(): Database.Database {
     .run(accountId, inbox)
   return fresh
 }
+
+describe('senderInventory (M95)', () => {
+  let db: Database.Database
+  afterEach(() => closeTestDb(db))
+
+  it('listet Top-Absender dedupliziert, Anzeigename vor Adresse', () => {
+    db = createTestDbForRetrieval()
+    const inventory = senderInventory(db)
+    expect(inventory).toContain('Bütefisch, Jens')
+    expect(inventory).not.toContain('jens.buetefisch@stadt.example')
+  })
+})
