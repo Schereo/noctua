@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.95.0] - 2026-07-20
+
+### Added
+
+- **Typo-tolerant sender search** (M92): asking the owl "letzte Mail von jens buetfisch" now finds "Bütefisch, Jens" even with a dropped letter — query terms are matched against every known sender (name words + address local-part) with a bounded edit distance, umlauts and ß folded like the index. Matched senders feed a dedicated recency-ordered channel into both the owl's retrieval basket (leading it) and the search result fusion (new "sender" signal). Generic mailbox words (info, service, newsletter, …) never identify a sender.
+
 ## [0.94.0] - 2026-07-20
 
 ### Changed

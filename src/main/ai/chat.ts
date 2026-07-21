@@ -1,4 +1,6 @@
 import { foldSharpS } from '../search/fold'
+import { fuzzySenderThreadKeys } from '../search/fuzzy-sender'
+import { queryTerms } from '../search/semantic'
 import { randomUUID } from 'node:crypto'
 import { currentDateLine, localStamp } from './prompt-date'
 import type Database from 'better-sqlite3'
@@ -211,6 +213,9 @@ async function runChat(
   if (isBudgetExceeded(db)) throw new Error('AI-Budget erschöpft')
 
   const keywords = await expandQuery(db, input.question)
+  // Typo-tolerant sender channel first: "letzte Mail von jens buetfisch"
+  // must surface that sender's threads even when full text misses (M92).
+  const senderKeys = fuzzySenderThreadKeys(db, queryTerms(input.question), 6)
   // Hybrid: semantische Treffer zuerst, Volltext füllt auf (dedupliziert).
   const [vecKeys, vecKeywordKeys, ftsKeys] = await Promise.all([
     vectorThreadKeys(db, input.question, 8),
@@ -220,7 +225,7 @@ async function runChat(
     Promise.resolve(ftsThreadKeys(db, keywords, 8))
   ])
   // Interleaved mergen, damit beide Vektor-Sichten vorne vertreten sind
-  const interleaved: string[] = []
+  const interleaved: string[] = [...senderKeys]
   const maxLen = Math.max(vecKeys.length, vecKeywordKeys.length, ftsKeys.length)
   for (let i = 0; i < maxLen; i++) {
     for (const list of [vecKeys, vecKeywordKeys, ftsKeys]) {

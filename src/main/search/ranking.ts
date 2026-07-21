@@ -1,7 +1,7 @@
 import type { SemanticSearchSignal } from '@shared/types'
 
 export interface RankedSearchList {
-  signal: Extract<SemanticSearchSignal, 'fulltext' | 'semantic'>
+  signal: Extract<SemanticSearchSignal, 'fulltext' | 'semantic' | 'sender'>
   messageIds: number[]
   weight?: number
 }
@@ -9,7 +9,7 @@ export interface RankedSearchList {
 export interface FusedSearchCandidate {
   messageId: number
   score: number
-  signals: Array<Extract<SemanticSearchSignal, 'fulltext' | 'semantic'>>
+  signals: Array<Extract<SemanticSearchSignal, 'fulltext' | 'semantic' | 'sender'>>
   bestRank: number
 }
 
