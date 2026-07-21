@@ -58,6 +58,34 @@ export function startChat(
   return { chatId }
 }
 
+/**
+ * Compact sender inventory for query expansion (M95): the model can only
+ * resolve "meine Bank" to N26 if it can see which senders exist in THIS
+ * mailbox. Top senders by volume, display name preferred, deduped.
+ */
+export function senderInventory(db: Database.Database, limit = 60): string {
+  const rows = db
+    .prepare(
+      `SELECT coalesce(nullif(trim(max(m.from_name)), ''), m.from_addr) AS label, count(*) AS n
+       FROM messages m
+       WHERE m.from_addr IS NOT NULL AND m.from_addr <> ''
+       GROUP BY lower(m.from_addr)
+       ORDER BY n DESC
+       LIMIT ?`
+    )
+    .all(limit) as Array<{ label: string; n: number }>
+  const seen = new Set<string>()
+  const labels: string[] = []
+  for (const row of rows) {
+    const label = row.label.replace(/["<>]/g, '').trim().slice(0, 48)
+    const key = label.toLocaleLowerCase('de-DE')
+    if (!label || seen.has(key)) continue
+    seen.add(key)
+    labels.push(label)
+  }
+  return labels.join(', ')
+}
+
 async function expandQuery(db: Database.Database, question: string): Promise<string[]> {
   const client = getOpenRouter()!
   // Draft-Modell: die Assoziation "Beschreibung -> Produktname" (z. B.
@@ -72,7 +100,11 @@ async function expandQuery(db: Database.Database, question: string): Promise<str
     messages: [
       {
         role: 'system',
-        content: `${currentDateLine()} Erzeuge Suchbegriffe für die Suche über ein E-Mail-Postfach. Namen, Firmen, Fachbegriffe, deutsche UND englische Varianten. Zeitbezüge ("diesen Monat", "letzte Woche") anhand des heutigen Datums auflösen. Beschreibt die Frage einen Dienst/ein Produkt, ohne ihn zu nennen, rate die wahrscheinlichsten Firmen-/Produktnamen dazu (z. B. "künstliche Stimmen" → ElevenLabs). Antworte NUR mit JSON: {"keywords": ["…"]}`
+        content: `${currentDateLine()} Erzeuge Suchbegriffe für die Suche über ein E-Mail-Postfach. Namen, Firmen, Fachbegriffe, deutsche UND englische Varianten. Zeitbezüge ("diesen Monat", "letzte Woche") anhand des heutigen Datums auflösen. Beschreibt die Frage einen Dienst/ein Produkt, ohne ihn zu nennen, rate die wahrscheinlichsten Firmen-/Produktnamen dazu (z. B. "künstliche Stimmen" → ElevenLabs).
+
+Absender in diesem Postfach (nutze passende davon als Suchbegriffe — beschreibt die Frage eine Kategorie wie "meine Bank" oder "mein Hoster", wähle die passenden Absender aus dieser Liste): ${senderInventory(db)}
+
+Antworte NUR mit JSON: {"keywords": ["…"]}`
       },
       { role: 'user', content: question }
     ],
