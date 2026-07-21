@@ -180,7 +180,7 @@ describe('storeBody', () => {
       .get(res.messageId) as { content_hash: string }
     db.prepare('INSERT INTO message_vecs (rowid, embedding) VALUES (?, ?)').run(
       BigInt(res.messageId),
-      Buffer.from(new Float32Array(384).buffer)
+      Buffer.from(new Float32Array(768).buffer)
     )
     db.prepare(
       `UPDATE message_embedding_state
@@ -263,7 +263,7 @@ describe('applyFlagUpdate & deleteByUids', () => {
     const message = upsertEnvelope(db, acc, folder, makeEnvelope({ uid: 21 }))!
     db.prepare('INSERT INTO message_vecs (rowid, embedding) VALUES (?, ?)').run(
       BigInt(message.messageId),
-      Buffer.from(new Float32Array(384).buffer)
+      Buffer.from(new Float32Array(768).buffer)
     )
 
     // Virtuelle Tabellen besitzen keine FK-Cascade.

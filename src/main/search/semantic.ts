@@ -425,7 +425,9 @@ export async function searchSemantic(
   const semantic = await vectorPromise
 
   const ranked = reciprocalRankFusion([
-    { signal: 'fulltext', messageIds: lexical.map((row) => row.messageId), weight: 1.05 },
+    // Weight tuned on the 57-case real-mailbox gold set (M96): 1.3 keeps rare
+    // exact matches from being diluted by the broad semantic candidate list.
+    { signal: 'fulltext', messageIds: lexical.map((row) => row.messageId), weight: 1.3 },
     { signal: 'semantic', messageIds: semantic.map((row) => row.messageId) },
     { signal: 'sender', messageIds: senderIds, weight: 1.1 }
   ])
