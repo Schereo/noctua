@@ -1,3 +1,4 @@
+import { foldSharpS } from '../search/fold'
 import { randomUUID } from 'node:crypto'
 import { currentDateLine, localStamp } from './prompt-date'
 import type Database from 'better-sqlite3'
@@ -105,9 +106,9 @@ interface RetrievedThread {
 
 function ftsThreadKeys(db: Database.Database, keywords: string[], limit: number): string[] {
   const match = keywords
-    .map((k) => k.replace(/["'*()]/g, '').trim())
-    .filter(Boolean)
-    .map((k) => `"${k}"*`)
+    .map((k) => foldSharpS(k.replace(/["'*()]/g, '').trim()))
+    .filter((k) => k.length >= 3)
+    .map((k) => `"${k}"`)
     .join(' OR ')
   if (!match) return []
   return (

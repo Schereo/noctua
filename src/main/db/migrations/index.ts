@@ -18,6 +18,7 @@ import m017 from './017_account_sync_days.sql?raw'
 import m018 from './018_followup_nudged_at.sql?raw'
 import m019 from './019_owl_conversations.sql?raw'
 import m020 from './020_addressed_to_me.sql?raw'
+import m021 from './021_fts_trigram.sql?raw'
 
 /**
  * Migrationen als ?raw-Importe, damit sie in das Main-Bundle eingebettet werden
@@ -44,5 +45,6 @@ export const migrations: ReadonlyArray<{ version: number; name: string; sql: str
   { version: 17, name: '017_account_sync_days', sql: m017 },
   { version: 18, name: '018_followup_nudged_at', sql: m018 },
   { version: 19, name: '019_owl_conversations', sql: m019 },
-  { version: 20, name: '020_addressed_to_me', sql: m020 }
+  { version: 20, name: '020_addressed_to_me', sql: m020 },
+  { version: 21, name: '021_fts_trigram', sql: m021 }
 ]
