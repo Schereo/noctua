@@ -202,6 +202,22 @@ function loadThreadContexts(db: Database.Database, threadKeys: string[]): Retrie
   })
 }
 
+/**
+ * Follow-up questions ("alle Mails von ihm") name their subject only in
+ * earlier turns — fold the recent conversation into the retrieval text so
+ * pronouns resolve (M93). Answers are capped early: entities lead them.
+ */
+export function buildRetrievalText(
+  question: string,
+  history: Array<{ role: 'user' | 'assistant'; content: string }>
+): string {
+  const tail = history
+    .slice(-4)
+    .map((turn) => turn.content.slice(0, turn.role === 'user' ? 300 : 240))
+    .join('\n')
+  return tail ? `${tail}\n${question}` : question
+}
+
 async function runChat(
   db: Database.Database,
   push: PushFn,
@@ -212,13 +228,17 @@ async function runChat(
   if (!client) throw new Error('Kein OpenRouter-Key hinterlegt (⌘, Einstellungen)')
   if (isBudgetExceeded(db)) throw new Error('AI-Budget erschöpft')
 
-  const keywords = await expandQuery(db, input.question)
+  const retrievalText = buildRetrievalText(input.question, input.history)
+
+  const keywords = await expandQuery(db, retrievalText)
   // Typo-tolerant sender channel first: "letzte Mail von jens buetfisch"
   // must surface that sender's threads even when full text misses (M92).
-  const senderKeys = fuzzySenderThreadKeys(db, queryTerms(input.question), 6)
+  // "alle Mails von …" widens the channel so the answer can enumerate.
+  const wantsAll = /\balle[nm]?\b/i.test(input.question)
+  const senderKeys = fuzzySenderThreadKeys(db, queryTerms(retrievalText), wantsAll ? 14 : 6)
   // Hybrid: semantische Treffer zuerst, Volltext füllt auf (dedupliziert).
   const [vecKeys, vecKeywordKeys, ftsKeys] = await Promise.all([
-    vectorThreadKeys(db, input.question, 8),
+    vectorThreadKeys(db, retrievalText, 8),
     keywords.length > 0
       ? vectorThreadKeys(db, keywords.join(', '), 6)
       : Promise.resolve([] as string[]),
@@ -240,7 +260,8 @@ async function runChat(
     topical: [...new Set(interleaved)],
     newest,
     temporal,
-    cap: 12
+    // "alle Mails von X": give an identified sender room to enumerate
+    cap: wantsAll && senderKeys.length > 0 ? 16 : 12
   })
   console.log(
     `[chat] retrieval: ${vecKeys.length} vektor(frage) + ${vecKeywordKeys.length} vektor(keywords) + ${ftsKeys.length} fts + ${newest.length} neueste${temporal ? ' (Zeitbezug!)' : ''} -> ${merged.length} gesamt`

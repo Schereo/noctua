@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.95.1] - 2026-07-20
+
+### Fixed
+
+- **Owl follow-up questions resolve pronouns** (follow-up to M92): "Kannst du mir alle Mails von ihm geben?" retrieved random threads because retrieval only saw the current question. The recent conversation turns are now folded into the retrieval text (keyword expansion, semantic channel, and the fuzzy sender channel), so "ihm" inherits the sender from the previous question. "Alle Mails von …" also widens the sender channel (14 threads, basket cap 16) so the answer can actually enumerate.
+
 ## [0.95.0] - 2026-07-20
 
 ### Added
