@@ -460,7 +460,7 @@ export async function searchSemantic(
         fromAddr: row.from_addr,
         date: row.mail_date,
         excerpt: evidenceExcerpt(row, terms),
-        signals,
+        signals: [...new Set(signals)],
         confidence: clear ? 'clear' : 'possible'
       }
     ]

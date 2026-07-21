@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.95.2] - 2026-07-21
+
+### Fixed
+
+- **HTML-only mails are fully searchable again** (found by the real-mailbox search evaluation): the trigram rebuild in migration 021 repopulated the index from plain text/snippet only, silently dropping the body text of 425 HTML-only mails. A one-time startup job re-runs the regular indexing path (which extracts text from HTML) for those messages. Also: search hit signals are deduplicated ("sender" could appear twice).
+
 ## [0.95.1] - 2026-07-20
 
 ### Fixed

@@ -141,6 +141,35 @@ export interface SearchOrphanCleanup {
 }
 
 /** Entfernt Indexzeilen, die virtuelle Tabellen nicht per FK-Cascade verlieren. */
+/**
+ * One-time repair (M94): the trigram rebuild in migration 021 populated the
+ * index from text_plain/snippet only — HTML-only mails lost their body text
+ * in FTS. Re-run the regular index path for those messages once.
+ */
+export function reindexHtmlOnlyMessages(db: Database.Database): number {
+  const FLAG = 'search.htmlReindex021Done'
+  const done = db.prepare('SELECT value FROM settings WHERE key = ?').get(FLAG) as
+    { value: string } | undefined
+  if (done?.value === '1') return 0
+
+  const candidates = (
+    db
+      .prepare(
+        `SELECT b.message_id AS id FROM message_bodies b
+         WHERE (b.text_plain IS NULL OR trim(b.text_plain) = '')
+           AND b.html_raw IS NOT NULL AND length(b.html_raw) > 50`
+      )
+      .all() as Array<{ id: number }>
+  ).map((row) => row.id)
+  for (const id of candidates) refreshMessageSearchIndex(db, id)
+
+  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(FLAG, '1')
+  if (candidates.length > 0) {
+    console.log(`[search] FTS-Reindex für ${candidates.length} HTML-only-Mails abgeschlossen`)
+  }
+  return candidates.length
+}
+
 export function cleanupSearchOrphans(db: Database.Database): SearchOrphanCleanup {
   const ftsIds = (
     db
