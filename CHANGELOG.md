@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.94.0] - 2026-07-20
+
+### Changed
+
+- **Search matches inside words and treats ß like ss** (M91): the full-text index moves to SQLite's trigram tokenizer — searching "Tafeln" now finds the German compound "Großflächentafeln", and "gross"/"groß" find each other (ß is folded to ss identically at index and query time; case and umlauts were already folded). Migration 021 rebuilds the index once on first launch (a few seconds). Trade-off: search terms now need at least three characters to hit the full-text path — shorter terms fall through to semantic search.
+
 ## [0.93.3] - 2026-07-20
 
 ### Fixed

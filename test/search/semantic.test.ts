@@ -8,6 +8,7 @@ import {
 } from '@main/search/semantic'
 import { dedupeByThread, reciprocalRankFusion } from '@main/search/ranking'
 import { closeTestDb, createTestDb, seedAccount, seedFolder } from '../helpers/db'
+import { foldSharpS } from '@main/search/fold'
 
 interface SeedMail {
   accountId: number
@@ -55,9 +56,9 @@ function seedMail(db: Database.Database, mail: SeedMail): number {
      VALUES (?, ?, ?, '', ?)`
   ).run(
     messageId,
-    mail.subject,
-    `${mail.fromName ?? 'Absender'} ${mail.fromAddr ?? 'sender@example.org'}`,
-    mail.body
+    foldSharpS(mail.subject),
+    foldSharpS(`${mail.fromName ?? 'Absender'} ${mail.fromAddr ?? 'sender@example.org'}`),
+    foldSharpS(mail.body)
   )
   return messageId
 }
@@ -135,7 +136,10 @@ describe('semantic search ranking', () => {
     expect(
       queryTerms('In welcher E-Mail habe ich meine Tickets für das Airbeat Festival bekommen?')
     ).toEqual(['tickets', 'airbeat', 'festival', 'bekommen'])
-    expect(buildFtsMatch('Airbeat Festival')).toBe('"airbeat"* OR "festival"*')
+    expect(buildFtsMatch('Airbeat Festival')).toBe('"airbeat" OR "festival"')
+    // trigram era: ß→ss fold, terms shorter than three characters are dropped
+    expect(buildFtsMatch('Straße')).toBe('"strasse"')
+    expect(buildFtsMatch('VW')).toBe('')
   })
 })
 
@@ -144,6 +148,38 @@ describe('semanticSearch', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     if (db) closeTestDb(db)
+  })
+
+  it('findet Substrings in Komposita und faltet ß/ss (M91)', async () => {
+    db = createTestDb()
+    const accountId = seedAccount(db, { email: 'tim@example.org' })
+    const inbox = seedFolder(db, accountId, '\\Inbox')
+    seedMail(db, {
+      accountId,
+      folderId: inbox,
+      uid: 41,
+      threadKey: 'tafeln',
+      subject: 'AW: Aufstellung von Großflächentafeln',
+      body: 'Hier können Sie die Standortliste noch einmal herunterladen.',
+      fromName: 'Jens B.',
+      fromAddr: 'verwaltung@stadt.example'
+    })
+
+    // compound substring: "Tafeln" is not a token prefix of the subject word
+    const compound = await semanticSearch(
+      db,
+      { q: 'Tafeln', limit: 5 },
+      { embedQuery: async () => [] }
+    )
+    expect(compound.hits.map((h) => h.threadKey)).toContain('tafeln')
+
+    // ss query finds ß text (both sides are folded identically)
+    const folded = await semanticSearch(
+      db,
+      { q: 'grossflächentafeln', limit: 5 },
+      { embedQuery: async () => [] }
+    )
+    expect(folded.hits.map((h) => h.threadKey)).toContain('tafeln')
   })
 
   it('kombiniert BM25 und sqlite-vec lokal, liefert Belegnachrichten und filtert private Ordner', async () => {

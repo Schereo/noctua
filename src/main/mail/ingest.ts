@@ -1,3 +1,4 @@
+import { foldSharpS } from '../search/fold'
 import { createHash } from 'node:crypto'
 import type Database from 'better-sqlite3'
 import { htmlToText, type ParsedMail } from './parser'
@@ -102,7 +103,13 @@ export function refreshMessageSearchIndex(db: Database.Database, messageId: numb
   db.prepare(
     `INSERT INTO messages_fts (rowid, subject, sender, recipients, body)
      VALUES (?, ?, ?, ?, ?)`
-  ).run(messageId, row.subject ?? '', sender, recipients, searchableBody)
+  ).run(
+    messageId,
+    foldSharpS(row.subject ?? ''),
+    foldSharpS(sender),
+    foldSharpS(recipients),
+    foldSharpS(searchableBody)
+  )
 
   if (!previous || previous.content_hash !== contentHash) {
     // Ein alter Vektor darf waehrend des Rebuilds keine falschen Treffer liefern.

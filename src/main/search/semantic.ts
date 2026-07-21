@@ -2,6 +2,7 @@ import type Database from 'better-sqlite3'
 import type { SemanticSearchHit, SemanticSearchIndex, SemanticSearchSignal } from '@shared/types'
 import { embedQuery, embeddingIndexer } from '../ai/embeddings'
 import { htmlToText } from '../mail/parser'
+import { foldSharpS } from './fold'
 import { dedupeByThread, reciprocalRankFusion } from './ranking'
 
 export interface SemanticSearchInput {
@@ -156,10 +157,17 @@ export function queryTerms(query: string): string[] {
   return [...new Set(meaningful.length > 0 ? meaningful : raw)].slice(0, 16)
 }
 
-/** Nur selbst erzeugte, gequotete Prefix-Tokens gelangen in MATCH. */
+/**
+ * Only self-built, quoted terms reach MATCH. With the trigram index a quoted
+ * term matches any substring — this is what makes German compounds findable
+ * ("tafeln" → "großflächentafeln"). Terms below three characters cannot hit
+ * the trigram index and are dropped; ß is folded to ss like at index time.
+ */
 export function buildFtsMatch(query: string): string {
   return queryTerms(query)
-    .map((term) => `"${term.replace(/"/g, '""')}"*`)
+    .map((term) => foldSharpS(term))
+    .filter((term) => term.length >= 3)
+    .map((term) => `"${term.replace(/"/g, '""')}"`)
     .join(' OR ')
 }
 
@@ -351,8 +359,15 @@ export function evidenceExcerpt(row: SearchRow, terms: string[], maxLength = 240
   if (body.length <= maxLength) return body
 
   const lower = body.toLocaleLowerCase('de-DE')
+  const foldedLower = foldSharpS(lower)
   const positions = terms
-    .map((term) => lower.indexOf(term.toLocaleLowerCase('de-DE')))
+    .map((term) => {
+      const needle = term.toLocaleLowerCase('de-DE')
+      const direct = lower.indexOf(needle)
+      // ß/ss-folded fallback: the offset drifts by one per preceding ß,
+      // which is fine for positioning a 240-char excerpt window.
+      return direct >= 0 ? direct : foldedLower.indexOf(foldSharpS(needle))
+    })
     .filter((position) => position >= 0)
   const firstMatch = positions.length > 0 ? Math.min(...positions) : 0
   const start = Math.max(0, firstMatch - 64)
@@ -374,8 +389,8 @@ function mailboxFor(specialUse: string | null): SemanticSearchHit['mailbox'] {
 }
 
 function containsTerm(text: string | null, terms: string[]): boolean {
-  const normalized = (text ?? '').toLocaleLowerCase('de-DE')
-  return terms.some((term) => normalized.includes(term))
+  const normalized = foldSharpS((text ?? '').toLocaleLowerCase('de-DE'))
+  return terms.some((term) => normalized.includes(foldSharpS(term)))
 }
 
 function matchingTermCount(row: SearchRow, terms: string[]): number {
