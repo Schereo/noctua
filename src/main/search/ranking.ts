@@ -45,15 +45,27 @@ export function reciprocalRankFusion(lists: RankedSearchList[], rrfK = 60): Fuse
   )
 }
 
-/** Erst nach dem Nachrichten-Ranking wird je Thread der beste Beleg behalten. */
-export function dedupeByThread<T extends { threadKey: string }>(rows: T[], limit: number): T[] {
-  const seen = new Set<string>()
-  const result: T[] = []
+/**
+ * Collapse the ranked messages to one hit per thread. The thread's position
+ * comes from its best-ranked message, but the DISPLAYED evidence is the
+ * NEWEST matching message of that thread: users search for "the mail from
+ * Friday" — a long March forward winning bm25 must not mask it (all
+ * candidates matched the query, so recency wins for presentation).
+ */
+export function dedupeByThread<T extends { threadKey: string; date?: number | null }>(
+  rows: T[],
+  limit: number
+): T[] {
+  const order: string[] = []
+  const newest = new Map<string, T>()
   for (const row of rows) {
-    if (seen.has(row.threadKey)) continue
-    seen.add(row.threadKey)
-    result.push(row)
-    if (result.length >= limit) break
+    const current = newest.get(row.threadKey)
+    if (!current) {
+      order.push(row.threadKey)
+      newest.set(row.threadKey, row)
+    } else if ((row.date ?? 0) > (current.date ?? 0)) {
+      newest.set(row.threadKey, row)
+    }
   }
-  return result
+  return order.slice(0, limit).map((threadKey) => newest.get(threadKey)!)
 }

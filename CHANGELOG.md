@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.93.3] - 2026-07-20
+
+### Fixed
+
+- **Search no longer masks recent mail behind old thread messages**: results collapse to one hit per thread, and the representative used to be the bm25 winner — a long March forward could outrank and hide the mail from last Friday, making it look like search couldn't find it. The thread's position still comes from its best-ranked message, but the displayed hit (date, subject, excerpt) is now the newest message of the thread that matched the query.
+
 ## [0.93.2] - 2026-07-20
 
 ### Fixed
