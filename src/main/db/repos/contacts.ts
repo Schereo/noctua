@@ -28,6 +28,17 @@ export function rebuildContactStats(db: Database.Database, accountId: number): v
          received_count = excluded.received_count,
          last_interaction = max(contact_stats.last_interaction, excluded.last_interaction)`
     ).run(accountId)
+    // Haeufigster Anzeigename je Adresse, damit die Empfaenger-Vorschlaege
+    // ihn nicht pro Tastendruck aus messages nachschlagen muessen. Laeuft mit
+    // idx_msg_from_addr_lower als indizierter Lookup je Kontakt.
+    db.prepare(
+      `UPDATE contact_stats SET display_name = (
+         SELECT m.from_name FROM messages m
+         WHERE lower(m.from_addr) = contact_stats.addr AND m.from_name IS NOT NULL
+         GROUP BY m.from_name ORDER BY count(*) DESC LIMIT 1
+       )
+       WHERE account_id = ?`
+    ).run(accountId)
   })
   tx()
 }
@@ -95,24 +106,20 @@ export function suggestContacts(
   limit: number
 ): ContactSuggestion[] {
   const like = `%${query.toLowerCase().replace(/[%_]/g, '')}%`
+  // Name und Adresse stehen beide in contact_stats (Migration 023), die Suche
+  // bleibt damit auf einer 3k-Zeilen-Tabelle. Vorher kostete jeder Tastendruck
+  // eine korrelierte Suche über alle Nachrichten — Sekunden bis Minuten, in
+  // denen der Main-Prozess keine IPC mehr beantwortet hat.
   return db
     .prepare(
       `SELECT cs.addr AS addr,
-              (SELECT m.from_name FROM messages m
-               WHERE lower(m.from_addr) = cs.addr AND m.from_name IS NOT NULL
-               GROUP BY m.from_name ORDER BY count(*) DESC LIMIT 1) AS name,
+              max(cs.display_name) AS name,
               sum(cs.sent_count * 3 + cs.received_count) AS weight,
               max(coalesce(cs.last_interaction, 0)) AS latest
        FROM contact_stats cs
        JOIN accounts own_account ON own_account.id = cs.account_id
        WHERE cs.addr <> lower(own_account.email)
-         AND (
-           cs.addr LIKE ?
-           OR EXISTS (
-             SELECT 1 FROM messages m2
-             WHERE m2.from_addr = cs.addr AND lower(coalesce(m2.from_name, '')) LIKE ?
-           )
-         )
+         AND (cs.addr LIKE ? OR lower(coalesce(cs.display_name, '')) LIKE ?)
        GROUP BY cs.addr
        ORDER BY (sum(cs.sent_count) > 0) DESC, weight DESC, latest DESC
        LIMIT ?`

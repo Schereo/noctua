@@ -82,6 +82,26 @@ describe('suggestContacts', () => {
     expect(result.map((r) => r.addr)).toEqual(['alice@firma.de'])
   })
 
+  it('haelt den Anzeigenamen in contact_stats, statt ihn pro Abfrage zu suchen', () => {
+    // Die Namenssuche darf messages nicht mehr anfassen: auf einem echten
+    // Postfach war das eine korrelierte Suche pro Kontakt (Sekunden bis Minuten).
+    expect(
+      db.prepare('SELECT display_name FROM contact_stats WHERE addr = ?').get('alice@firma.de')
+    ).toEqual({ display_name: 'Alice Ammann' })
+
+    const plan = db
+      .prepare(
+        `EXPLAIN QUERY PLAN
+         SELECT cs.addr FROM contact_stats cs
+         JOIN accounts own_account ON own_account.id = cs.account_id
+         WHERE cs.addr <> lower(own_account.email)
+           AND (cs.addr LIKE ? OR lower(coalesce(cs.display_name, '')) LIKE ?)
+         GROUP BY cs.addr`
+      )
+      .all('%a%', '%a%') as Array<{ detail: string }>
+    expect(plan.map((step) => step.detail).join(' ')).not.toMatch(/messages/)
+  })
+
   it('filtert eigene Konto-Adressen aus', () => {
     // tim@test.de steht durch den Self-Send in contact_stats, darf aber nie kommen
     expect(suggestContacts(db, 'test.de', 8)).toEqual([])

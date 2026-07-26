@@ -6,6 +6,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.97.1] - 2026-07-26
+
+### Fixed
+
+- **The window no longer freezes while typing.** Three main-process paths ran unindexed full scans on every interaction. `better-sqlite3` is synchronous, so each one stalled the whole IPC channel — every keystroke, every list update, the macOS spinner. Measured against the real 42k-message mailbox with the shipped binaries:
+  - *Recipient suggestions* matched contacts by display name with a correlated `EXISTS (SELECT … FROM messages …)` evaluated once per contact row — 3k contacts against 42k messages with no usable index, roughly 130M row probes. **15–90 seconds per call**, and the recipient field fires one call per 120ms of typing. The display name now lives on `contact_stats` itself (migration 023), so the query never leaves a 3k-row table: **5ms**.
+  - *Search* recomputed the owl's index-coverage footer on every query — a full scan of the trigram index plus a per-row `EXISTS` against the vec0 table, which has no rowid index. **1.0–4.6 seconds per keystroke**, for a caption. The counts now go through the FTS `_docsize` shadow table and are cached for a minute.
+  - *The embedding indexer* re-checked every message against the vec0 table every 60 seconds — **1.3–3.9 seconds**, even with the index complete and nothing to do. Vectors lost to a table rebuild are now detected once per session with two counting queries instead.
+- Migration 023 also adds `idx_msg_from_addr_lower`, which the fuzzy-sender channel's sender inventory groups by. It backfills once on first launch (~10s on a 42k-message mailbox).
+
+### Changed
+
+- **Recipient suggestions match the name they display.** The name search used to hit any From name an address had ever carried, so typing "tim" surfaced a mailing list whose visible name is "noreply-spamdigest via Volt Deutschland – Oldenburg Team" — because one of its 100+ messages had been posted by a Tim. Matching now runs against the contact's actual display name, and a real contact takes the freed slot.
+
+## [0.97.0] - 2026-07-21
+
+### Changed
+
+- **Semantic search moves to multilingual-e5-base** (M96): on the 57-case gold set from the real mailbox, recall@1 rises 51% → 65% and MRR 0.61 → 0.70, together with a retuned fulltext fusion weight of 1.3 (rare exact matches were being diluted by the broad semantic candidate list). Migration 022 rebuilds the vec table for the new 768 dimensions and the indexer re-embeds in the background. Includes an env-gated A/B runner as a local test.
+
 ## [0.96.0] - 2026-07-21
 
 ### Added

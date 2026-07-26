@@ -259,6 +259,37 @@ function countRows(db: Database.Database, sql: string, accountId?: number): numb
   return row.count
 }
 
+const INDEX_STATUS_TTL_MS = 60_000
+let indexStatusCache: {
+  db: Database.Database
+  key: number | 'all'
+  at: number
+  value: SemanticSearchIndex
+} | null = null
+
+/**
+ * Der Indexstand speist nur die Fusszeile der Eule, zaehlt dafuer aber ueber
+ * den gesamten Volltext- und Vektorindex. Frueher lief das bei jedem
+ * Sucheingabe-Request mit und blockierte den Main-Prozess sekundenlang. Die
+ * Zahl aendert sich nur, waehrend der Indexer im Hintergrund arbeitet — ein
+ * Cache von einer Minute reicht dafuer voellig.
+ */
+function cachedIndexStatus(db: Database.Database, accountId?: number): SemanticSearchIndex {
+  const key = accountId ?? 'all'
+  const now = Date.now()
+  if (
+    indexStatusCache &&
+    indexStatusCache.db === db &&
+    indexStatusCache.key === key &&
+    now - indexStatusCache.at < INDEX_STATUS_TTL_MS
+  ) {
+    return indexStatusCache.value
+  }
+  const value = semanticIndexStatus(db, accountId)
+  indexStatusCache = { db, key, at: now, value }
+  return value
+}
+
 export function semanticIndexStatus(
   db: Database.Database,
   accountId?: number
@@ -272,17 +303,33 @@ export function semanticIndexStatus(
   let searchableMessages = 0
   let embeddedMessages = 0
   try {
+    // Über messages_fts selbst zu zählen liest den kompletten Trigram-Index —
+    // auf einem 40k-Postfach bis zu zweieinhalb Sekunden. Die Schattentabelle
+    // _docsize hat genau eine Zeile pro indexiertem Dokument, der Treffer wird
+    // also zum Punkt-Lookup. Fällt sie weg, zählt der alte Weg weiter.
     searchableMessages = countRows(
       db,
-      `SELECT count(*) AS count FROM messages_fts ft
-       JOIN messages m ON m.id = ft.rowid
+      `SELECT count(*) AS count FROM messages m
        JOIN folders f ON f.id = m.folder_id
        WHERE ${SEARCHABLE_MESSAGE_SQL}
-         AND (? IS NULL OR m.account_id = ?)`,
+         AND (? IS NULL OR m.account_id = ?)
+         AND EXISTS (SELECT 1 FROM messages_fts_docsize d WHERE d.id = m.id)`,
       accountId
     )
   } catch {
-    // Eine alte/teilmigrierte DB soll die restliche Suche nicht blockieren.
+    try {
+      searchableMessages = countRows(
+        db,
+        `SELECT count(*) AS count FROM messages_fts ft
+         JOIN messages m ON m.id = ft.rowid
+         JOIN folders f ON f.id = m.folder_id
+         WHERE ${SEARCHABLE_MESSAGE_SQL}
+           AND (? IS NULL OR m.account_id = ?)`,
+        accountId
+      )
+    } catch {
+      // Eine alte/teilmigrierte DB soll die restliche Suche nicht blockieren.
+    }
   }
   try {
     embeddedMessages = countRows(
@@ -470,7 +517,7 @@ export async function searchSemantic(
 
   return {
     hits: dedupeByThread(hits, limit),
-    index: semanticIndexStatus(db, input.accountId),
+    index: cachedIndexStatus(db, input.accountId),
     mode: semantic.length > 0 ? 'hybrid' : 'fulltext'
   }
 }

@@ -12,7 +12,7 @@ describe('migrations', () => {
 
   it('wenden alle Migrationen sauber an und setzen user_version', () => {
     db = createTestDb()
-    expect(db.pragma('user_version', { simple: true })).toBe(22)
+    expect(db.pragma('user_version', { simple: true })).toBe(23)
   })
 
   it('erzwingt eindeutige Postfachnamen unabhängig von Großschreibung', () => {
@@ -220,7 +220,7 @@ describe('migrations', () => {
     db = createTestDb()
     const { runMigrations } = await import('@main/db/migrate')
     const result = runMigrations(db)
-    expect(result).toEqual({ from: 22, to: 22 })
+    expect(result).toEqual({ from: 23, to: 23 })
   })
 
   it('bereinigt Aufgaben aus kontenuebergreifenden Selbst-Sends', async () => {
@@ -250,11 +250,13 @@ describe('migrations', () => {
        VALUES ('mail', ?, ?, 'Falsche Aufgabe', 'open', 1)`
     ).run(messageId, receiver)
 
-    // Eine echte v11-DB besitzt die M13/M14/M15/M19/M20-Strukturen noch nicht. Der Test startet
+    // Eine echte v11-DB besitzt die M13/M14/M15/M19/M20/M23-Strukturen noch nicht. Der Test startet
     // sonst zwar bei user_version 11, behaelt aber physisch das aktuelle Schema.
     db.exec(`
       ALTER TABLE ai_annotations DROP COLUMN addressed_to_me;
       ALTER TABLE followups DROP COLUMN nudged_at;
+      ALTER TABLE contact_stats DROP COLUMN display_name;
+      DROP INDEX IF EXISTS idx_msg_from_addr_lower;
       DROP TABLE drafts;
       DROP TABLE owl_conversations;
       DROP TABLE message_header_details;
@@ -271,7 +273,7 @@ describe('migrations', () => {
     `)
     db.pragma('user_version = 11')
     const { runMigrations } = await import('@main/db/migrate')
-    expect(runMigrations(db)).toEqual({ from: 11, to: 22 })
+    expect(runMigrations(db)).toEqual({ from: 11, to: 23 })
     expect(db.prepare('SELECT count(*) count FROM tasks').get()).toEqual({ count: 0 })
     expect(
       db
