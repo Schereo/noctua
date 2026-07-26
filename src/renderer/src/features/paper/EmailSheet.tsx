@@ -35,7 +35,11 @@ import {
 import { MessageAttachments } from '@renderer/features/paper/MessageAttachments'
 import { OverrideMenu } from '@renderer/features/inbox/OverrideMenu'
 import { useUiStore } from '@renderer/stores/ui'
-import { buildReplyRecipients, mergeRecipientFields } from '@renderer/lib/reply-recipients'
+import {
+  buildReplyRecipients,
+  dropRecipients,
+  mergeRecipientFields
+} from '@renderer/lib/reply-recipients'
 import { parseAddresses } from '@renderer/features/composer/address-check'
 import { RecipientInput } from '@renderer/features/composer/RecipientInput'
 
@@ -606,11 +610,20 @@ export function EmailSheet(): React.JSX.Element {
   const extraToText = useRef('')
   const extraCcText = useRef('')
   const extraBccText = useRef('')
+  // Gestrichene Antwort-Empfänger (M97): erst damit lässt sich jemand anderem
+  // als dem Absender antworten — die berechnete Adresse fliegt raus, die neue
+  // kommt über die +Zeile dazu. Wie die Extras threadlokal und flüchtig.
+  const [droppedRecipients, setDroppedRecipients] = useState<string[]>([])
+  // Getippter, noch nicht als Chip übernommener Empfänger — nur als Ja/Nein,
+  // damit die Sendefreigabe stimmt, ohne pro Tastendruck neu zu rendern.
+  const [hasPendingExtra, setHasPendingExtra] = useState(false)
   const resetExtras = useCallback((): void => {
     setExtrasOpen(false)
     setExtraTo([])
     setExtraCc([])
     setExtraBcc([])
+    setDroppedRecipients([])
+    setHasPendingExtra(false)
     extraToText.current = ''
     extraCcText.current = ''
     extraBccText.current = ''
@@ -984,10 +997,21 @@ export function EmailSheet(): React.JSX.Element {
     // Merge the extra recipients in, keeping each address in one field only
     // (to beats cc beats bcc) and never duplicating an address.
     const { to, cc, bcc } = mergeRecipientFields({
-      to: [...reply.to, ...extraTo, ...parseAddresses(extraToText.current)],
-      cc: [...reply.cc, ...extraCc, ...parseAddresses(extraCcText.current)],
+      to: [
+        ...dropRecipients(reply.to, droppedRecipients),
+        ...extraTo,
+        ...parseAddresses(extraToText.current)
+      ],
+      cc: [
+        ...dropRecipients(reply.cc, droppedRecipients),
+        ...extraCc,
+        ...parseAddresses(extraCcText.current)
+      ],
       bcc: [...extraBcc, ...parseAddresses(extraBccText.current)]
     })
+    // Alles gestrichen und nichts nachgetragen: lieber nicht senden als an
+    // niemanden — der Sendeknopf ist dann ohnehin gesperrt.
+    if (to.length + cc.length + bcc.length === 0) return
     const htmlBody = composerHtmlForSend(c.html, c.text)
     setComp({ mode: 'sending', error: null, errorKind: null })
     void invoke('compose:send', {
@@ -1037,6 +1061,7 @@ export function EmailSheet(): React.JSX.Element {
     extraTo,
     extraCc,
     extraBcc,
+    droppedRecipients,
     resetExtras
   ])
 
@@ -1302,6 +1327,12 @@ export function EmailSheet(): React.JSX.Element {
     account && messages.data
       ? (buildReplyRecipients(messages.data, ownEmails, 'all')?.cc ?? [])
       : []
+  // Was nach dem Streichen (M97) übrig bleibt. Anzeige, Sendefreigabe und
+  // Versand lesen denselben Stand, damit die Zeile nicht lügt.
+  const replyToLive = replyTarget ? dropRecipients(replyTarget.to, droppedRecipients) : []
+  const replyCcLive = replyTarget ? dropRecipients(replyTarget.cc, droppedRecipients) : []
+  const extraCount = extraTo.length + extraCc.length + extraBcc.length
+  const hasRecipient = replyToLive.length + replyCcLive.length + extraCount > 0 || hasPendingExtra
   const canRetryError =
     comp.errorKind === 'generation' ||
     comp.errorKind === 'send' ||
@@ -1450,13 +1481,37 @@ export function EmailSheet(): React.JSX.Element {
                 <span className="mlabel flex-none" style={{ fontSize: 8, color: 'var(--muted)' }}>
                   {t('replyScopeLabel')}
                 </span>
-                <span
-                  className="min-w-0 flex-1 truncate"
-                  style={{ font: '400 10px var(--mono)', color: 'var(--secondary)' }}
-                  title={replyTarget.to.join(', ')}
-                >
-                  {replyTarget.to.join(', ')}
+                <span className="reply-chips min-w-0 flex-1">
+                  {replyToLive.length === 0 ? (
+                    <span className="reply-chips__empty">{t('replyNoRecipient')}</span>
+                  ) : (
+                    replyToLive.map((address) => (
+                      <span key={address} className="reply-chip" title={address}>
+                        <span className="reply-chip__addr">{address}</span>
+                        <button
+                          type="button"
+                          className="reply-chip__drop"
+                          onClick={() => setDroppedRecipients((prev) => [...prev, address])}
+                          aria-label={t('replyDropRecipient', { addr: address })}
+                          title={t('replyDropRecipient', { addr: address })}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))
+                  )}
                 </span>
+                {droppedRecipients.length > 0 && (
+                  <button
+                    type="button"
+                    className="reply-extra-btn flex-none"
+                    onClick={() => setDroppedRecipients([])}
+                    aria-label={t('replyRestoreRecipients')}
+                    title={t('replyRestoreRecipients')}
+                  >
+                    ↺
+                  </button>
+                )}
                 {replyAllExtras.length > 0 && (
                   <button
                     type="button"
@@ -1495,17 +1550,26 @@ export function EmailSheet(): React.JSX.Element {
                     : '+'}
                 </button>
               </div>
-              {isReplyAll && replyTarget.cc.length > 0 && (
+              {isReplyAll && replyCcLive.length > 0 && (
                 <div className="flex items-baseline gap-2.5" style={{ marginTop: 5, minWidth: 0 }}>
                   <span className="mlabel flex-none" style={{ fontSize: 9, color: 'var(--ac)' }}>
                     CC
                   </span>
-                  <span
-                    className="min-w-0 flex-1 truncate"
-                    style={{ font: '400 10.5px var(--mono)', color: 'var(--secondary)' }}
-                    title={replyTarget.cc.join(', ')}
-                  >
-                    {replyTarget.cc.join(' · ')}
+                  <span className="reply-chips min-w-0 flex-1">
+                    {replyCcLive.map((address) => (
+                      <span key={address} className="reply-chip" title={address}>
+                        <span className="reply-chip__addr">{address}</span>
+                        <button
+                          type="button"
+                          className="reply-chip__drop"
+                          onClick={() => setDroppedRecipients((prev) => [...prev, address])}
+                          aria-label={t('replyDropRecipient', { addr: address })}
+                          title={t('replyDropRecipient', { addr: address })}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
                   </span>
                 </div>
               )}
@@ -1546,6 +1610,20 @@ export function EmailSheet(): React.JSX.Element {
                           onChipsChange={field.set}
                           onTextChange={(text) => {
                             field.ref.current = text
+                            // Noch nicht als Chip übernommener Text zählt für
+                            // die Sendefreigabe mit — sonst schluckt der
+                            // gesperrte Knopf den ersten Klick, wenn man den
+                            // Absender gestrichen und die neue Adresse gerade
+                            // erst getippt hat. setState mit gleichem Wert
+                            // rendert nicht neu, das bleibt pro Tastendruck
+                            // billig.
+                            setHasPendingExtra(
+                              Boolean(
+                                extraToText.current.trim() ||
+                                extraCcText.current.trim() ||
+                                extraBccText.current.trim()
+                              )
+                            )
                           }}
                           autoFocus={index === 0}
                         />
@@ -1570,7 +1648,9 @@ export function EmailSheet(): React.JSX.Element {
             signatureText={signature.text}
             resultKind={compHere ? comp.resultKind : null}
             error={composerError}
-            canSend={Boolean(compHere && comp.text.trim() && account && replyTarget)}
+            canSend={Boolean(
+              compHere && comp.text.trim() && account && replyTarget && hasRecipient
+            )}
             onDocumentChange={updateDocument}
             onStartDictation={startDictation}
             onStopDictation={finishListening}
@@ -1581,7 +1661,7 @@ export function EmailSheet(): React.JSX.Element {
             onDiscard={compHere && comp.text.trim() ? discardDraft : undefined}
             onErrorMessage={toastNow}
             sendRecipientCount={
-              isReplyAll && replyTarget ? replyTarget.to.length + replyTarget.cc.length : null
+              isReplyAll && replyTarget ? replyToLive.length + replyCcLive.length : null
             }
             onToggleReplyScope={
               replyAllExtras.length > 0 ? (isReplyAll ? manualReply : replyAllReply) : undefined

@@ -75,6 +75,22 @@ export function buildReplyRecipients(
 }
 
 /**
+ * Remove recipients the user struck from the reply row (M97). Answering
+ * someone other than the sender means dropping the computed address, not just
+ * adding a second one — so the reply can go to a different person entirely.
+ * Case-insensitive on the address; the remaining order is untouched.
+ */
+export function dropRecipients(addresses: string[], dropped: Iterable<string>): string[] {
+  const keys = new Set<string>()
+  for (const address of dropped) {
+    const key = address.trim().toLowerCase()
+    if (key) keys.add(key)
+  }
+  if (keys.size === 0) return addresses
+  return addresses.filter((address) => !keys.has(address.trim().toLowerCase()))
+}
+
+/**
  * Merge extra recipients (M90: the + button in the reply row) into the
  * computed reply set. Each address ends up in exactly one field — to beats
  * cc beats bcc — and blank entries are dropped.

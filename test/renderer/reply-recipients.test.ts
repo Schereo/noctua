@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   buildReplyRecipients,
+  dropRecipients,
   mergeRecipientFields,
   type ReplyMessage
 } from '@renderer/lib/reply-recipients'
@@ -214,5 +215,30 @@ describe('mergeRecipientFields (M90 — extra reply recipients)', () => {
       cc: [],
       bcc: []
     })
+  })
+})
+
+describe('dropRecipients (M97 — reply to someone other than the sender)', () => {
+  it('removes a struck address and keeps the rest in order', () => {
+    expect(dropRecipients(['a@x.de', 'b@x.de', 'c@x.de'], ['b@x.de'])).toEqual(['a@x.de', 'c@x.de'])
+  })
+
+  it('matches case-insensitively and ignores surrounding space', () => {
+    expect(dropRecipients([' Alice@Firma.test '], ['alice@firma.test'])).toEqual([])
+  })
+
+  it('returns the list untouched when nothing is dropped', () => {
+    const list = ['a@x.de']
+    expect(dropRecipients(list, [])).toBe(list)
+    expect(dropRecipients(list, ['', '  '])).toBe(list)
+  })
+
+  it('can empty the computed reply set entirely — the point of the feature', () => {
+    const reply = buildReplyRecipients([msg({})], [ME], 'sender')!
+    expect(dropRecipients(reply.to, reply.to)).toEqual([])
+  })
+
+  it('leaves an unrelated address alone', () => {
+    expect(dropRecipients(['a@x.de'], ['b@x.de'])).toEqual(['a@x.de'])
   })
 })

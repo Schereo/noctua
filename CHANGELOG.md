@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.98.0] - 2026-07-26
+
+### Added
+
+- **Reply to someone other than the sender** (M97): the addresses in the reply row are now chips with an × — striking one removes it from the reply. Combined with the + button (M90), that covers the case the row could not express before: not answering the sender at all and writing to a different person instead, while the reply stays in its thread and keeps the `Re:` subject. Removals are per-thread and are dropped again on send or when another thread is opened; a ↺ button brings them back. In reply-all the CC entries can be struck the same way. With nothing left the row says so and the send button stays locked, so a reply can never go out addressed to nobody.
+
 ## [0.97.1] - 2026-07-26
 
 ### Fixed
