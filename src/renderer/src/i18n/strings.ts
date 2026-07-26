@@ -1117,6 +1117,18 @@ const table = {
     de: 'Weitere Empfänger hinzufügen (An/CC/BCC)'
   },
   replyExtraTo: { en: '+TO', de: '+AN' },
+  replyDropRecipient: {
+    en: 'Do not reply to {addr}',
+    de: 'Nicht an {addr} antworten'
+  },
+  replyRestoreRecipients: {
+    en: 'Restore the removed recipients',
+    de: 'Entfernte Empfänger zurückholen'
+  },
+  replyNoRecipient: {
+    en: 'nobody — add a recipient with +',
+    de: 'niemand — Empfänger über + hinzufügen'
+  },
   replyAllToggleAria: {
     en: 'reply to all — {n} more recipients',
     de: 'allen antworten — {n} weitere Empfänger'

@@ -2145,6 +2145,55 @@ kbd,
   box-shadow: 1px 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
+/* ── Antwort-Empfänger als streichbare Chips (M97) ─────────────────── */
+.reply-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.reply-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 3px 1px 5px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  font: 400 10px/1.6 var(--mono);
+  color: var(--secondary);
+}
+
+.reply-chip__addr {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reply-chip__drop {
+  appearance: none;
+  flex: none;
+  border: 0;
+  padding: 0 2px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 11px/1 var(--mono);
+  cursor: pointer;
+}
+
+.reply-chip__drop:hover,
+.reply-chip__drop:focus-visible {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.reply-chips__empty {
+  font: 400 10px var(--mono);
+  font-style: italic;
+  color: var(--muted);
+}
+
 /* ── Filter-Zeile des Posteingangs (Design 7a) ─────────────────────── */
 .inbox-filter-row {
   position: relative;
