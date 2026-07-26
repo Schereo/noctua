@@ -614,12 +614,16 @@ export function EmailSheet(): React.JSX.Element {
   // als dem Absender antworten — die berechnete Adresse fliegt raus, die neue
   // kommt über die +Zeile dazu. Wie die Extras threadlokal und flüchtig.
   const [droppedRecipients, setDroppedRecipients] = useState<string[]>([])
+  // Getippter, noch nicht als Chip übernommener Empfänger — nur als Ja/Nein,
+  // damit die Sendefreigabe stimmt, ohne pro Tastendruck neu zu rendern.
+  const [hasPendingExtra, setHasPendingExtra] = useState(false)
   const resetExtras = useCallback((): void => {
     setExtrasOpen(false)
     setExtraTo([])
     setExtraCc([])
     setExtraBcc([])
     setDroppedRecipients([])
+    setHasPendingExtra(false)
     extraToText.current = ''
     extraCcText.current = ''
     extraBccText.current = ''
@@ -1328,7 +1332,7 @@ export function EmailSheet(): React.JSX.Element {
   const replyToLive = replyTarget ? dropRecipients(replyTarget.to, droppedRecipients) : []
   const replyCcLive = replyTarget ? dropRecipients(replyTarget.cc, droppedRecipients) : []
   const extraCount = extraTo.length + extraCc.length + extraBcc.length
-  const hasRecipient = replyToLive.length + replyCcLive.length + extraCount > 0
+  const hasRecipient = replyToLive.length + replyCcLive.length + extraCount > 0 || hasPendingExtra
   const canRetryError =
     comp.errorKind === 'generation' ||
     comp.errorKind === 'send' ||
@@ -1606,6 +1610,20 @@ export function EmailSheet(): React.JSX.Element {
                           onChipsChange={field.set}
                           onTextChange={(text) => {
                             field.ref.current = text
+                            // Noch nicht als Chip übernommener Text zählt für
+                            // die Sendefreigabe mit — sonst schluckt der
+                            // gesperrte Knopf den ersten Klick, wenn man den
+                            // Absender gestrichen und die neue Adresse gerade
+                            // erst getippt hat. setState mit gleichem Wert
+                            // rendert nicht neu, das bleibt pro Tastendruck
+                            // billig.
+                            setHasPendingExtra(
+                              Boolean(
+                                extraToText.current.trim() ||
+                                extraCcText.current.trim() ||
+                                extraBccText.current.trim()
+                              )
+                            )
                           }}
                           autoFocus={index === 0}
                         />
