@@ -15,6 +15,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   - *Search* recomputed the owl's index-coverage footer on every query — a full scan of the trigram index plus a per-row `EXISTS` against the vec0 table, which has no rowid index. **1.0–4.6 seconds per keystroke**, for a caption. The counts now go through the FTS `_docsize` shadow table and are cached for a minute.
   - *The embedding indexer* re-checked every message against the vec0 table every 60 seconds — **1.3–3.9 seconds**, even with the index complete and nothing to do. Vectors lost to a table rebuild are now detected once per session with two counting queries instead.
 - Migration 023 also adds `idx_msg_from_addr_lower`, which the fuzzy-sender channel's sender inventory groups by. It backfills once on first launch (~10s on a 42k-message mailbox).
+- **The packaged app no longer swallows the whole project directory.** `electron-builder` does not read `.gitignore`, and the `files` list only excluded a handful of named files — so everything sitting next to the app was packed into `app.asar`. With the agent worktrees under `.claude/` grown to 25 GB, the build came out at **7.6 GB instead of 563 MB**. `.claude`, `.codex-work`, `coverage`, `output`, `outputs`, `tmp`, `test` and `scripts` are now excluded explicitly.
 
 ### Changed
 
