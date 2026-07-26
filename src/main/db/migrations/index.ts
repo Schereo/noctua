@@ -20,6 +20,7 @@ import m019 from './019_owl_conversations.sql?raw'
 import m020 from './020_addressed_to_me.sql?raw'
 import m021 from './021_fts_trigram.sql?raw'
 import m022 from './022_embeddings_base.sql?raw'
+import m023 from './023_contact_display_name.sql?raw'
 
 /**
  * Migrationen als ?raw-Importe, damit sie in das Main-Bundle eingebettet werden
@@ -48,5 +49,6 @@ export const migrations: ReadonlyArray<{ version: number; name: string; sql: str
   { version: 19, name: '019_owl_conversations', sql: m019 },
   { version: 20, name: '020_addressed_to_me', sql: m020 },
   { version: 21, name: '021_fts_trigram', sql: m021 },
-  { version: 22, name: '022_embeddings_base', sql: m022 }
+  { version: 22, name: '022_embeddings_base', sql: m022 },
+  { version: 23, name: '023_contact_display_name', sql: m023 }
 ]

@@ -101,6 +101,7 @@ export class EmbeddingIndexer {
   private timer: NodeJS.Timeout | null = null
   private startupTimer: NodeJS.Timeout | null = null
   private running = false
+  private reconciled = false
   private modelState: EmbeddingModelState = 'not_loaded'
   private modelError: string | null = null
 
@@ -157,13 +158,17 @@ export class EmbeddingIndexer {
         model: { id: EMBEDDING_MODEL, state: this.modelState, error: this.modelError }
       }
     }
+    // Der Zustand kommt allein aus message_embedding_state (indiziert). Ein
+    // `EXISTS (… message_vecs …)` pro Zeile wäre genauer, kostet auf einem
+    // 40k-Postfach aber ein bis drei Sekunden im Main-Prozess — und da vec0
+    // keinen Rowid-Index hat, wächst das quadratisch. Fehlende Vektoren fängt
+    // stattdessen reconcileMissingVectors() einmal pro Sitzung ab.
     const counts = this.db
       .prepare(
         `SELECT count(*) AS eligible,
                 coalesce(sum(CASE WHEN
                   s.embedded_hash = s.content_hash
                   AND s.embedding_model = ?
-                  AND EXISTS (SELECT 1 FROM message_vecs v WHERE v.rowid = m.id)
                 THEN 1 ELSE 0 END), 0) AS indexed
          FROM messages m
          JOIN message_bodies b ON b.message_id = m.id
@@ -216,6 +221,40 @@ export class EmbeddingIndexer {
     })()
   }
 
+  /**
+   * Eine Migration kann die vec0-Tabelle neu anlegen (022 hat das getan),
+   * während message_embedding_state die Nachrichten weiter als eingebettet
+   * führt. Zwei billige Zählungen erkennen das; nur dann wird der teure
+   * Zeilenabgleich fällig — statt bei jedem Poll.
+   */
+  private reconcileMissingVectors(): void {
+    if (this.reconciled || !this.db) return
+    this.reconciled = true
+    try {
+      const { n: vectors } = this.db.prepare('SELECT count(*) AS n FROM message_vecs').get() as {
+        n: number
+      }
+      const { n: claimed } = this.db
+        .prepare(
+          `SELECT count(*) AS n FROM message_embedding_state
+           WHERE embedding_model = ? AND embedded_hash = content_hash`
+        )
+        .get(EMBEDDING_MODEL) as { n: number }
+      if (vectors >= claimed) return
+      const cleared = this.db
+        .prepare(
+          `UPDATE message_embedding_state
+           SET embedded_hash = NULL, embedding_model = NULL, indexed_at = NULL
+           WHERE embedded_hash IS NOT NULL
+             AND NOT EXISTS (SELECT 1 FROM message_vecs v WHERE v.rowid = message_id)`
+        )
+        .run().changes
+      if (cleared > 0) console.log(`[embeddings] ${cleared} verwaiste Staende zurueckgesetzt`)
+    } catch (error) {
+      console.warn('[embeddings] reconcile:', error)
+    }
+  }
+
   private pendingRows(): IndexRow[] {
     this.ensureSearchStates()
     return this.db!.prepare(
@@ -235,16 +274,19 @@ export class EmbeddingIndexer {
              OR s.embedded_hash != s.content_hash
              OR s.embedding_model IS NULL
              OR s.embedding_model != ?
-             OR NOT EXISTS (SELECT 1 FROM message_vecs v WHERE v.rowid = m.id)
            )
          ORDER BY m.date DESC LIMIT ?`
     ).all(EMBEDDING_MODEL, SCAN_LIMIT) as IndexRow[]
   }
 
   private async drain(): Promise<void> {
-    cleanupSearchOrphans(this.db!)
+    this.reconcileMissingVectors()
     let rows = this.pendingRows()
+    // Der Waisen-Abgleich scannt FTS- und Vektortabelle komplett. Im
+    // Normalfall (nichts zu indexieren) lohnt das nicht alle 60 Sekunden —
+    // init() räumt beim Start auf, danach nur noch bei echter Arbeit.
     if (rows.length === 0) return
+    cleanupSearchOrphans(this.db!)
     const insert = this.db!.prepare('INSERT INTO message_vecs (rowid, embedding) VALUES (?, ?)')
     const remove = this.db!.prepare('DELETE FROM message_vecs WHERE rowid = ?')
     const currentHash = this.db!.prepare(
