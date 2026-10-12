@@ -83,7 +83,7 @@
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.2",
     "tinykeys": "^4.0.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^7.2.6",
     "vitest": "^4.1.9",
     "zod": "^4.4.3",
