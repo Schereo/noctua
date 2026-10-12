@@ -41,7 +41,7 @@
     "ical.js": "^2.2.1",
     "imapflow": "^1.4.3",
     "nodemailer": "^10.0.15",
-    "openai": "^6.45.0",
+    "openai": "^7.31.0",
     "postal-mime": "^2.7.5",
     "sharp": "^0.35.5",
     "sqlite-vec": "^0.1.9"
